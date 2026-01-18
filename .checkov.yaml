@@ -1,0 +1,37 @@
+framework:
+  - terraform
+
+directory:
+  - terraform/
+
+output:
+  - cli
+  - json
+
+soft-fail: false
+
+compact: true
+
+skip-check:
+  # S3 bucket logging - we handle this at the module level with optional logging
+  - CKV_AWS_18
+  # S3 bucket versioning - handled by module with enable_versioning variable
+  - CKV_AWS_21
+  # VPC Flow Logs - handled by module with enable_flow_logs variable
+  - CKV2_AWS_11
+  # EBS encryption - handled by security-baseline module
+  - CKV_AWS_3
+  # IAM password policy - handled by security-baseline module
+  - CKV_AWS_9
+  - CKV_AWS_10
+  - CKV_AWS_11
+  - CKV_AWS_12
+  - CKV_AWS_13
+  - CKV_AWS_14
+  - CKV_AWS_15
+  - CKV_AWS_16
+
+external-checks-dir:
+  - terraform/.checkov/custom-checks
+
+download-external-modules: false

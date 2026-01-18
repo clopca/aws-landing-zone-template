@@ -2,28 +2,25 @@ import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
-// This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
+const SITE_URL = process.env.SITE_URL || 'https://landing-zone.example.com';
+const GITHUB_ORG = process.env.GITHUB_ORG || 'your-org';
+const GITHUB_REPO = process.env.GITHUB_REPO || 'aws-landing-zone-template';
+const COPYRIGHT_HOLDER = process.env.COPYRIGHT_HOLDER || 'Your Organization';
 
 const config: Config = {
   title: 'AWS Landing Zone Template',
   tagline: 'Multi-Account AWS Organization with Terraform',
   favicon: 'img/favicon.ico',
 
-  // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
-    v4: true, // Improve compatibility with the upcoming Docusaurus v4
+    v4: true,
   },
 
-  // Set the production url of your site here
-  url: 'https://docs.your-domain.com', // Will be configured with SST
-  // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
+  url: SITE_URL,
   baseUrl: '/',
 
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'your-org', // Usually your GitHub org/user name.
-  projectName: 'aws-landing-zone-template', // Usually your repo name.
+  organizationName: GITHUB_ORG,
+  projectName: GITHUB_REPO,
 
   onBrokenLinks: 'throw',
 
@@ -51,10 +48,7 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/your-org/aws-landing-zone-template/edit/main/docs/',
+          editUrl: `https://github.com/${GITHUB_ORG}/${GITHUB_REPO}/edit/main/docs/`,
         },
         blog: {
           showReadingTime: true,
@@ -62,11 +56,7 @@ const config: Config = {
             type: ['rss', 'atom'],
             xslt: true,
           },
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/your-org/aws-landing-zone-template/edit/main/docs/',
-          // Useful options to enforce blogging best practices
+          editUrl: `https://github.com/${GITHUB_ORG}/${GITHUB_REPO}/edit/main/docs/`,
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
           onUntruncatedBlogPosts: 'warn',
@@ -80,7 +70,6 @@ const config: Config = {
   themes: ['@docusaurus/theme-mermaid'],
 
   themeConfig: {
-    // Replace with your project's social card
     image: 'img/aws-landing-zone-social-card.jpg',
     colorMode: {
       respectPrefersColorScheme: true,
@@ -104,7 +93,7 @@ const config: Config = {
           position: 'right',
         },
         {
-          href: 'https://github.com/your-org/aws-landing-zone-template',
+          href: `https://github.com/${GITHUB_ORG}/${GITHUB_REPO}`,
           label: 'GitHub',
           position: 'right',
         },
@@ -152,16 +141,16 @@ const config: Config = {
           items: [
             {
               label: 'GitHub',
-              href: 'https://github.com/your-org/aws-landing-zone-template',
+              href: `https://github.com/${GITHUB_ORG}/${GITHUB_REPO}`,
             },
             {
               label: 'Issues',
-              href: 'https://github.com/your-org/aws-landing-zone-template/issues',
+              href: `https://github.com/${GITHUB_ORG}/${GITHUB_REPO}/issues`,
             },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Your Organization. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} ${COPYRIGHT_HOLDER}. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,

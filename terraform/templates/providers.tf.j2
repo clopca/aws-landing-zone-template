@@ -1,0 +1,36 @@
+provider "aws" {
+  region = "{{ region }}"
+
+  assume_role {
+    role_arn     = "arn:aws:iam::{{ account_id }}:role/{{ role_name }}"
+    session_name = "{{ session_name | default('terraform-session') }}"
+  }
+
+  default_tags {
+    tags = {
+      ManagedBy   = "Terraform"
+      Environment = "{{ environment | default('production') }}"
+      AccountId   = "{{ account_id }}"
+    }
+  }
+}
+
+{% if secondary_region is defined %}
+provider "aws" {
+  alias  = "secondary"
+  region = "{{ secondary_region }}"
+
+  assume_role {
+    role_arn     = "arn:aws:iam::{{ account_id }}:role/{{ role_name }}"
+    session_name = "{{ session_name | default('terraform-session') }}"
+  }
+
+  default_tags {
+    tags = {
+      ManagedBy   = "Terraform"
+      Environment = "{{ environment | default('production') }}"
+      AccountId   = "{{ account_id }}"
+    }
+  }
+}
+{% endif %}
