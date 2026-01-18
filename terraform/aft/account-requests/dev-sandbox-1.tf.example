@@ -1,0 +1,33 @@
+module "dev_sandbox_1" {
+  source = "./modules/aft-account-request"
+
+  control_tower_parameters = {
+    AccountEmail              = "aws+dev-sandbox-1@example.com"
+    AccountName               = "acme-dev-sandbox-1"
+    ManagedOrganizationalUnit = "Sandbox"
+    SSOUserEmail              = "developer@example.com"
+    SSOUserFirstName          = "Developer"
+    SSOUserLastName           = "Name"
+  }
+
+  account_tags = {
+    Environment = "sandbox"
+    CostCenter  = "CC-DEV-001"
+    Team        = "development"
+    Owner       = "developer@example.com"
+  }
+
+  custom_fields = {
+    workload_type = "sandbox"
+    vpc_cidr      = "10.100.0.0/16"
+    requires_tgw  = "false"
+    budget_limit  = "500"
+  }
+
+  change_management_parameters = {
+    change_requested_by = "Developer"
+    change_reason       = "Developer sandbox for experimentation"
+  }
+
+  account_customizations_name = "SANDBOX"
+}

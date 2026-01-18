@@ -1,0 +1,86 @@
+# Progress Log
+
+<!-- 
+Ralph appends progress after each completed task.
+Format:
+[YYYY-MM-DD HH:MM] Task: <beads-id> - <title>
+- What was implemented
+- Key decisions made
+- Files changed
+-->
+
+[2026-01-18 15:35] Initial Setup
+- Created repository structure
+- Configured OpenCode (Oh-My-OpenCode + Ralph Wiggum with Beads)
+- Set up Beads task tracking
+- Ready to continue with Docusaurus setup
+
+[2026-01-18 15:50] Fase 2: Documentación Docusaurus - COMPLETADA
+- Initialized Beads (bd init)
+- Created docs/docs/architecture/ with 4 files:
+  - overview.md: High-level architecture with Mermaid diagrams
+  - multi-account.md: OU structure and account strategy
+  - security-model.md: Defense in depth, SCPs, security services
+  - network-design.md: Transit Gateway hub-and-spoke topology
+- Created docs/docs/modules/ with 4 files:
+  - organization.md: AWS Organizations module docs
+  - security-baseline.md: GuardDuty, Security Hub, Config
+  - networking.md: Transit Gateway, VPCs, DNS
+  - aft.md: Account Factory for Terraform
+- Created docs/docs/runbooks/ with 3 files:
+  - account-vending.md: Step-by-step account provisioning
+  - deployment.md: Terraform deployment order and procedures
+  - troubleshooting.md: Common issues and resolutions
+- Replaced intro.md with AWS Landing Zone content
+- Removed tutorial-basics/ and tutorial-extras/ (example content)
+- Added _category_.json for each section
+- Verified Docusaurus build passes
+
+[2026-01-18 15:50] Beads Issues Created for Remaining Phases
+- lz-cni: Fase 3 - SST Deploy (P1)
+- lz-0m0: Fase 4 - Terraform Base (P1, depends on lz-cni)
+- lz-yt5: Fase 5 - Módulos Core (P2, depends on lz-0m0)
+- lz-dnp: Fase 6 - AFT Setup (P2, depends on lz-yt5)
+- lz-wz6: Fase 7 - CI/CD (P3, depends on lz-dnp)
+
+Next: Run `bd ready` to see available tasks (lz-cni is ready)
+
+[2026-01-18 16:30] Fase 3: SST Deploy (lz-cni) - COMPLETADA
+- Created infra/ directory with SST configuration
+- infra/sst.config.ts: StaticSite component for Docusaurus
+- infra/package.json with SST dependencies
+- Configured CloudFront deployment with cache optimization
+
+[2026-01-18 16:35] Fase 4: Terraform Base (lz-0m0) - COMPLETADA
+- terraform/organization/: AWS Organizations, OUs, SCPs
+- terraform/security/: GuardDuty, Security Hub, Config, Access Analyzer
+- terraform/log-archive/: S3 buckets for CloudTrail, Config, VPC Flow Logs
+- terraform/network/: Transit Gateway, VPCs, NAT, Route53
+- terraform/shared-services/: VPC, ECR repositories
+- All configurations validated with `terraform validate`
+
+[2026-01-18 16:45] Fase 5: Módulos Core (lz-yt5) - COMPLETADA
+- terraform/modules/vpc/: Reusable VPC module with subnets, NAT, flow logs
+- terraform/modules/security-baseline/: EBS encryption, S3 block, IAM password policy
+- terraform/modules/transit-gateway/: TGW with route tables and RAM sharing
+- All modules validated successfully
+
+[2026-01-18 16:50] Fase 6: AFT Setup (lz-dnp) - COMPLETADA
+- terraform/aft/aft-setup/: AFT module configuration
+- terraform/aft/account-requests/: Example account request templates
+- terraform/aft/aft-global-customizations/: Security baseline for all accounts
+- terraform/aft/aft-account-customizations/PROD-WORKLOAD/: VPC + TGW attachment
+- terraform/aft/aft-account-provisioning/: SSM parameter for account metadata
+
+[2026-01-18 16:55] Fase 7: CI/CD (lz-wz6) - COMPLETADA
+- .github/workflows/terraform-validate.yml.disabled
+- .github/workflows/docs-deploy.yml.disabled
+- Both workflows ready to enable by removing .disabled suffix
+
+[2026-01-18 16:55] Reference Documentation Created
+- REFERENCES.md: Catalog of AWS reference implementations used
+  - awslabs/aft-blueprints (primary AFT reference)
+  - aws-samples/aws-network-hub-for-terraform (network architecture)
+  - aws-samples/aws-security-reference-architecture-examples (security)
+
+ALL PHASES COMPLETE - Template ready for use

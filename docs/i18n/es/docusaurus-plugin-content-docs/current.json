@@ -1,0 +1,18 @@
+{
+  "version.label": {
+    "message": "Next",
+    "description": "The label for version current"
+  },
+  "sidebar.landingZoneSidebar.category.Architecture": {
+    "message": "Architecture",
+    "description": "The label for category 'Architecture' in sidebar 'landingZoneSidebar'"
+  },
+  "sidebar.landingZoneSidebar.category.Modules": {
+    "message": "Modules",
+    "description": "The label for category 'Modules' in sidebar 'landingZoneSidebar'"
+  },
+  "sidebar.landingZoneSidebar.category.Runbooks": {
+    "message": "Runbooks",
+    "description": "The label for category 'Runbooks' in sidebar 'landingZoneSidebar'"
+  }
+}

@@ -1,0 +1,11 @@
+aws_region        = "us-east-1"
+organization_name = "acme"
+organization_id   = "o-xxxxxxxxxx"
+
+cloudtrail_retention_days   = 365
+config_retention_days       = 365
+vpc_flow_log_retention_days = 90
+
+enable_s3_access_logging  = true
+enable_glacier_transition = true
+glacier_transition_days   = 90

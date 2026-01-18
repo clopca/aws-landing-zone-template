@@ -1,0 +1,73 @@
+name: Terraform Validate
+
+on:
+  pull_request:
+    paths:
+      - 'terraform/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'terraform/**'
+
+env:
+  TF_VERSION: '1.5.0'
+
+jobs:
+  validate:
+    name: Validate Terraform
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform Format Check
+        run: |
+          cd terraform
+          terraform fmt -recursive -check
+
+      - name: Validate Organization
+        run: |
+          cd terraform/organization
+          terraform init -backend=false
+          terraform validate
+
+      - name: Validate Security
+        run: |
+          cd terraform/security
+          terraform init -backend=false
+          terraform validate
+
+      - name: Validate Log Archive
+        run: |
+          cd terraform/log-archive
+          terraform init -backend=false
+          terraform validate
+
+      - name: Validate Network
+        run: |
+          cd terraform/network
+          terraform init -backend=false
+          terraform validate
+
+      - name: Validate Shared Services
+        run: |
+          cd terraform/shared-services
+          terraform init -backend=false
+          terraform validate
+
+      - name: Validate Modules
+        run: |
+          for module in terraform/modules/*/; do
+            echo "Validating $module"
+            cd "$module"
+            terraform init -backend=false
+            terraform validate
+            cd - > /dev/null
+          done

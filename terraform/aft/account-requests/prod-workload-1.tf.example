@@ -1,0 +1,33 @@
+module "production_workload_1" {
+  source = "./modules/aft-account-request"
+
+  control_tower_parameters = {
+    AccountEmail              = "aws+prod-workload-1@example.com"
+    AccountName               = "acme-prod-workload-1"
+    ManagedOrganizationalUnit = "Production"
+    SSOUserEmail              = "platform-team@example.com"
+    SSOUserFirstName          = "Platform"
+    SSOUserLastName           = "Team"
+  }
+
+  account_tags = {
+    Environment        = "production"
+    CostCenter         = "CC-PROD-001"
+    Team               = "platform"
+    DataClassification = "confidential"
+  }
+
+  custom_fields = {
+    workload_type    = "application"
+    vpc_cidr         = "10.10.0.0/16"
+    requires_tgw     = "true"
+    compliance_scope = "pci-dss"
+  }
+
+  change_management_parameters = {
+    change_requested_by = "Platform Team"
+    change_reason       = "Initial production workload account"
+  }
+
+  account_customizations_name = "PROD-WORKLOAD"
+}

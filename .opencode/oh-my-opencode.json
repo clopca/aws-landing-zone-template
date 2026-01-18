@@ -1,0 +1,34 @@
+{
+	"$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
+	"google_auth": false,
+	"ralph_loop": { 
+		"enabled": true, 
+		"default_max_iterations": 50 
+	},
+	"agents": {
+		"Sisyphus": {
+			"model": "amazon-bedrock/global.anthropic.claude-opus-4-5-20251101-v1:0"
+		},
+		"librarian": {
+			"model": "google/gemini-3-flash"
+		},
+		"explore": {
+			"model": "google/gemini-3-flash"
+		},
+		"frontend-ui-ux-engineer": {
+			"model": "google/gemini-3-pro-high"
+		},
+		"document-writer": {
+			"model": "google/gemini-3-flash"
+		},
+		"multimodal-looker": {
+			"model": "google/gemini-3-flash"
+		},
+		"terraform-engineer": {
+			"model": "google/gemini-3-pro-high"
+		},
+		"infrastructure-architect": {
+			"model": "amazon-bedrock/global.anthropic.claude-opus-4-5-20251101-v1:0"
+		}
+	}
+}

@@ -1,0 +1,14 @@
+aws_region        = "us-east-1"
+organization_name = "acme"
+organization_arn  = "arn:aws:organizations::123456789012:organization/o-xxxxxxxxxx"
+
+availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
+network_hub_cidr   = "10.0.0.0/16"
+
+tgw_route_tables = ["shared", "production", "nonproduction"]
+
+enable_dns_firewall      = true
+private_hosted_zone_name = "aws.internal"
+
+enable_network_firewall = true
+vpc_flow_log_bucket_arn = "arn:aws:s3:::acme-vpc-flow-logs-123456789012"

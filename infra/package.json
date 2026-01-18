@@ -1,0 +1,19 @@
+{
+  "name": "aws-landing-zone-infra",
+  "version": "1.0.0",
+  "description": "SST infrastructure for AWS Landing Zone documentation deployment",
+  "type": "module",
+  "scripts": {
+    "dev": "sst dev",
+    "deploy": "sst deploy",
+    "remove": "sst remove"
+  },
+  "keywords": ["sst", "aws", "infrastructure", "docusaurus"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^25.0.9",
+    "sst": "^3.17.25",
+    "typescript": "^5.9.3"
+  }
+}
