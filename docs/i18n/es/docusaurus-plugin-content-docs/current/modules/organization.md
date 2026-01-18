@@ -2,20 +2,20 @@
 sidebar_position: 1
 ---
 
-# Organization Module
+# Módulo de Organización {#organization-module}
 
-The Organization module manages AWS Organizations, Organizational Units (OUs), and Service Control Policies (SCPs).
+El módulo de Organización gestiona AWS Organizations, Unidades Organizativas (OUs) y Políticas de Control de Servicios (SCPs).
 
-## Overview
+## Descripción General {#overview}
 
-This module is deployed in the **Management Account** and creates:
+Este módulo se despliega en la **Management Account** y crea:
 
-- AWS Organization (if not exists)
-- Organizational Unit hierarchy
-- Service Control Policies
-- Account baseline settings
+- AWS Organization (si no existe)
+- Jerarquía de Unidades Organizativas
+- Políticas de Control de Servicios (SCPs)
+- Configuración base de la cuenta
 
-## Usage
+## Uso {#usage}
 
 ```hcl
 module "organization" {
@@ -62,31 +62,31 @@ module "organization" {
 }
 ```
 
-## Inputs
+## Entradas {#inputs}
 
 | Name | Description | Type | Required |
 |------|-------------|------|----------|
-| `organization_name` | Name for the organization | `string` | Yes |
-| `organizational_units` | Map of OUs to create | `map(object)` | Yes |
-| `scp_policies` | Map of SCPs to create and attach | `map(object)` | No |
-| `enable_all_features` | Enable all organization features | `bool` | No |
-| `aws_service_access_principals` | AWS services to enable | `list(string)` | No |
+| `organization_name` | Nombre de la organización | `string` | Yes |
+| `organizational_units` | Mapa de OUs a crear | `map(object)` | Yes |
+| `scp_policies` | Mapa de SCPs a crear y adjuntar | `map(object)` | No |
+| `enable_all_features` | Habilitar todas las características de la organización | `bool` | No |
+| `aws_service_access_principals` | Servicios de AWS a habilitar | `list(string)` | No |
 
-## Outputs
+## Salidas {#outputs}
 
 | Name | Description |
 |------|-------------|
-| `organization_id` | AWS Organization ID |
-| `organization_arn` | AWS Organization ARN |
-| `root_id` | Root OU ID |
-| `ou_ids` | Map of OU names to IDs |
-| `scp_ids` | Map of SCP names to IDs |
+| `organization_id` | ID de AWS Organization |
+| `organization_arn` | ARN de AWS Organization |
+| `root_id` | ID de la OU Raíz (Root) |
+| `ou_ids` | Mapa de nombres de OU a IDs |
+| `scp_ids` | Mapa de nombres de SCP a IDs |
 
-## SCP Policies
+## Políticas SCP {#scp-policies}
 
-### deny-leave-org
+### deny-leave-org {#deny-leave-org}
 
-Prevents accounts from leaving the organization.
+Evita que las cuentas abandonen la organización.
 
 ```json
 {
@@ -102,9 +102,9 @@ Prevents accounts from leaving the organization.
 }
 ```
 
-### require-imdsv2
+### require-imdsv2 {#require-imdsv2}
 
-Requires EC2 instances to use IMDSv2.
+Requiere que las instancias EC2 utilicen IMDSv2.
 
 ```json
 {
@@ -125,19 +125,19 @@ Requires EC2 instances to use IMDSv2.
 }
 ```
 
-### restrict-regions
+### restrict-regions {#restrict-regions}
 
-Restricts operations to approved AWS regions.
+Restringe las operaciones a las regiones de AWS aprobadas.
 
-### deny-root-user
+### deny-root-user {#deny-root-user}
 
-Denies actions by the root user (except specific allowed actions).
+Deniega acciones por parte del usuario raíz (excepto acciones específicas permitidas).
 
-## File Structure
+## Estructura de Archivos {#file-structure}
 
 ```
 terraform/organization/
-├── main.tf              # Organization and OUs
+├── main.tf              # Organization y OUs
 ├── scps.tf              # Service Control Policies
 ├── iam-identity-center.tf
 ├── variables.tf
@@ -147,14 +147,14 @@ terraform/organization/
 └── terraform.tfvars.example
 ```
 
-## Dependencies
+## Dependencias {#dependencies}
 
-- Must be the first module deployed
-- Management account must have Organizations enabled
-- IAM Identity Center requires organization
+- Debe ser el primer módulo desplegado
+- La Management account debe tener Organizations habilitado
+- IAM Identity Center requiere una organización
 
-## Related
+## Relacionado {#related}
 
-- [Multi-Account Architecture](../architecture/multi-account)
-- [Security Model](../architecture/security-model)
-- [AFT Module](./aft)
+- [Arquitectura Multi-Cuenta](../architecture/multi-account)
+- [Modelo de Seguridad](../architecture/security-model)
+- [Módulo AFT](./aft)

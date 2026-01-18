@@ -2,49 +2,49 @@
 sidebar_position: 1
 ---
 
-# Account Vending Runbook
+# Guía Operativa de Aprovisionamiento de Cuentas {#account-vending-runbook}
 
-This runbook describes how to provision new AWS accounts using Account Factory for Terraform (AFT).
+Esta guía operativa describe cómo aprovisionar nuevas cuentas de AWS utilizando Account Factory for Terraform (AFT).
 
-## Prerequisites
+## Requisitos Previos {#prerequisites}
 
-- [ ] Access to the AFT repository (CodeCommit or GitHub)
-- [ ] Platform team approval for new account
-- [ ] Account details: name, email, OU, cost center
-- [ ] SSO user information for account owner
+- [ ] Acceso al repositorio de AFT (CodeCommit o GitHub)
+- [ ] Aprobación del equipo de plataforma para la nueva cuenta
+- [ ] Detalles de la cuenta: nombre, correo electrónico, OU, centro de costos
+- [ ] Información del usuario de SSO para el propietario de la cuenta
 
-## Account Request Process
+## Proceso de Solicitud de Cuenta {#account-request-process}
 
-### Step 1: Gather Information
+### Paso 1: Recopilar Información {#step-1-gather-information}
 
-Collect the following information:
+Recopile la siguiente información:
 
-| Field | Example | Notes |
+| Campo | Ejemplo | Notas |
 |-------|---------|-------|
-| Account Name | `acme-prod-ecommerce` | Follow naming convention |
-| Account Email | `aws+prod-ecommerce@acme.com` | Unique email per account |
-| OU | `Production` | Must exist in organization |
-| SSO User Email | `team-lead@acme.com` | Initial admin access |
-| Cost Center | `CC-12345` | For billing allocation |
-| Environment | `production` | prod, staging, dev, sandbox |
-| Workload Type | `ecommerce` | Application category |
+| Nombre de la Cuenta | `acme-prod-ecommerce` | Siga la convención de nombres |
+| Correo de la Cuenta | `aws+prod-ecommerce@acme.com` | Correo único por cuenta |
+| OU | `Production` | Debe existir en la organización |
+| Correo del Usuario SSO | `team-lead@acme.com` | Acceso inicial de administrador |
+| Centro de Costos | `CC-12345` | Para la asignación de facturación |
+| Entorno | `production` | prod, staging, dev, sandbox |
+| Tipo de Carga de Trabajo | `ecommerce` | Categoría de la aplicación |
 
-### Step 2: Create Account Request
+### Paso 2: Crear la Solicitud de Cuenta {#step-2-create-account-request}
 
-1. Clone the AFT account requests repository:
+1. Clone el repositorio de solicitudes de cuenta de AFT:
 
 ```bash
 git clone https://git-codecommit.us-east-1.amazonaws.com/v1/repos/aft-account-request
 cd aft-account-request
 ```
 
-2. Create a new Terraform file:
+2. Cree un nuevo archivo de Terraform:
 
 ```bash
 touch terraform/prod-ecommerce.tf
 ```
 
-3. Add the account request configuration:
+3. Añada la configuración de la solicitud de cuenta:
 
 ```hcl
 # terraform/prod-ecommerce.tf
@@ -78,17 +78,17 @@ module "prod_ecommerce" {
 }
 ```
 
-### Step 3: Create Account Customizations (Optional)
+### Paso 3: Crear Personalizaciones de Cuenta (Opcional) {#step-3-create-account-customizations}
 
-If the account needs specific customizations:
+Si la cuenta necesita personalizaciones específicas:
 
-1. Create customization directory:
+1. Cree el directorio de personalización:
 
 ```bash
 mkdir -p ../aft-account-customizations/PROD-ECOMMERCE/terraform
 ```
 
-2. Add customization configuration:
+2. Añada la configuración de personalización:
 
 ```hcl
 # aft-account-customizations/PROD-ECOMMERCE/terraform/main.tf
@@ -125,9 +125,9 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "main" {
 }
 ```
 
-### Step 4: Submit Pull Request
+### Paso 4: Enviar Solicitud de Extracción (Pull Request) {#step-4-submit-pull-request}
 
-1. Create a branch and commit:
+1. Cree una rama y realice el commit:
 
 ```bash
 git checkout -b account/prod-ecommerce
@@ -136,83 +136,83 @@ git commit -m "feat: request new account prod-ecommerce"
 git push origin account/prod-ecommerce
 ```
 
-2. Create Pull Request with:
-   - Title: `Account Request: prod-ecommerce`
-   - Description: Business justification and details
-   - Reviewers: Platform team
+2. Cree el Pull Request con:
+   - Título: `Account Request: prod-ecommerce`
+   - Descripción: Justificación comercial y detalles
+   - Revisores: Equipo de plataforma
 
-### Step 5: Review and Approval
+### Paso 5: Revisión y Aprobación {#step-5-review-and-approval}
 
-The platform team will review:
+El equipo de plataforma revisará:
 
-- [ ] Account naming follows conventions
-- [ ] Email is unique and follows pattern
-- [ ] OU is appropriate for workload
-- [ ] Tags are complete
-- [ ] Customizations are valid
-- [ ] Cost allocation is set
+- [ ] El nombre de la cuenta sigue las convenciones
+- [ ] El correo electrónico es único y sigue el patrón
+- [ ] La OU es apropiada para la carga de trabajo
+- [ ] Las etiquetas están completas
+- [ ] Las personalizaciones son válidas
+- [ ] La asignación de costos está establecida
 
-### Step 6: Merge and Provision
+### Paso 6: Fusión y Aprovisionamiento {#step-6-merge-and-provision}
 
-After approval:
+Tras la aprobación:
 
-1. PR is merged to main branch
-2. AFT pipeline triggers automatically
-3. Control Tower provisions the account
-4. Global customizations are applied
-5. Account-specific customizations are applied
+1. El PR se fusiona con la rama principal (main)
+2. El pipeline de AFT se activa automáticamente
+3. Control Tower aprovisiona la cuenta
+4. Se aplican las personalizaciones globales
+5. Se aplican las personalizaciones específicas de la cuenta
 
-### Step 7: Verify Account
+### Paso 7: Verificar la Cuenta {#step-7-verify-account}
 
-1. Check AFT pipeline status in CodePipeline
-2. Verify account appears in AWS Organizations
-3. Test SSO access
-4. Verify baseline resources exist
+1. Verifique el estado del pipeline de AFT en CodePipeline
+2. Verifique que la cuenta aparezca en AWS Organizations
+3. Pruebe el acceso SSO
+4. Verifique que existan los recursos de la línea base
 
 ```bash
-# List accounts in OU
+# Listar cuentas en la OU
 aws organizations list-accounts-for-parent \
   --parent-id ou-xxxx-xxxxxxxx
 
-# Check account status
+# Verificar el estado de la cuenta
 aws organizations describe-account \
   --account-id 123456789012
 ```
 
-## Troubleshooting
+## Solución de Problemas {#troubleshooting}
 
-### Pipeline Failed
+### Fallo en el Pipeline {#pipeline-failed}
 
-1. Check CodePipeline execution details
-2. Review CloudWatch Logs for Step Functions
-3. Common issues:
-   - Invalid email format
-   - OU doesn't exist
-   - Terraform syntax error
+1. Verifique los detalles de ejecución de CodePipeline
+2. Revise los logs de CloudWatch para las Step Functions
+3. Problemas comunes:
+   - Formato de correo electrónico inválido
+   - La OU no existe
+   - Error de sintaxis en Terraform
 
-### Account Not Appearing
+### La Cuenta no Aparece {#account-not-appearing}
 
-1. Check Control Tower account factory
-2. Verify Service Catalog portfolio
-3. Check for pending actions in Control Tower
+1. Verifique el Account Factory de Control Tower
+2. Verifique el portafolio de Service Catalog
+3. Busque acciones pendientes en Control Tower
 
-### SSO Access Issues
+### Problemas de Acceso SSO {#sso-access-issues}
 
-1. Verify SSO user exists
-2. Check permission set assignment
-3. Verify account is enrolled in IAM Identity Center
+1. Verifique que el usuario SSO exista
+2. Verifique la asignación del conjunto de permisos (permission set)
+3. Verifique que la cuenta esté inscrita en IAM Identity Center
 
-## Rollback
+## Reversión {#rollback}
 
-To delete a vended account:
+Para eliminar una cuenta aprovisionada:
 
-1. Remove the account request file
-2. Create PR and merge
-3. **Note**: AFT does not automatically delete accounts
-4. Manually close account via Organizations console
+1. Elimine el archivo de solicitud de cuenta
+2. Cree el PR y fusiónelo
+3. **Nota**: AFT no elimina automáticamente las cuentas
+4. Cierre manualmente la cuenta a través de la consola de Organizations
 
-## Related
+## Relacionado {#related}
 
-- [AFT Module Documentation](../modules/aft)
-- [Multi-Account Architecture](../architecture/multi-account)
-- [Deployment Runbook](./deployment)
+- [Documentación del Módulo AFT](../modules/aft)
+- [Arquitectura Multi-Cuenta](../architecture/multi-account)
+- [Guía Operativa de Despliegue](./deployment)

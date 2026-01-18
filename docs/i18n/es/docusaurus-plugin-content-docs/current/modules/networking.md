@@ -2,21 +2,21 @@
 sidebar_position: 3
 ---
 
-# Networking Module
+# Módulo de Redes {#networking-module}
 
-The Networking module creates the hub-and-spoke network architecture using Transit Gateway.
+El módulo de Redes crea la arquitectura de red hub-and-spoke utilizando Transit Gateway.
 
-## Overview
+## Descripción General {#overview}
 
-This module is deployed in the **Network Hub Account** and creates:
+Este módulo se despliega en la **Network Hub Account** y crea:
 
 - Transit Gateway
-- Central VPCs (Ingress, Egress, Inspection)
-- Route tables and associations
-- DNS infrastructure (Route53)
-- VPC Endpoints (shared)
+- VPCs Centrales (Ingress, Egress, Inspection)
+- Tablas de ruteo y asociaciones
+- Infraestructura de DNS (Route53)
+- VPC Endpoints (compartidos)
 
-## Architecture
+## Arquitectura {#architecture}
 
 ```mermaid
 graph TB
@@ -44,7 +44,7 @@ graph TB
     TGW --> SPOKE3[Spoke VPC N]
 ```
 
-## Usage
+## Uso {#usage}
 
 ```hcl
 module "networking" {
@@ -77,46 +77,46 @@ module "networking" {
 }
 ```
 
-## Inputs
+## Entradas {#inputs}
 
 | Name | Description | Type | Required |
 |------|-------------|------|----------|
-| `transit_gateway_name` | Name for Transit Gateway | `string` | Yes |
-| `amazon_side_asn` | BGP ASN for TGW | `number` | No |
-| `create_ingress_vpc` | Create Ingress VPC | `bool` | No |
-| `create_egress_vpc` | Create Egress VPC | `bool` | No |
-| `create_inspection_vpc` | Create Inspection VPC | `bool` | No |
-| `network_hub_cidr` | CIDR for Network Hub | `string` | Yes |
-| `private_hosted_zone_name` | Route53 PHZ name | `string` | No |
-| `availability_zones` | AZs to use | `list(string)` | Yes |
+| `transit_gateway_name` | Nombre para el Transit Gateway | `string` | Yes |
+| `amazon_side_asn` | ASN de BGP para el TGW | `number` | No |
+| `create_ingress_vpc` | Crear VPC de Ingress | `bool` | No |
+| `create_egress_vpc` | Crear VPC de Egress | `bool` | No |
+| `create_inspection_vpc` | Crear VPC de Inspección | `bool` | No |
+| `network_hub_cidr` | CIDR para el Network Hub | `string` | Yes |
+| `private_hosted_zone_name` | Nombre de la PHZ de Route53 | `string` | No |
+| `availability_zones` | AZs a utilizar | `list(string)` | Yes |
 
-## Outputs
+## Salidas {#outputs}
 
 | Name | Description |
 |------|-------------|
-| `transit_gateway_id` | Transit Gateway ID |
-| `transit_gateway_arn` | Transit Gateway ARN |
-| `ingress_vpc_id` | Ingress VPC ID |
-| `egress_vpc_id` | Egress VPC ID |
-| `inspection_vpc_id` | Inspection VPC ID |
-| `route_table_ids` | Map of route table IDs |
-| `private_hosted_zone_id` | Route53 PHZ ID |
+| `transit_gateway_id` | ID de Transit Gateway |
+| `transit_gateway_arn` | ARN de Transit Gateway |
+| `ingress_vpc_id` | ID de la VPC de Ingress |
+| `egress_vpc_id` | ID de la VPC de Egress |
+| `inspection_vpc_id` | ID de la VPC de Inspección |
+| `route_table_ids` | Mapa de IDs de tablas de ruteo |
+| `private_hosted_zone_id` | ID de la PHZ de Route53 |
 
-## Transit Gateway Route Tables
+## Tablas de Ruteo de Transit Gateway {#transit-gateway-route-tables}
 
 | Route Table | Purpose | Associated VPCs |
 |-------------|---------|-----------------|
-| `shared` | Access to shared services | All |
-| `production` | Production traffic | Production VPCs |
-| `non-production` | Non-prod traffic | Dev/Staging VPCs |
-| `inspection` | Traffic inspection | Ingress, Egress |
+| `shared` | Acceso a servicios compartidos | Todas |
+| `production` | Tráfico de producción | VPCs de Producción |
+| `non-production` | Tráfico de no-producción | VPCs de Dev/Staging |
+| `inspection` | Inspección de tráfico | Ingress, Egress |
 
-## Spoke VPC Attachment
+## Adjunto de VPC Spoke {#spoke-vpc-attachment}
 
-To attach a spoke VPC from another account:
+Para adjuntar una VPC spoke desde otra cuenta:
 
 ```hcl
-# In the workload account
+# En la cuenta de carga de trabajo (workload account)
 resource "aws_ec2_transit_gateway_vpc_attachment" "spoke" {
   subnet_ids         = var.transit_subnet_ids
   transit_gateway_id = data.aws_ec2_transit_gateway.shared.id
@@ -130,29 +130,29 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "spoke" {
   }
 }
 
-# RAM share acceptance
+# Aceptación de compartición de RAM
 resource "aws_ram_resource_share_accepter" "tgw" {
   share_arn = data.aws_ram_resource_share.tgw.arn
 }
 ```
 
-## VPC Endpoints
+## VPC Endpoints {#vpc-endpoints}
 
-Centralized VPC endpoints in Shared Services VPC:
+VPC endpoints centralizados en la VPC de Shared Services:
 
 | Endpoint | Type | Services Using |
 |----------|------|----------------|
-| S3 | Gateway | All |
-| DynamoDB | Gateway | All |
+| S3 | Gateway | Todos |
+| DynamoDB | Gateway | Todos |
 | ECR (api, dkr) | Interface | ECS, EKS |
-| CloudWatch Logs | Interface | All |
+| CloudWatch Logs | Interface | Todos |
 | SSM, SSM Messages | Interface | EC2 |
 | Secrets Manager | Interface | Lambda, ECS |
-| STS | Interface | All |
+| STS | Interface | Todos |
 
-## DNS Configuration
+## Configuración de DNS {#dns-configuration}
 
-### Private Hosted Zones
+### Private Hosted Zones {#private-hosted-zones}
 
 ```
 aws.internal
@@ -161,23 +161,23 @@ aws.internal
 └── dev.aws.internal       → 10.20.x.x
 ```
 
-### Route53 Resolver
+### Route53 Resolver {#route53-resolver}
 
-- Inbound endpoints for on-premises → AWS resolution
-- Outbound endpoints for AWS → on-premises resolution
-- Resolver rules shared via RAM
+- Endpoints de entrada (inbound) para resolución on-premises → AWS
+- Endpoints de salida (outbound) para resolución AWS → on-premises
+- Reglas del Resolver compartidas vía RAM
 
-## File Structure
+## Estructura de Archivos {#file-structure}
 
 ```
 terraform/network/
-├── main.tf              # Main configuration
-├── transit-gateway.tf   # TGW and route tables
-├── vpcs.tf              # Central VPCs
-├── nat-gateways.tf      # NAT configuration
-├── route53.tf           # DNS infrastructure
-├── vpc-endpoints.tf     # Centralized endpoints
-├── ram.tf               # Resource sharing
+├── main.tf              # Configuración principal
+├── transit-gateway.tf   # TGW y tablas de ruteo
+├── vpcs.tf              # VPCs centrales
+├── nat-gateways.tf      # Configuración de NAT
+├── route53.tf           # Infraestructura de DNS
+├── vpc-endpoints.tf     # Endpoints centralizados
+├── ram.tf               # Compartición de recursos (RAM)
 ├── variables.tf
 ├── outputs.tf
 ├── providers.tf
@@ -185,12 +185,12 @@ terraform/network/
 └── terraform.tfvars.example
 ```
 
-## Dependencies
+## Dependencias {#dependencies}
 
-- Organization module (for RAM sharing)
-- Requires accounts to accept RAM shares
+- Módulo de Organización (para compartición vía RAM)
+- Requiere que las cuentas acepten las comparticiones de RAM
 
-## Related
+## Relacionado {#related}
 
-- [Network Design](../architecture/network-design)
-- [Organization Module](./organization)
+- [Diseño de Red](../architecture/network-design)
+- [Módulo de Organización](./organization)

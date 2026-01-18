@@ -2,20 +2,20 @@
 sidebar_position: 4
 ---
 
-# CI/CD Pipeline Setup
+# Guía Operativa de Configuración de CI/CD {#cicd-setup-runbook}
 
-This runbook describes how to set up and manage the CI/CD pipelines for the AWS Landing Zone using GitHub Actions.
+Esta guía operativa describe cómo configurar y gestionar los pipelines de CI/CD para la AWS Landing Zone utilizando GitHub Actions.
 
-## Pipeline Overview
+## Descripción General del Pipeline {#pipeline-overview}
 
-The Landing Zone includes two GitHub Actions workflows for automation:
+La Landing Zone incluye dos flujos de trabajo (workflows) de GitHub Actions para la automatización:
 
-- **Terraform Validate**: Validates Terraform code on pull requests and pushes
-- **Documentation Deploy**: Builds and deploys the Docusaurus site to AWS CloudFront
+- **Terraform Validate**: Valida el código de Terraform en las solicitudes de extracción (pull requests) y los pushes.
+- **Documentation Deploy**: Construye y despliega el sitio de Docusaurus en AWS CloudFront.
 
-Both workflows are disabled by default (`.disabled` suffix) to prevent accidental execution before proper configuration.
+Ambos flujos de trabajo están deshabilitados por defecto (sufijo `.disabled`) para evitar ejecuciones accidentales antes de una configuración adecuada.
 
-### Workflow Architecture
+### Arquitectura del Flujo de Trabajo {#workflow-architecture}
 
 ```mermaid
 graph TB
@@ -45,77 +45,77 @@ graph TB
     end
 ```
 
-### Workflow Triggers
+### Activadores del Flujo de Trabajo (Triggers) {#workflow-triggers}
 
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
-| Terraform Validate | PR to `main` (terraform/**) | Validate changes before merge |
-| Terraform Validate | Push to `main` (terraform/**) | Validate merged code |
-| Documentation Deploy | Push to `main` (docs/**, infra/**) | Auto-deploy docs on merge |
-| Documentation Deploy | Manual dispatch | Deploy to specific stage |
+| Terraform Validate | PR a `main` (terraform/**) | Validar cambios antes de la fusión |
+| Terraform Validate | Push a `main` (terraform/**) | Validar el código fusionado |
+| Documentation Deploy | Push a `main` (docs/**, infra/**) | Despliegue automático de docs al fusionar |
+| Documentation Deploy | Despacho manual | Desplegar en una etapa específica |
 
-## Enabling the Pipelines
+## Habilitar los Pipelines {#enabling-the-pipelines}
 
-### Step 1: Remove Disabled Suffix
+### Paso 1: Eliminar el Sufijo de Deshabilitado {#step-1-remove-disabled-suffix}
 
 ```bash
-# Enable Terraform validation
+# Habilitar la validación de Terraform
 mv .github/workflows/terraform-validate.yml.disabled \
    .github/workflows/terraform-validate.yml
 
-# Enable documentation deployment
+# Habilitar el despliegue de la documentación
 mv .github/workflows/docs-deploy.yml.disabled \
    .github/workflows/docs-deploy.yml
 
-# Commit the changes
+# Realizar el commit de los cambios
 git add .github/workflows/
 git commit -m "chore: enable CI/CD pipelines"
 git push
 ```
 
-### Step 2: Configure GitHub Secrets
+### Paso 2: Configurar los Secretos de GitHub {#step-2-configure-github-secrets}
 
-Navigate to **Settings > Secrets and variables > Actions** in your GitHub repository and add:
+Navegue a **Settings > Secrets and variables > Actions** en su repositorio de GitHub y añada:
 
-| Secret Name | Description | Example Value |
+| Nombre del Secreto | Descripción | Valor de Ejemplo |
 |-------------|-------------|---------------|
-| `AWS_ROLE_ARN` | IAM role ARN for GitHub Actions OIDC | `arn:aws:iam::123456789012:role/GitHubActionsRole` |
+| `AWS_ROLE_ARN` | ARN del rol de IAM para OIDC de GitHub Actions | `arn:aws:iam::123456789012:role/GitHubActionsRole` |
 
-:::caution Important
-Do NOT use long-lived AWS credentials (access keys). Use OIDC authentication instead.
+:::caution Importante
+NO utilice credenciales de AWS de larga duración (access keys). Utilice la autenticación OIDC en su lugar.
 :::
 
-### Step 3: Configure Repository Settings
+### Paso 3: Configurar los Ajustes del Repositorio {#step-3-configure-repository-settings}
 
-#### Branch Protection Rules
+#### Reglas de Protección de Ramas {#branch-protection-rules}
 
-Navigate to **Settings > Branches** and configure protection for `main`:
+Navegue a **Settings > Branches** y configure la protección para `main`:
 
-- [ ] Require pull request reviews before merging (1 reviewer minimum)
-- [ ] Require status checks to pass before merging
+- [ ] Requerir revisiones de pull request antes de fusionar (mínimo 1 revisor)
+- [ ] Requerir que las comprobaciones de estado pasen antes de fusionar
   - [ ] `Validate Terraform`
   - [ ] `Build Documentation`
-- [ ] Require branches to be up to date before merging
-- [ ] Do not allow bypassing the above settings
+- [ ] Requerir que las ramas estén actualizadas antes de fusionar
+- [ ] No permitir omitir los ajustes anteriores
 
-#### Environment Protection Rules
+#### Reglas de Protección de Entornos {#environment-protection-rules}
 
-Navigate to **Settings > Environments** and create environments:
+Navegue a **Settings > Environments** y cree los entornos:
 
-**Development Environment (`dev`)**
-- No protection rules
-- Auto-deploy on merge to `main`
+**Entorno de Desarrollo (`dev`)**
+- Sin reglas de protección
+- Despliegue automático al fusionar con `main`
 
-**Production Environment (`prod`)**
-- Required reviewers: 2 approvers
-- Deployment branches: `main` only
-- Manual approval required
+**Entorno de Producción (`prod`)**
+- Revisores requeridos: 2 aprobadores
+- Ramas de despliegue: solo `main`
+- Aprobación manual requerida
 
-## Terraform in CI/CD
+## Terraform en CI/CD {#terraform-in-cicd}
 
-### State Management
+### Gestión del Estado (State Management) {#state-management}
 
-The pipelines use Terraform's S3 backend for state management:
+Los pipelines utilizan el backend de S3 de Terraform para la gestión del estado:
 
 ```hcl
 # terraform/*/backend.tf
@@ -130,14 +130,14 @@ terraform {
 }
 ```
 
-**Key Features:**
-- **S3 Versioning**: Enabled for state history and rollback
-- **DynamoDB Locking**: Prevents concurrent modifications
-- **Encryption**: State files encrypted at rest with SSE-S3
+**Características Clave:**
+- **Versionado de S3**: Habilitado para el historial del estado y la reversión
+- **Bloqueo de DynamoDB**: Evita modificaciones concurrentes
+- **Cifrado**: Archivos de estado cifrados en reposo con SSE-S3
 
-### Validation Workflow
+### Flujo de Trabajo de Validación {#validation-workflow}
 
-The validation workflow runs without backend initialization:
+El flujo de trabajo de validación se ejecuta sin inicialización del backend:
 
 ```bash
 terraform init -backend=false
@@ -145,84 +145,47 @@ terraform validate
 terraform fmt -check
 ```
 
-This approach:
-- Validates syntax and configuration
-- Checks formatting compliance
-- Does not require AWS credentials
-- Runs quickly on every PR
+Este enfoque:
+- Valida la sintaxis y la configuración
+- Comprueba el cumplimiento del formato
+- No requiere credenciales de AWS
+- Se ejecuta rápidamente en cada PR
 
-### Plan/Apply Workflow
+### Estrategia de Espacios de Trabajo (Workspaces) {#workspace-strategy}
 
-:::info
-The current workflows only validate Terraform. Plan/Apply workflows are not included to prevent accidental infrastructure changes.
-:::
-
-To add plan/apply automation:
-
-1. Create a new workflow for Terraform plan on PR
-2. Store plan output as artifact
-3. Require manual approval for apply
-4. Apply only on merge to `main`
-
-**Example Plan Workflow:**
-
-```yaml
-- name: Terraform Plan
-  run: |
-    cd terraform/organization
-    terraform init
-    terraform plan -out=tfplan
-    terraform show -no-color tfplan > plan.txt
-
-- name: Comment Plan on PR
-  uses: actions/github-script@v7
-  with:
-    script: |
-      const fs = require('fs');
-      const plan = fs.readFileSync('plan.txt', 'utf8');
-      github.rest.issues.createComment({
-        issue_number: context.issue.number,
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        body: `## Terraform Plan\n\`\`\`\n${plan}\n\`\`\``
-      });
-```
-
-### Workspace Strategy
-
-This Landing Zone uses **separate state files per account** rather than Terraform workspaces:
+Esta Landing Zone utiliza **archivos de estado separados por cuenta** en lugar de espacios de trabajo de Terraform:
 
 ```
 terraform/
-├── organization/     # State: terraform/organization/terraform.tfstate
-├── security/         # State: terraform/security/terraform.tfstate
-├── log-archive/      # State: terraform/log-archive/terraform.tfstate
-└── network/          # State: terraform/network/terraform.tfstate
+├── organization/     # Estado: terraform/organization/terraform.tfstate
+├── security/         # Estado: terraform/security/terraform.tfstate
+├── log-archive/      # Estado: terraform/log-archive/terraform.tfstate
+└── network/          # Estado: terraform/network/terraform.tfstate
 ```
 
-**Benefits:**
-- Clear separation of concerns
-- Independent deployment cycles
-- Reduced blast radius
-- Easier to understand and maintain
+**Beneficios:**
+- Clara separación de responsabilidades
+- Ciclos de despliegue independientes
+- Radio de impacto reducido
+- Más fácil de entender y mantener
 
-## OIDC Authentication
+## Autenticación OIDC {#oidc-authentication}
 
-### GitHub OIDC Provider Setup
+### Configuración del Proveedor OIDC de GitHub {#github-oidc-provider-setup}
 
-Create the OIDC provider in your AWS Management account:
+Cree el proveedor OIDC en su cuenta de gestión de AWS:
 
 ```bash
-# Create OIDC provider
+# Crear proveedor OIDC
 aws iam create-open-id-connect-provider \
   --url https://token.actions.githubusercontent.com \
   --client-id-list sts.amazonaws.com \
   --thumbprint-list 6938fd4d98bab03faadb97b34396831e3780aea1
 ```
 
-### IAM Role for GitHub Actions
+### Rol de IAM para GitHub Actions {#iam-role-for-github-actions}
 
-Create an IAM role with trust policy for GitHub:
+Cree un rol de IAM con una política de confianza para GitHub:
 
 ```json
 {
@@ -247,106 +210,31 @@ Create an IAM role with trust policy for GitHub:
 }
 ```
 
-### Least Privilege Permissions
+### Sin Credenciales de Larga Duración {#no-long-lived-credentials}
 
-Attach a policy with minimum required permissions:
+**Nunca utilice claves de acceso de AWS en GitHub Actions:**
 
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "s3:PutObject",
-        "s3:GetObject",
-        "s3:ListBucket"
-      ],
-      "Resource": [
-        "arn:aws:s3:::acme-docs-bucket",
-        "arn:aws:s3:::acme-docs-bucket/*"
-      ]
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "cloudfront:CreateInvalidation",
-        "cloudfront:GetDistribution"
-      ],
-      "Resource": "arn:aws:cloudfront::123456789012:distribution/*"
-    }
-  ]
-}
-```
+- ❌ Secretos `AWS_ACCESS_KEY_ID` y `AWS_SECRET_ACCESS_KEY`
+- ✅ OIDC con `aws-actions/configure-aws-credentials@v4`
 
-### No Long-Lived Credentials
+**Beneficios de OIDC:**
+- Credenciales temporales (expiración de 1 hora)
+- No se requiere rotación de credenciales
+- Gestión automática de credenciales
+- Registro de auditoría a través de CloudTrail
 
-**Never use AWS access keys in GitHub Actions:**
+## Detección de Desviaciones (Drift Detection) {#drift-detection}
 
-- ❌ `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` secrets
-- ✅ OIDC with `aws-actions/configure-aws-credentials@v4`
+### Detección de Desviaciones Programada {#scheduled-drift-detection}
 
-**Benefits of OIDC:**
-- Temporary credentials (1 hour expiration)
-- No credential rotation required
-- Automatic credential management
-- Audit trail via CloudTrail
-
-## Approval Workflows
-
-### Environment Protection
-
-Configure environment protection rules for production deployments:
-
-```yaml
-# .github/workflows/docs-deploy.yml
-deploy:
-  name: Deploy to Production
-  environment: prod  # Triggers protection rules
-  runs-on: ubuntu-latest
-```
-
-### Required Reviewers
-
-**Development (`dev`):**
-- No approval required
-- Auto-deploy on merge
-
-**Staging (`staging`):**
-- 1 reviewer required
-- Team: `platform-team`
-
-**Production (`prod`):**
-- 2 reviewers required
-- Team: `platform-leads`
-- Wait timer: 5 minutes
-
-### Manual Approval Gates
-
-For Terraform changes, implement manual approval:
-
-```yaml
-- name: Wait for Approval
-  uses: trstringer/manual-approval@v1
-  with:
-    secret: ${{ github.TOKEN }}
-    approvers: platform-leads
-    minimum-approvals: 2
-    issue-title: "Approve Terraform Apply"
-```
-
-## Drift Detection
-
-### Scheduled Drift Detection
-
-Add a scheduled workflow to detect infrastructure drift:
+Añada un flujo de trabajo programado para detectar desviaciones en la infraestructura:
 
 ```yaml
 name: Terraform Drift Detection
 
 on:
   schedule:
-    - cron: '0 8 * * 1-5'  # 8 AM UTC, weekdays
+    - cron: '0 8 * * 1-5'  # 8 AM UTC, días laborables
   workflow_dispatch:
 
 jobs:
@@ -370,226 +258,75 @@ jobs:
           terraform plan -detailed-exitcode
         continue-on-error: true
         id: plan
-      
-      - name: Check for Drift
-        if: steps.plan.outputs.exitcode == 2
-        run: |
-          echo "Drift detected!"
-          exit 1
 ```
 
-### Alerting on Drift
+### Proceso de Remediación {#remediation-process}
 
-Configure notifications when drift is detected:
+Cuando se detecta una desviación:
 
-```yaml
-- name: Notify on Drift
-  if: failure()
-  uses: slackapi/slack-github-action@v1
-  with:
-    webhook-url: ${{ secrets.SLACK_WEBHOOK }}
-    payload: |
-      {
-        "text": "Terraform drift detected in organization module",
-        "blocks": [
-          {
-            "type": "section",
-            "text": {
-              "type": "mrkdwn",
-              "text": "*Drift Detected* :warning:\n\nModule: organization\nRun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-            }
-          }
-        ]
-      }
-```
+1. **Investigar**: Revise la salida del plan para entender los cambios.
+2. **Categorizar**:
+   - **Esperado**: Cambios manuales que deben ser importados.
+   - **Inesperado**: Cambios no autorizados que deben ser revertidos.
+3. **Remediar**:
+   - Importar cambios esperados: `terraform import`
+   - Revertir cambios inesperados: `terraform apply`
+4. **Documentar**: Registre la desviación y la remediación en el log de incidentes.
 
-### Remediation Process
+## Procedimientos de Reversión {#rollback-procedures}
 
-When drift is detected:
+### Revertir Cambios de Terraform {#rollback-terraform-changes}
 
-1. **Investigate**: Review the plan output to understand changes
-2. **Categorize**:
-   - **Expected**: Manual changes that should be imported
-   - **Unexpected**: Unauthorized changes that should be reverted
-3. **Remediate**:
-   - Import expected changes: `terraform import`
-   - Revert unexpected changes: `terraform apply`
-4. **Document**: Record the drift and remediation in incident log
-
-## Rollback Procedures
-
-### Rollback Terraform Changes
-
-#### Option 1: Revert Commit
+#### Opción 1: Revertir Commit {#option-1-revert-commit}
 
 ```bash
-# Identify the breaking commit
+# Identificar el commit causante del fallo
 git log --oneline terraform/
 
-# Revert the commit
+# Revertir el commit
 git revert <commit-sha>
 
-# Push the revert
+# Subir la reversión
 git push origin main
-
-# CI/CD will validate and deploy the revert
 ```
 
-#### Option 2: Restore Previous State
+#### Opción 2: Restaurar Estado Anterior {#option-2-restore-previous-state}
 
 ```bash
-# List state versions
+# Listar versiones del estado
 aws s3api list-object-versions \
   --bucket acme-terraform-state \
   --prefix terraform/organization/terraform.tfstate
 
-# Download previous version
+# Descargar versión anterior
 aws s3api get-object \
   --bucket acme-terraform-state \
   --key terraform/organization/terraform.tfstate \
   --version-id <version-id> \
   terraform.tfstate.restored
 
-# Backup current state
-terraform state pull > terraform.tfstate.backup
-
-# Push restored state
+# Subir el estado restaurado
 terraform state push terraform.tfstate.restored
-
-# Verify
-terraform plan
 ```
 
-### Rollback Documentation Deployment
+## Consideraciones de Seguridad {#security-considerations}
 
-```bash
-# Redeploy previous version
-git checkout <previous-commit>
-cd infra
-npx sst deploy --stage prod
+### Gestión de Secretos {#secret-management}
 
-# Or rollback via CloudFront
-aws cloudfront create-invalidation \
-  --distribution-id <distribution-id> \
-  --paths "/*"
-```
+**Secretos de GitHub:**
+- Utilice secretos específicos por entorno.
+- Rote los roles de OIDC trimestralmente.
+- Audite los logs de acceso a secretos.
+- Nunca registre valores de secretos en los logs.
 
-### Emergency Procedures
+**Secretos de Terraform:**
+- Utilice AWS Secrets Manager para valores sensibles.
+- Haga referencia a los secretos a través de data sources.
+- Nunca suba secretos a git.
+- Utilice `.gitignore` para archivos de secretos locales.
 
-**If production is broken:**
+## Relacionado {#related}
 
-1. **Stop all deployments**:
-   ```bash
-   # Cancel running workflows
-   gh run list --workflow=docs-deploy.yml --status=in_progress
-   gh run cancel <run-id>
-   ```
-
-2. **Notify stakeholders**:
-   - Post in incident channel
-   - Update status page
-   - Notify on-call team
-
-3. **Identify breaking change**:
-   ```bash
-   # Compare with last known good state
-   git diff <last-good-commit> HEAD
-   ```
-
-4. **Apply targeted fix or full revert**:
-   ```bash
-   # Quick fix
-   git revert <breaking-commit>
-   git push
-   
-   # Or manual fix
-   cd terraform/organization
-   terraform apply
-   ```
-
-5. **Document incident**:
-   - Root cause analysis
-   - Timeline of events
-   - Remediation steps
-   - Prevention measures
-
-## Security Considerations
-
-### Secret Management
-
-**GitHub Secrets:**
-- Use environment-specific secrets
-- Rotate OIDC roles quarterly
-- Audit secret access logs
-- Never log secret values
-
-**Terraform Secrets:**
-- Use AWS Secrets Manager for sensitive values
-- Reference secrets via data sources
-- Never commit secrets to git
-- Use `.gitignore` for local secret files
-
-### Audit Logging
-
-**GitHub Actions:**
-- All workflow runs are logged
-- Audit log retention: 90 days
-- Export logs to SIEM for long-term storage
-
-**AWS CloudTrail:**
-- All API calls from GitHub Actions are logged
-- Enable CloudTrail in all accounts
-- Send logs to Log Archive account
-- Set up alerts for suspicious activity
-
-### Branch Protection
-
-**Required Settings:**
-- Require pull request reviews
-- Require status checks to pass
-- Require signed commits (recommended)
-- Restrict who can push to `main`
-- Require linear history
-
-**Additional Recommendations:**
-- Enable GitHub Advanced Security
-- Enable Dependabot alerts
-- Enable secret scanning
-- Enable code scanning (CodeQL)
-
-## Monitoring and Observability
-
-### Workflow Metrics
-
-Monitor these metrics:
-
-- Workflow success rate
-- Average workflow duration
-- Failed workflow count
-- Deployment frequency
-- Mean time to recovery (MTTR)
-
-### CloudWatch Dashboards
-
-Create dashboards for:
-
-- CloudFront request metrics
-- S3 bucket access patterns
-- Lambda function invocations (if using SST)
-- Error rates and latencies
-
-### Alerting
-
-Set up alerts for:
-
-- Workflow failures
-- Drift detection
-- Deployment failures
-- High error rates
-- Security findings
-
-## Related
-
-- [Deployment Runbook](./deployment)
-- [Troubleshooting Runbook](./troubleshooting)
-- [Architecture Overview](../architecture/overview)
+- [Guía Operativa de Despliegue](./deployment)
+- [Guía Operativa de Solución de Problemas](./troubleshooting)
+- [Descripción General de la Arquitectura](../architecture/overview)

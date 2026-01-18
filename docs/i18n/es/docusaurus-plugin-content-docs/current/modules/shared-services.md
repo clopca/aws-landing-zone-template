@@ -2,22 +2,22 @@
 sidebar_position: 6
 ---
 
-# Shared Services Module
+# Módulo de Servicios Compartidos {#shared-services-module}
 
-The Shared Services module creates a centralized VPC for shared infrastructure and services accessible to all workload accounts via Transit Gateway.
+El módulo de Servicios Compartidos crea una VPC centralizada para la infraestructura y los servicios compartidos accesibles para todas las cuentas de carga de trabajo (workload accounts) a través de Transit Gateway.
 
-## Overview
+## Descripción General {#overview}
 
-This module is deployed in the **Shared Services Account** and creates:
+Este módulo se despliega en la **Shared Services Account** y crea:
 
-- VPC with DNS support enabled
-- Private subnets across multiple availability zones
-- Transit subnets for Transit Gateway attachment
-- Route tables with Transit Gateway routing
-- Transit Gateway VPC attachment
-- ECR repositories with image scanning and lifecycle policies
+- VPC con soporte de DNS habilitado
+- Subredes privadas en múltiples zonas de disponibilidad (AZs)
+- Subredes de tránsito para el adjunto de Transit Gateway
+- Tablas de ruteo con enrutamiento hacia Transit Gateway
+- Adjunto de VPC a Transit Gateway
+- Repositorios ECR con escaneo de imágenes y políticas de ciclo de vida
 
-## Usage
+## Uso {#usage}
 
 ```hcl
 module "shared_services" {
@@ -44,28 +44,28 @@ module "shared_services" {
 }
 ```
 
-## Inputs
+## Entradas {#inputs}
 
 | Name | Description | Type | Required |
 |------|-------------|------|----------|
-| `organization_name` | Organization name prefix for resource naming | `string` | Yes |
-| `vpc_cidr` | CIDR block for shared services VPC | `string` | No (default: `10.1.0.0/16`) |
-| `availability_zones` | List of availability zones to use | `list(string)` | No (default: `["us-east-1a", "us-east-1b", "us-east-1c"]`) |
-| `transit_gateway_id` | Transit Gateway ID to attach VPC to | `string` | Yes |
-| `tgw_route_table_id` | Transit Gateway route table ID for association | `string` | Yes |
-| `enable_ecr` | Whether to create ECR repositories | `bool` | No (default: `true`) |
-| `ecr_repositories` | List of ECR repository names to create | `list(string)` | No (default: `[]`) |
-| `aws_region` | AWS region for deployment | `string` | No (default: `us-east-1`) |
+| `organization_name` | Prefijo del nombre de la organización para el nombramiento de recursos | `string` | Yes |
+| `vpc_cidr` | Bloque CIDR para la VPC de servicios compartidos | `string` | No (default: `10.1.0.0/16`) |
+| `availability_zones` | Lista de zonas de disponibilidad a utilizar | `list(string)` | No (default: `["us-east-1a", "us-east-1b", "us-east-1c"]`) |
+| `transit_gateway_id` | ID de Transit Gateway al que adjuntar la VPC | `string` | Yes |
+| `tgw_route_table_id` | ID de la tabla de ruteo de Transit Gateway para la asociación | `string` | Yes |
+| `enable_ecr` | Indica si se deben crear repositorios ECR | `bool` | No (default: `true`) |
+| `ecr_repositories` | Lista de nombres de repositorios ECR a crear | `list(string)` | No (default: `[]`) |
+| `aws_region` | Región de AWS para el despliegue | `string` | No (default: `us-east-1`) |
 
-## Outputs
+## Salidas {#outputs}
 
 | Name | Description |
 |------|-------------|
-| `vpc_id` | Shared Services VPC ID |
-| `private_subnet_ids` | List of private subnet IDs |
-| `ecr_repository_urls` | Map of ECR repository names to repository URLs |
+| `vpc_id` | ID de la VPC de Servicios Compartidos |
+| `private_subnet_ids` | Lista de IDs de subredes privadas |
+| `ecr_repository_urls` | Mapa de nombres de repositorios ECR a URLs de repositorio |
 
-## Architecture
+## Arquitectura {#architecture}
 
 ```mermaid
 graph TB
@@ -122,57 +122,57 @@ graph TB
     style TGW fill:#fce4ec
 ```
 
-## Network Design
+## Diseño de Red {#network-design}
 
-### VPC Configuration
+### Configuración de VPC {#vpc-configuration}
 
-The Shared Services VPC is configured with:
+La VPC de Servicios Compartidos está configurada con:
 
-- **DNS Support**: Enabled for internal DNS resolution
-- **DNS Hostnames**: Enabled for EC2 instance hostname assignment
-- **CIDR Block**: Configurable (default: `10.1.0.0/16`)
+- **Soporte de DNS**: Habilitado para la resolución interna de DNS
+- **Nombres de host DNS**: Habilitado para la asignación de nombres de host a instancias EC2
+- **Bloque CIDR**: Configurable (por defecto: `10.1.0.0/16`)
 
-### Subnet Strategy
+### Estrategia de Subredes {#subnet-strategy}
 
-**Private Subnets** (one per AZ):
-- CIDR: `/20` subnets starting from the VPC base
-- Purpose: Host shared services (CI/CD, monitoring, etc.)
-- Routing: Default route to Transit Gateway
+**Subredes Privadas** (una por AZ):
+- CIDR: subredes `/20` comenzando desde la base de la VPC
+- Propósito: Alojar servicios compartidos (CI/CD, monitoreo, etc.)
+- Ruteo: Ruta por defecto hacia Transit Gateway
 
-**Transit Subnets** (one per AZ):
-- CIDR: `/20` subnets offset by 4 from private subnets
-- Purpose: Transit Gateway VPC attachment endpoints
-- Routing: Default route to Transit Gateway
+**Subredes de Tránsito** (una por AZ):
+- CIDR: subredes `/20` desplazadas por 4 desde las subredes privadas
+- Propósito: Endpoints para el adjunto de VPC a Transit Gateway
+- Ruteo: Ruta por defecto hacia Transit Gateway
 
-### Transit Gateway Integration
+### Integración con Transit Gateway {#transit-gateway-integration}
 
-The module creates a Transit Gateway VPC attachment using the transit subnets and associates it with the specified Transit Gateway route table. This enables:
+El módulo crea un adjunto de VPC a Transit Gateway utilizando las subredes de tránsito y lo asocia con la tabla de ruteo de Transit Gateway especificada. Esto permite:
 
-- Hub-and-spoke connectivity to all workload accounts
-- Centralized access to shared services
-- Network isolation with controlled routing
+- Conectividad hub-and-spoke con todas las cuentas de carga de trabajo
+- Acceso centralizado a servicios compartidos
+- Aislamiento de red con ruteo controlado
 
-## ECR Configuration
+## Configuración de ECR {#ecr-configuration}
 
-### Image Scanning
+### Escaneo de Imágenes {#image-scanning}
 
-All ECR repositories are configured with:
+Todos los repositorios ECR están configurados con:
 
-- **Scan on Push**: Automatically scan images for vulnerabilities when pushed
-- **Encryption**: AES256 encryption at rest
-- **Tag Mutability**: MUTABLE (allows tag updates)
+- **Scan on Push**: Escaneo automático de imágenes en busca de vulnerabilidades al subirlas
+- **Cifrado**: Cifrado AES256 en reposo
+- **Mutabilidad de Etiquetas**: MUTABLE (permite la actualización de etiquetas)
 
-### Lifecycle Policies
+### Políticas de Ciclo de Vida {#lifecycle-policies}
 
-Each repository includes a lifecycle policy that:
+Cada repositorio incluye una política de ciclo de vida que:
 
-- Keeps the last 30 images
-- Automatically expires older images
-- Reduces storage costs
+- Mantiene las últimas 30 imágenes
+- Expira automáticamente las imágenes más antiguas
+- Reduce los costos de almacenamiento
 
-### Cross-Account Access
+### Acceso entre Cuentas {#cross-account-access}
 
-To allow workload accounts to pull images, configure ECR repository policies:
+Para permitir que las cuentas de carga de trabajo descarguen imágenes, configure las políticas del repositorio ECR:
 
 ```hcl
 resource "aws_ecr_repository_policy" "cross_account" {
@@ -186,8 +186,8 @@ resource "aws_ecr_repository_policy" "cross_account" {
         Effect = "Allow"
         Principal = {
           AWS = [
-            "arn:aws:iam::111111111111:root",  # Production account
-            "arn:aws:iam::222222222222:root"   # Development account
+            "arn:aws:iam::111111111111:root",  # Cuenta de Producción
+            "arn:aws:iam::222222222222:root"   # Cuenta de Desarrollo
           ]
         }
         Action = [
@@ -201,25 +201,25 @@ resource "aws_ecr_repository_policy" "cross_account" {
 }
 ```
 
-## File Structure
+## Estructura de Archivos {#file-structure}
 
 ```
 terraform/shared-services/
 ├── main.tf              # VPC, subnets, TGW attachment, ECR
-├── variables.tf         # Input variables
-├── outputs.tf           # Output values
-├── providers.tf         # Provider configuration
+├── variables.tf         # Variables de entrada
+├── outputs.tf           # Valores de salida
+├── providers.tf         # Configuración del proveedor
 └── terraform.tfvars.example
 ```
 
-## Dependencies
+## Dependencias {#dependencies}
 
-- **Network Module**: Must be deployed first to create Transit Gateway
-- **Transit Gateway ID**: Required from Network module output
-- **Transit Gateway Route Table**: Required from Network module output
+- **Módulo de Redes**: Debe desplegarse primero para crear el Transit Gateway
+- **ID de Transit Gateway**: Requerido desde la salida del módulo de Redes
+- **Tabla de Ruteo de Transit Gateway**: Requerida desde la salida del módulo de Redes
 
-## Related
+## Relacionado {#related}
 
-- [Networking Module](./networking)
-- [Organization Module](./organization)
-- [AFT Module](./aft)
+- [Módulo de Redes](./networking)
+- [Módulo de Organización](./organization)
+- [Módulo AFT](./aft)

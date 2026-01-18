@@ -2,20 +2,20 @@
 sidebar_position: 2
 ---
 
-# Security Baseline Module
+# Módulo de Línea Base de Seguridad {#security-baseline-module}
 
-The Security Baseline module configures security services across all accounts.
+El módulo de Línea Base de Seguridad configura los servicios de seguridad en todas las cuentas.
 
-## Overview
+## Descripción General {#overview}
 
-This module is deployed in the **Security Account** and configures:
+Este módulo se despliega en la **Security Account** y configura:
 
-- GuardDuty (organization-wide)
-- Security Hub (organization-wide)
-- AWS Config (organization aggregator)
+- GuardDuty (a nivel de organización)
+- Security Hub (a nivel de organización)
+- AWS Config (agregador de organización)
 - IAM Access Analyzer
 
-## Architecture
+## Arquitectura {#architecture}
 
 ```mermaid
 graph TB
@@ -42,7 +42,7 @@ graph TB
     CFG_AGG --> CFG_MEM
 ```
 
-## Usage
+## Uso {#usage}
 
 ```hcl
 module "security_baseline" {
@@ -76,87 +76,87 @@ module "security_baseline" {
 }
 ```
 
-## Inputs
+## Entradas {#inputs}
 
 | Name | Description | Type | Required |
 |------|-------------|------|----------|
-| `enable_guardduty` | Enable GuardDuty | `bool` | No |
-| `guardduty_s3_protection` | Enable S3 protection | `bool` | No |
-| `guardduty_eks_protection` | Enable EKS protection | `bool` | No |
-| `enable_security_hub` | Enable Security Hub | `bool` | No |
-| `security_hub_standards` | Standards to enable | `list(string)` | No |
-| `enable_config_aggregator` | Enable Config aggregator | `bool` | No |
-| `enable_access_analyzer` | Enable Access Analyzer | `bool` | No |
-| `security_notification_emails` | Email addresses for alerts | `list(string)` | No |
+| `enable_guardduty` | Habilitar GuardDuty | `bool` | No |
+| `guardduty_s3_protection` | Habilitar protección de S3 | `bool` | No |
+| `guardduty_eks_protection` | Habilitar protección de EKS | `bool` | No |
+| `enable_security_hub` | Habilitar Security Hub | `bool` | No |
+| `security_hub_standards` | Estándares a habilitar | `list(string)` | No |
+| `enable_config_aggregator` | Habilitar agregador de Config | `bool` | No |
+| `enable_access_analyzer` | Habilitar Access Analyzer | `bool` | No |
+| `security_notification_emails` | Direcciones de correo para alertas | `list(string)` | No |
 
-## Outputs
+## Salidas {#outputs}
 
 | Name | Description |
 |------|-------------|
-| `guardduty_detector_id` | GuardDuty detector ID |
-| `security_hub_arn` | Security Hub ARN |
-| `config_aggregator_arn` | Config aggregator ARN |
-| `access_analyzer_arn` | Access Analyzer ARN |
-| `sns_topic_arn` | SNS topic for security alerts |
+| `guardduty_detector_id` | ID del detector de GuardDuty |
+| `security_hub_arn` | ARN de Security Hub |
+| `config_aggregator_arn` | ARN del agregador de Config |
+| `access_analyzer_arn` | ARN de Access Analyzer |
+| `sns_topic_arn` | ARN del tópico SNS para alertas de seguridad |
 
-## GuardDuty Configuration
+## Configuración de GuardDuty {#guardduty-configuration}
 
-### Enabled Detectors
+### Detectores Habilitados {#enabled-detectors}
 
-- **EC2**: Malicious activity on EC2 instances
-- **S3**: Data exfiltration, suspicious access patterns
-- **EKS**: Kubernetes audit logs analysis
-- **Malware Protection**: Scanning EBS volumes
+- **EC2**: Actividad maliciosa en instancias EC2
+- **S3**: Exfiltración de datos, patrones de acceso sospechosos
+- **EKS**: Análisis de logs de auditoría de Kubernetes
+- **Malware Protection**: Escaneo de volúmenes EBS
 
-### Finding Severity Mapping
+### Mapeo de Severidad de Hallazgos {#finding-severity-mapping}
 
 | Severity | Action |
 |----------|--------|
 | Critical | PagerDuty + Slack + Email |
 | High | Slack + Email |
 | Medium | Email |
-| Low | Log only |
+| Low | Solo log |
 
-## Security Hub Configuration
+## Configuración de Security Hub {#security-hub-configuration}
 
-### Enabled Standards
+### Estándares Habilitados {#enabled-standards}
 
 1. **AWS Foundational Security Best Practices**
-   - Covers most AWS services
-   - ~200 automated checks
+   - Cubre la mayoría de los servicios de AWS
+   - ~200 controles automatizados
 
 2. **CIS AWS Foundations Benchmark**
-   - Industry standard compliance
-   - IAM, logging, monitoring, networking
+   - Cumplimiento de estándares de la industria
+   - IAM, logging, monitoreo, redes
 
-### Custom Insights
+### Insights Personalizados {#custom-insights}
 
-- Resources with public access
-- Unencrypted storage
-- Cross-account access
+- Recursos con acceso público
+- Almacenamiento no cifrado
+- Acceso entre cuentas (cross-account)
 
-## Config Rules
+## Reglas de Config {#config-rules}
 
-### Organization Rules
+### Reglas de Organización {#organization-rules}
 
 | Rule | Description |
 |------|-------------|
-| `s3-bucket-ssl-requests-only` | Require SSL for S3 |
-| `encrypted-volumes` | EBS encryption required |
-| `rds-storage-encrypted` | RDS encryption required |
-| `cloudtrail-enabled` | CloudTrail must be enabled |
-| `root-account-mfa-enabled` | Root MFA required |
+| `s3-bucket-ssl-requests-only` | Requiere SSL para S3 |
+| `encrypted-volumes` | Cifrado de EBS requerido |
+| `rds-storage-encrypted` | Cifrado de RDS requerido |
+| `cloudtrail-enabled` | CloudTrail debe estar habilitado |
+| `root-account-mfa-enabled` | MFA requerido para el usuario raíz |
 
-## File Structure
+## Estructura de Archivos {#file-structure}
 
 ```
 terraform/security/
-├── main.tf              # Main configuration
-├── guardduty.tf         # GuardDuty setup
-├── security-hub.tf      # Security Hub setup
-├── config.tf            # Config aggregator
+├── main.tf              # Configuración principal
+├── guardduty.tf         # Configuración de GuardDuty
+├── security-hub.tf      # Configuración de Security Hub
+├── config.tf            # Agregador de Config
 ├── access-analyzer.tf   # Access Analyzer
-├── notifications.tf     # SNS topics and subscriptions
+├── notifications.tf     # Tópicos SNS y suscripciones
 ├── variables.tf
 ├── outputs.tf
 ├── providers.tf
@@ -164,13 +164,13 @@ terraform/security/
 └── terraform.tfvars.example
 ```
 
-## Prerequisites
+## Requisitos Previos {#prerequisites}
 
-- Management account must delegate admin to Security account
-- Log Archive account must exist (for findings storage)
-- IAM roles for cross-account access
+- La Management account debe delegar la administración a la Security account
+- La Log Archive account debe existir (para el almacenamiento de hallazgos)
+- Roles de IAM para acceso entre cuentas
 
-## Related
+## Relacionado {#related}
 
-- [Security Model](../architecture/security-model)
-- [Troubleshooting Runbook](../runbooks/troubleshooting)
+- [Modelo de Seguridad](../architecture/security-model)
+- [Guía Operativa de Solución de Problemas](../runbooks/troubleshooting)

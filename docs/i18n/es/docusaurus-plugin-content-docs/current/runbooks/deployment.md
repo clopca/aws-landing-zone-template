@@ -2,21 +2,21 @@
 sidebar_position: 2
 ---
 
-# Deployment Runbook
+# Guía Operativa de Despliegue {#deployment-runbook}
 
-This runbook describes how to deploy and update the AWS Landing Zone infrastructure.
+Esta guía operativa describe cómo desplegar y actualizar la infraestructura de la AWS Landing Zone.
 
-## Prerequisites
+## Requisitos Previos {#prerequisites}
 
-- [ ] Terraform >= 1.5.0 installed
-- [ ] AWS CLI v2 configured
-- [ ] Access to Management account
-- [ ] Backend S3 bucket and DynamoDB table exist
+- [ ] Terraform >= 1.5.0 instalado
+- [ ] AWS CLI v2 configurado
+- [ ] Acceso a la cuenta de gestión (Management account)
+- [ ] El bucket S3 de backend y la tabla de DynamoDB existen
 
-## Deployment Order
+## Orden de Despliegue {#deployment-order}
 
-:::caution Important
-Modules must be deployed in the correct order due to dependencies.
+:::caution Importante
+Los módulos deben desplegarse en el orden correcto debido a sus dependencias.
 :::
 
 ```mermaid
@@ -29,33 +29,33 @@ graph LR
     E --> F[6. AFT]
 ```
 
-| Order | Module | Account | Dependencies |
+| Orden | Módulo | Cuenta | Dependencias |
 |-------|--------|---------|--------------|
-| 1 | Organization | Management | None |
+| 1 | Organization | Management | Ninguna |
 | 2 | Log Archive | Log Archive | Organization |
 | 3 | Security | Security | Log Archive |
 | 4 | Network | Network Hub | Log Archive |
 | 5 | Shared Services | Shared Services | Security, Network |
-| 6 | AFT | AFT | All above |
+| 6 | AFT | AFT | Todas las anteriores |
 
-## Initial Deployment
+## Despliegue Inicial {#initial-deployment}
 
-### Step 1: Configure Backend
+### Paso 1: Configurar el Backend {#step-1-configure-backend}
 
-Create the Terraform backend resources (run once):
+Cree los recursos del backend de Terraform (ejecutar una vez):
 
 ```bash
-# Create S3 bucket for state
+# Crear bucket S3 para el estado
 aws s3api create-bucket \
   --bucket acme-terraform-state \
   --region us-east-1
 
-# Enable versioning
+# Habilitar el versionado
 aws s3api put-bucket-versioning \
   --bucket acme-terraform-state \
   --versioning-configuration Status=Enabled
 
-# Create DynamoDB table for locking
+# Crear tabla de DynamoDB para el bloqueo (locking)
 aws dynamodb create-table \
   --table-name terraform-locks \
   --attribute-definitions AttributeName=LockID,AttributeType=S \
@@ -63,32 +63,32 @@ aws dynamodb create-table \
   --billing-mode PAY_PER_REQUEST
 ```
 
-### Step 2: Deploy Organization Module
+### Paso 2: Desplegar el Módulo de Organización {#step-2-deploy-organization-module}
 
 ```bash
 cd terraform/organization
 
-# Copy example variables
+# Copiar variables de ejemplo
 cp terraform.tfvars.example terraform.tfvars
 
-# Edit variables
+# Editar variables
 vim terraform.tfvars
 
-# Initialize and plan
+# Inicializar y planificar
 terraform init
 terraform plan -out=tfplan
 
-# Review plan carefully!
-# Apply
+# ¡Revise el plan cuidadosamente!
+# Aplicar
 terraform apply tfplan
 ```
 
-### Step 3: Deploy Log Archive Module
+### Paso 3: Desplegar el Módulo de Archivo de Logs {#step-3-deploy-log-archive-module}
 
 ```bash
 cd ../log-archive
 
-# Assume role in Log Archive account
+# Asumir rol en la cuenta de Log Archive
 export AWS_PROFILE=log-archive
 
 cp terraform.tfvars.example terraform.tfvars
@@ -99,7 +99,7 @@ terraform plan -out=tfplan
 terraform apply tfplan
 ```
 
-### Step 4: Deploy Security Module
+### Paso 4: Desplegar el Módulo de Seguridad {#step-4-deploy-security-module}
 
 ```bash
 cd ../security
@@ -114,7 +114,7 @@ terraform plan -out=tfplan
 terraform apply tfplan
 ```
 
-### Step 5: Deploy Network Module
+### Paso 5: Desplegar el Módulo de Redes {#step-5-deploy-network-module}
 
 ```bash
 cd ../network
@@ -129,7 +129,7 @@ terraform plan -out=tfplan
 terraform apply tfplan
 ```
 
-### Step 6: Deploy Shared Services Module
+### Paso 6: Desplegar el Módulo de Servicios Compartidos {#step-6-deploy-shared-services-module}
 
 ```bash
 cd ../shared-services
@@ -144,7 +144,7 @@ terraform plan -out=tfplan
 terraform apply tfplan
 ```
 
-### Step 7: Deploy AFT (Optional)
+### Paso 7: Desplegar AFT (Opcional) {#step-7-deploy-aft}
 
 ```bash
 cd ../aft/aft-setup
@@ -156,32 +156,32 @@ terraform plan -out=tfplan
 terraform apply tfplan
 ```
 
-## State Management
+## Gestión del Estado (State Management) {#state-management}
 
-### The Bootstrap Problem
+### El Problema del Bootstrap {#the-bootstrap-problem}
 
-When deploying a Landing Zone, you face a chicken-and-egg problem:
-- Terraform state should be stored in S3 with DynamoDB locking
-- But the S3 bucket and DynamoDB table don't exist yet
-- You need Terraform to create them, but Terraform needs state storage
+Al desplegar una Landing Zone, se enfrenta a un problema de "el huevo o la gallina":
+- El estado de Terraform debe almacenarse en S3 con bloqueo de DynamoDB.
+- Pero el bucket S3 y la tabla de DynamoDB aún no existen.
+- Necesita Terraform para crearlos, pero Terraform necesita almacenamiento para el estado.
 
-### Solution: Two-Phase Deployment
+### Solución: Despliegue en Dos Fases {#solution-two-phase-deployment}
 
-#### Phase 1: Local State Bootstrap
+#### Fase 1: Bootstrap del Estado Local {#phase-1-local-state-bootstrap}
 
-Start with local state to create the state infrastructure:
+Comience con el estado local para crear la infraestructura del estado:
 
 ```hcl
-# terraform/organization/backend.tf (initial)
+# terraform/organization/backend.tf (inicial)
 terraform {
-  # Start with local backend
+  # Comenzar con backend local
   backend "local" {
     path = "terraform.tfstate"
   }
 }
 ```
 
-Create state infrastructure:
+Cree la infraestructura del estado:
 ```bash
 cd terraform/organization
 terraform init
@@ -189,9 +189,9 @@ terraform apply -target=aws_s3_bucket.terraform_state
 terraform apply -target=aws_dynamodb_table.terraform_locks
 ```
 
-#### Phase 2: Migrate to S3 Backend
+#### Fase 2: Migrar al Backend de S3 {#phase-2-migrate-to-s3-backend}
 
-Update backend configuration:
+Actualice la configuración del backend:
 ```hcl
 # terraform/organization/backend.tf (final)
 terraform {
@@ -205,24 +205,24 @@ terraform {
 }
 ```
 
-Migrate state:
+Migre el estado:
 ```bash
 terraform init -migrate-state
 ```
 
-Terraform will prompt:
+Terraform preguntará:
 ```
 Do you want to copy existing state to the new backend?
   Enter "yes" to copy and "no" to start with an empty state.
 ```
 
-Enter `yes` to migrate.
+Introduzca `yes` para migrar.
 
-### State File Per Account
+### Archivo de Estado por Cuenta {#state-file-per-account}
 
-Each account module has its own state file:
+Cada módulo de cuenta tiene su propio archivo de estado:
 
-| Module | State Key |
+| Módulo | Clave del Estado (State Key) |
 |--------|-----------|
 | organization | `organization/terraform.tfstate` |
 | log-archive | `log-archive/terraform.tfstate` |
@@ -231,9 +231,9 @@ Each account module has its own state file:
 | shared-services | `shared-services/terraform.tfstate` |
 | aft | `aft/terraform.tfstate` |
 
-### State Locking
+### Bloqueo del Estado (State Locking) {#state-locking}
 
-DynamoDB provides state locking to prevent concurrent modifications:
+DynamoDB proporciona bloqueo del estado para evitar modificaciones concurrentes:
 
 ```hcl
 resource "aws_dynamodb_table" "terraform_locks" {
@@ -248,28 +248,28 @@ resource "aws_dynamodb_table" "terraform_locks" {
 }
 ```
 
-If you encounter a lock error:
+Si encuentra un error de bloqueo:
 ```bash
-# Check who holds the lock
+# Verificar quién tiene el bloqueo
 aws dynamodb get-item \
   --table-name terraform-locks \
   --key '{"LockID": {"S": "acme-terraform-state/organization/terraform.tfstate"}}'
 
-# Force unlock (use with caution!)
+# Forzar el desbloqueo (¡usar con precaución!)
 terraform force-unlock <LOCK_ID>
 ```
 
-### State Backup and Recovery
+### Respaldo y Recuperación del Estado {#state-backup-and-recovery}
 
-S3 versioning is enabled for state recovery:
+El versionado de S3 está habilitado para la recuperación del estado:
 
 ```bash
-# List state versions
+# Listar versiones del estado
 aws s3api list-object-versions \
   --bucket acme-terraform-state \
   --prefix organization/terraform.tfstate
 
-# Restore previous version
+# Restaurar versión anterior
 aws s3api get-object \
   --bucket acme-terraform-state \
   --key organization/terraform.tfstate \
@@ -277,9 +277,9 @@ aws s3api get-object \
   terraform.tfstate.backup
 ```
 
-### Cross-Account State Access
+### Acceso al Estado entre Cuentas {#cross-account-state-access}
 
-For modules deployed in different accounts, use assume role:
+Para módulos desplegados en diferentes cuentas, utilice la asunción de rol (assume role):
 
 ```hcl
 terraform {
@@ -290,60 +290,60 @@ terraform {
     encrypt        = true
     dynamodb_table = "terraform-locks"
     
-    # Assume role in management account where state bucket lives
+    # Asumir rol en la cuenta de gestión donde reside el bucket de estado
     role_arn       = "arn:aws:iam::MANAGEMENT_ACCOUNT:role/TerraformStateAccess"
   }
 }
 ```
 
-### Importing Existing Resources
+### Importación de Recursos Existentes {#importing-existing-resources}
 
-If resources already exist (e.g., from console or another tool):
+Si los recursos ya existen (por ejemplo, desde la consola u otra herramienta):
 
 ```bash
-# Import existing resource
+# Importar recurso existente
 terraform import aws_organizations_organization.main o-abc123
 
-# Import with specific provider
+# Importar con un proveedor específico
 terraform import -provider=aws.security aws_guardduty_detector.main abc123def456
 ```
 
-### State Manipulation Commands
+### Comandos de Manipulación del Estado {#state-manipulation-commands}
 
 ```bash
-# List resources in state
+# Listar recursos en el estado
 terraform state list
 
-# Show specific resource
+# Mostrar un recurso específico
 terraform state show aws_s3_bucket.cloudtrail
 
-# Move resource (rename)
+# Mover recurso (renombrar)
 terraform state mv aws_s3_bucket.old aws_s3_bucket.new
 
-# Remove resource from state (doesn't delete actual resource)
+# Eliminar recurso del estado (no elimina el recurso real)
 terraform state rm aws_s3_bucket.orphaned
 
-# Pull remote state locally
+# Descargar el estado remoto localmente
 terraform state pull > terraform.tfstate.backup
 ```
 
 :::caution
-State manipulation commands can cause drift or orphaned resources. Always backup state before manipulation.
+Los comandos de manipulación del estado pueden causar desviaciones (drift) o recursos huérfanos. Siempre realice un respaldo del estado antes de manipularlo.
 :::
 
-## Day-to-Day Updates
+## Actualizaciones Diarias {#day-to-day-updates}
 
-### Making Changes
+### Realizar Cambios {#making-changes}
 
-1. Create a branch:
+1. Cree una rama:
 
 ```bash
 git checkout -b feature/update-scp-policies
 ```
 
-2. Make changes to Terraform files
+2. Realice los cambios en los archivos de Terraform.
 
-3. Validate changes:
+3. Valide los cambios:
 
 ```bash
 cd terraform/<module>
@@ -352,41 +352,41 @@ terraform validate
 terraform fmt -check
 ```
 
-4. Plan changes:
+4. Planifique los cambios:
 
 ```bash
 terraform plan -out=tfplan
 ```
 
-5. Create PR for review
+5. Cree un PR para revisión.
 
-6. After approval, apply:
+6. Tras la aprobación, aplique:
 
 ```bash
 terraform apply tfplan
 ```
 
-### Using the Validation Script
+### Uso del Script de Validación {#using-the-validation-script}
 
 ```bash
-# Validate all modules
+# Validar todos los módulos
 ./scripts/tf-validate.sh
 
-# Validate specific module
+# Validar un módulo específico
 ./scripts/tf-validate.sh organization
 ```
 
-### Using the Plan Script
+### Uso del Script de Planificación {#using-the-plan-script}
 
 ```bash
-# Plan specific account
+# Planificar una cuenta específica
 ./scripts/tf-plan.sh organization
 ./scripts/tf-plan.sh security
 ```
 
-## CI/CD Integration
+## Integración CI/CD {#cicd-integration}
 
-### GitHub Actions (when enabled)
+### GitHub Actions (cuando esté habilitado) {#github-actions}
 
 ```yaml
 # .github/workflows/terraform.yml
@@ -411,11 +411,11 @@ jobs:
           done
 ```
 
-## Rollback Procedures
+## Procedimientos de Reversión {#rollback-procedures}
 
-### Minor Changes
+### Cambios Menores {#minor-changes}
 
-Use Terraform to revert:
+Utilice Terraform para revertir:
 
 ```bash
 git revert <commit>
@@ -423,19 +423,19 @@ terraform plan -out=tfplan
 terraform apply tfplan
 ```
 
-### Major Changes
+### Cambios Mayores {#major-changes}
 
-1. Identify the last known good state
-2. Check Terraform state history in S3 versioning
-3. Restore previous state version if needed:
+1. Identifique el último estado conocido como bueno.
+2. Verifique el historial del estado de Terraform en el versionado de S3.
+3. Restaure la versión anterior del estado si es necesario:
 
 ```bash
-# List state versions
+# Listar versiones del estado
 aws s3api list-object-versions \
   --bucket acme-terraform-state \
   --prefix terraform/organization/terraform.tfstate
 
-# Restore previous version
+# Restaurar versión anterior
 aws s3api get-object \
   --bucket acme-terraform-state \
   --key terraform/organization/terraform.tfstate \
@@ -443,39 +443,39 @@ aws s3api get-object \
   terraform.tfstate.backup
 ```
 
-### Emergency Rollback
+### Reversión de Emergencia {#emergency-rollback}
 
-If infrastructure is broken:
+Si la infraestructura está dañada:
 
-1. Stop all deployments
-2. Notify stakeholders
-3. Identify breaking change
-4. Apply targeted fix or full revert
-5. Document incident
+1. Detenga todos los despliegues.
+2. Notifique a las partes interesadas.
+3. Identifique el cambio que causó el fallo.
+4. Aplique una corrección dirigida o una reversión completa.
+5. Documente el incidente.
 
-## Verification
+## Verificación {#verification}
 
-After deployment, verify:
+Tras el despliegue, verifique:
 
 ```bash
-# Check Organization
+# Verificar Organización
 aws organizations describe-organization
 
-# Check SCPs
+# Verificar SCPs
 aws organizations list-policies --filter SERVICE_CONTROL_POLICY
 
-# Check GuardDuty
+# Verificar GuardDuty
 aws guardduty list-detectors
 
-# Check Security Hub
+# Verificar Security Hub
 aws securityhub describe-hub
 
-# Check Transit Gateway
+# Verificar Transit Gateway
 aws ec2 describe-transit-gateways
 ```
 
-## Related
+## Relacionado {#related}
 
-- [Troubleshooting Runbook](./troubleshooting)
-- [Account Vending Runbook](./account-vending)
-- [Architecture Overview](../architecture/overview)
+- [Guía Operativa de Solución de Problemas](./troubleshooting)
+- [Guía Operativa de Aprovisionamiento de Cuentas](./account-vending)
+- [Descripción General de la Arquitectura](../architecture/overview)

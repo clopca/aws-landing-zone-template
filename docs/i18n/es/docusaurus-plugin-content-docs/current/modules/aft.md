@@ -2,48 +2,48 @@
 sidebar_position: 4
 ---
 
-# Account Factory for Terraform (AFT)
+# Account Factory for Terraform (AFT) {#account-factory-for-terraform-aft}
 
-AFT automates the provisioning and customization of AWS accounts in your organization.
+AFT automatiza el aprovisionamiento y la personalización de cuentas de AWS en su organización.
 
-## Overview
+## Descripción General {#overview}
 
-Account Factory for Terraform (AFT) provides:
+Account Factory for Terraform (AFT) proporciona:
 
-- Automated account provisioning
-- Account customization pipelines
-- Global customizations (applied to all accounts)
-- Account-specific customizations
-- GitOps-based workflow
+- Aprovisionamiento automatizado de cuentas
+- Pipelines de personalización de cuentas
+- Personalizaciones globales (aplicadas a todas las cuentas)
+- Personalizaciones específicas por cuenta
+- Flujo de trabajo basado en GitOps
 
-## Why AFT Over Alternatives?
+## ¿Por qué AFT frente a otras alternativas? {#why-aft-over-alternatives}
 
-### AFT vs Control Tower Account Factory (Console)
-| Aspect | AFT | CT Console |
-|--------|-----|------------|
-| Automation | Full GitOps | Manual clicks |
-| Customization | Terraform-based | Limited |
-| Auditability | Git history | CloudTrail only |
-| Scalability | Handles 100s of accounts | Manual bottleneck |
-| Reproducibility | Infrastructure as Code | Not reproducible |
+### AFT vs Control Tower Account Factory (Consola) {#aft-vs-control-tower-account-factory-console}
+| Aspecto | AFT | Consola de CT |
+|---------|-----|------------|
+| Automatización | GitOps completo | Clics manuales |
+| Personalización | Basada en Terraform | Limitada |
+| Auditabilidad | Historial de Git | Solo CloudTrail |
+| Escalabilidad | Maneja cientos de cuentas | Cuello de botella manual |
+| Reproducibilidad | Infraestructura como Código | No reproducible |
 
-### AFT vs Custom Account Vending
-- **AWS maintained**: Updates with Control Tower changes
-- **Proven patterns**: Used by AWS Professional Services
-- **Integration**: Native CT integration, no custom Lambda
-- **Support**: AWS support available
+### AFT vs Aprovisionamiento de Cuentas Personalizado {#aft-vs-custom-account-vending}
+- **Mantenido por AWS**: Se actualiza con los cambios de Control Tower.
+- **Patrones probados**: Utilizado por AWS Professional Services.
+- **Integración**: Integración nativa con CT, sin Lambdas personalizadas.
+- **Soporte**: Soporte de AWS disponible.
 
-### When NOT to Use AFT
-- **Very small organizations** (&lt;10 accounts): Overhead may not be worth it
-- **No Control Tower**: AFT requires Control Tower
-- **Simple needs**: If only basic accounts needed, CT console may suffice
+### Cuándo NO usar AFT {#when-not-to-use-aft}
+- **Organizaciones muy pequeñas** (&lt;10 cuentas): La sobrecarga puede no valer la pena.
+- **Sin Control Tower**: AFT requiere Control Tower.
+- **Necesidades simples**: Si solo se necesitan cuentas básicas, la consola de CT puede ser suficiente.
 
-### Trade-offs of AFT
-- **Complexity**: Learning curve for Terraform + AFT
-- **Pipeline time**: Account provisioning takes 20-30 minutes
-- **Debugging**: Pipeline failures require CodePipeline knowledge
+### Desventajas de AFT {#trade-offs-of-aft}
+- **Complejidad**: Curva de aprendizaje para Terraform + AFT.
+- **Tiempo del pipeline**: El aprovisionamiento de cuentas tarda entre 20 y 30 minutos.
+- **Depuración**: Los fallos en el pipeline requieren conocimientos de CodePipeline.
 
-## Architecture
+## Arquitectura {#architecture}
 
 ```mermaid
 graph TB
@@ -73,37 +73,22 @@ graph TB
     ACCT --> NEW1
 ```
 
-## Directory Structure
+## Estructura de Directorios {#directory-structure}
 
 ```
 terraform/aft/
-├── aft-setup/                    # AFT infrastructure setup
-│   ├── main.tf
-│   ├── variables.tf
-│   └── backend.tf
-├── account-requests/             # Account request definitions
-│   └── terraform/
-│       ├── prod-workload-1.tf
-│       └── dev-sandbox-1.tf
-├── aft-global-customizations/    # Applied to ALL accounts
-│   └── terraform/
-│       ├── main.tf
-│       └── iam-baseline.tf
-├── aft-account-customizations/   # Account-specific
-│   ├── PROD-WORKLOAD-1/
-│   │   └── terraform/
-│   └── DEV-SANDBOX-1/
-│       └── terraform/
-└── aft-account-provisioning/     # Post-provisioning
-    └── terraform/
-        └── main.tf
+├── aft-setup/                    # Configuración de la infraestructura de AFT
+├── account-requests/             # Definiciones de solicitudes de cuenta
+├── aft-global-customizations/    # Aplicado a TODAS las cuentas
+├── aft-account-customizations/   # Específico por cuenta
+└── aft-account-provisioning/     # Post-aprovisionamiento
 ```
 
-## Usage
+## Uso {#usage}
 
-### 1. AFT Setup
+### 1. Configuración de AFT {#aft-setup}
 
-Deploy AFT infrastructure in the AFT management account:
+Despliegue la infraestructura de AFT en la cuenta de gestión de AFT:
 
 ```hcl
 module "aft" {
@@ -129,9 +114,9 @@ module "aft" {
 }
 ```
 
-### 2. Account Request
+### 2. Solicitud de Cuenta {#account-request}
 
-Create a new account by adding to `account-requests/terraform/`:
+Cree una nueva cuenta añadiéndola a `account-requests/terraform/`:
 
 ```hcl
 # prod-ecommerce.tf
@@ -162,9 +147,9 @@ module "prod_ecommerce" {
 }
 ```
 
-### 3. Global Customizations
+### 3. Personalizaciones Globales {#global-customizations}
 
-Applied to ALL accounts after provisioning:
+Aplicadas a TODAS las cuentas después del aprovisionamiento:
 
 ```hcl
 # aft-global-customizations/terraform/main.tf
@@ -193,15 +178,11 @@ resource "aws_s3_account_public_access_block" "block" {
   ignore_public_acls      = true
   restrict_public_buckets = true
 }
-
-# CloudTrail (if not using org trail)
-# Security baseline resources
-# etc.
 ```
 
-### 4. Account-Specific Customizations
+### 4. Personalizaciones Específicas por Cuenta {#account-specific-customizations}
 
-For specific accounts:
+Para cuentas específicas:
 
 ```hcl
 # aft-account-customizations/PROD-ECOMMERCE/terraform/main.tf
@@ -229,32 +210,32 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "tgw" {
 }
 ```
 
-## Workflow
+## Flujo de Trabajo {#workflow}
 
-1. **Request**: Developer submits PR to account-requests repo
-2. **Review**: Platform team reviews and approves PR
-3. **Merge**: PR merged triggers AFT pipeline
-4. **Provision**: Control Tower creates account
-5. **Baseline**: Global customizations applied
-6. **Customize**: Account-specific customizations applied
-7. **Notify**: Team notified of account readiness
+1. **Solicitud**: El desarrollador envía un PR al repositorio de solicitudes de cuenta.
+2. **Revisión**: El equipo de plataforma revisa y aprueba el PR.
+3. **Fusión (Merge)**: La fusión del PR activa el pipeline de AFT.
+4. **Aprovisionamiento**: Control Tower crea la cuenta.
+5. **Línea Base**: Se aplican las personalizaciones globales.
+6. **Personalización**: Se aplican las personalizaciones específicas de la cuenta.
+7. **Notificación**: Se notifica al equipo que la cuenta está lista.
 
-## Inputs (AFT Setup)
+## Entradas (Configuración de AFT) {#inputs-aft-setup}
 
 | Name | Description | Type | Required |
 |------|-------------|------|----------|
-| `ct_management_account_id` | Management account ID | `string` | Yes |
-| `log_archive_account_id` | Log Archive account ID | `string` | Yes |
-| `audit_account_id` | Audit account ID | `string` | Yes |
-| `aft_management_account_id` | AFT account ID | `string` | Yes |
-| `ct_home_region` | Control Tower home region | `string` | Yes |
-| `terraform_version` | Terraform version | `string` | Yes |
+| `ct_management_account_id` | ID de la cuenta de gestión | `string` | Yes |
+| `log_archive_account_id` | ID de la cuenta de archivo de logs | `string` | Yes |
+| `audit_account_id` | ID de la cuenta de auditoría | `string` | Yes |
+| `aft_management_account_id` | ID de la cuenta de AFT | `string` | Yes |
+| `ct_home_region` | Región de origen de Control Tower | `string` | Yes |
+| `terraform_version` | Versión de Terraform | `string` | Yes |
 
-## Global Customization Patterns
+## Patrones de Personalización Global {#global-customization-patterns}
 
-Global customizations are applied to ALL accounts after provisioning. Keep these focused on security and compliance baselines.
+Las personalizaciones globales se aplican a TODAS las cuentas después del aprovisionamiento. Manténgalas enfocadas en las líneas base de seguridad y cumplimiento.
 
-### Security Baseline
+### Línea Base de Seguridad {#security-baseline}
 
 ```hcl
 # aft-global-customizations/terraform/security-baseline.tf
@@ -285,29 +266,21 @@ resource "aws_accessanalyzer_analyzer" "account" {
 }
 ```
 
-### Networking Baseline
+### Línea Base de Redes {#networking-baseline}
 
 ```hcl
 # aft-global-customizations/terraform/networking.tf
 
-# Default VPC cleanup (optional - removes default VPC)
+# Default VPC cleanup (opcional - elimina la VPC por defecto)
 data "aws_vpc" "default" {
   default = true
 }
-
-# Note: Be careful with this - some services expect default VPC
-# resource "aws_default_vpc" "default" {
-#   force_destroy = true
-# }
 ```
 
-### Tagging Enforcement
+### Aplicación de Etiquetas (Tagging) {#tagging-enforcement}
 
 ```hcl
 # aft-global-customizations/terraform/tagging.tf
-
-# Tag policies are applied at Organization level, but you can
-# create resources that help enforce tagging
 
 locals {
   required_tags = {
@@ -318,11 +291,11 @@ locals {
 }
 ```
 
-## Account-Specific Customization Patterns
+## Patrones de Personalización Específicos por Cuenta {#account-specific-customization-patterns}
 
-Account-specific customizations allow you to provision resources unique to each workload.
+Las personalizaciones específicas por cuenta le permiten aprovisionar recursos únicos para cada carga de trabajo.
 
-### Production Workload Account
+### Cuenta de Carga de Trabajo de Producción {#production-workload-account}
 
 ```hcl
 # aft-account-customizations/PROD-WORKLOAD/terraform/main.tf
@@ -352,22 +325,9 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "main" {
     Name = "prod-workload-attachment"
   }
 }
-
-# Production-specific monitoring
-resource "aws_cloudwatch_metric_alarm" "high_cpu" {
-  alarm_name          = "high-cpu-utilization"
-  comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = "2"
-  metric_name         = "CPUUtilization"
-  namespace           = "AWS/EC2"
-  period              = "300"
-  statistic           = "Average"
-  threshold           = "80"
-  alarm_description   = "CPU utilization exceeded 80%"
-}
 ```
 
-### Developer Sandbox Account
+### Cuenta Sandbox de Desarrollador {#developer-sandbox-account}
 
 ```hcl
 # aft-account-customizations/DEV-SANDBOX/terraform/main.tf
@@ -385,32 +345,15 @@ module "vpc" {
   public_subnets  = ["10.100.101.0/24", "10.100.102.0/24"]
 
   enable_nat_gateway = true
-  single_nat_gateway = true  # Cost savings for sandbox
-}
-
-# Budget alert for sandbox
-resource "aws_budgets_budget" "sandbox" {
-  name              = "sandbox-monthly-budget"
-  budget_type       = "COST"
-  limit_amount      = "100"
-  limit_unit        = "USD"
-  time_unit         = "MONTHLY"
-
-  notification {
-    comparison_operator        = "GREATER_THAN"
-    threshold                  = 80
-    threshold_type             = "PERCENTAGE"
-    notification_type          = "FORECASTED"
-    subscriber_email_addresses = ["sandbox-owner@example.com"]
-  }
+  single_nat_gateway = true  # Ahorro de costos para sandbox
 }
 ```
 
-## Using Custom Fields
+## Uso de Campos Personalizados (Custom Fields) {#using-custom-fields}
 
-Custom fields allow passing metadata from account requests to customizations.
+Los campos personalizados permiten pasar metadatos desde las solicitudes de cuenta a las personalizaciones.
 
-### Account Request with Custom Fields
+### Solicitud de Cuenta con Campos Personalizados {#account-request-with-custom-fields}
 
 ```hcl
 # account-requests/terraform/prod-api.tf
@@ -436,12 +379,12 @@ module "prod_api" {
 }
 ```
 
-### Reading Custom Fields in Customizations
+### Lectura de Campos Personalizados en Personalizaciones {#reading-custom-fields-in-customizations}
 
 ```hcl
 # aft-account-customizations/PROD-API/terraform/main.tf
 
-# Custom fields are available via SSM parameters
+# Los campos personalizados están disponibles a través de parámetros de SSM
 data "aws_ssm_parameter" "vpc_cidr" {
   name = "/aft/account-request/custom-fields/vpc_cidr"
 }
@@ -449,85 +392,50 @@ data "aws_ssm_parameter" "vpc_cidr" {
 data "aws_ssm_parameter" "environment" {
   name = "/aft/account-request/custom-fields/environment"
 }
-
-module "vpc" {
-  source = "terraform-aws-modules/vpc/aws"
-  
-  cidr = data.aws_ssm_parameter.vpc_cidr.value
-  # ... rest of config
-}
 ```
 
-## Troubleshooting
+## Solución de Problemas {#troubleshooting}
 
-### Common Issues
+### Problemas Comunes {#common-issues}
 
-#### Pipeline Fails at "Terraform Plan"
+#### El pipeline falla en "Terraform Plan" {#pipeline-fails-at-terraform-plan}
 
-**Symptoms**: CodePipeline fails during terraform plan stage
+**Síntomas**: CodePipeline falla durante la etapa de terraform plan.
 
-**Common Causes**:
-- Invalid Terraform syntax
-- Missing provider configuration
-- Resource already exists
+**Causas Comunes**:
+- Sintaxis de Terraform inválida.
+- Falta la configuración del proveedor.
+- El recurso ya existe.
 
-**Resolution**:
-1. Check CodeBuild logs in AFT account
-2. Look for specific Terraform error
-3. Fix in customization repo and re-trigger
+**Resolución**:
+1. Revise los logs de CodeBuild en la cuenta de AFT.
+2. Busque el error específico de Terraform.
+3. Corrija en el repositorio de personalización y vuelva a activar.
 
-#### Account Stuck in "Enrolling"
+#### Cuenta atascada en "Enrolling" {#account-stuck-in-enrolling}
 
-**Symptoms**: Account shows "Enrolling" in Control Tower for >1 hour
+**Síntomas**: La cuenta muestra "Enrolling" en Control Tower durante más de 1 hora.
 
-**Common Causes**:
-- Service quota limits
-- SCP blocking required actions
-- Email already in use
+**Causas Comunes**:
+- Límites de cuota de servicio.
+- SCP bloqueando acciones requeridas.
+- Correo electrónico ya en uso.
 
-**Resolution**:
-1. Check Control Tower console for errors
-2. Review CloudTrail in management account
-3. Verify email is unique and accessible
+**Resolución**:
+1. Revise la consola de Control Tower para ver errores.
+2. Revise CloudTrail en la cuenta de gestión.
+3. Verifique que el correo sea único y accesible.
 
-#### Customizations Not Applied
+## Mejores Prácticas {#best-practices}
 
-**Symptoms**: Account created but customizations missing
+1. **Use campos personalizados** para los metadatos de la carga de trabajo.
+2. **Mantenga las personalizaciones globales al mínimo**: solo la línea base de seguridad.
+3. **Control de versiones para todo**: flujo de trabajo GitOps.
+4. **Pruebe en sandbox** antes de las cuentas de producción.
+5. **Documente el propósito de las cuentas** en los archivos de solicitud.
 
-**Common Causes**:
-- Wrong customization folder name
-- Terraform errors in customization
-- Pipeline not triggered
+## Relacionado {#related}
 
-**Resolution**:
-1. Verify folder name matches `account_customizations_name`
-2. Check CodePipeline execution history
-3. Manually trigger pipeline if needed
-
-#### SSM Parameter Not Found
-
-**Symptoms**: `ParameterNotFound` error in customizations
-
-**Common Causes**:
-- Custom field not defined in account request
-- Typo in parameter path
-- Cross-region issue
-
-**Resolution**:
-1. Verify custom field exists in account request
-2. Check parameter path: `/aft/account-request/custom-fields/<field_name>`
-3. Ensure running in AFT home region
-
-## Best Practices
-
-1. **Use custom fields** for workload metadata
-2. **Keep global customizations minimal** - security baseline only
-3. **Version control everything** - GitOps workflow
-4. **Test in sandbox** before production accounts
-5. **Document account purposes** in request files
-
-## Related
-
-- [Account Vending Runbook](../runbooks/account-vending)
-- [Multi-Account Architecture](../architecture/multi-account)
-- [AWS AFT Documentation](https://docs.aws.amazon.com/controltower/latest/userguide/aft-overview.html)
+- [Guía Operativa de Aprovisionamiento de Cuentas](../runbooks/account-vending)
+- [Arquitectura Multi-Cuenta](../architecture/multi-account)
+- [Documentación de AWS AFT](https://docs.aws.amazon.com/controltower/latest/userguide/aft-overview.html)

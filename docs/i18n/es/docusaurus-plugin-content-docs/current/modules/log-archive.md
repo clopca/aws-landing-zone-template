@@ -2,23 +2,23 @@
 sidebar_position: 5
 ---
 
-# Log Archive Module
+# Módulo de Archivo de Logs {#log-archive-module}
 
-The Log Archive module centralizes all audit and compliance logs from across the AWS Organization into a dedicated account with secure storage and lifecycle management.
+El módulo de Archivo de Logs centraliza todos los logs de auditoría y cumplimiento de toda la AWS Organization en una cuenta dedicada con almacenamiento seguro y gestión de ciclo de vida.
 
-## Overview
+## Descripción General {#overview}
 
-This module is deployed in the **Log Archive Account** and creates:
+Este módulo se despliega en la **Log Archive Account** y crea:
 
-- KMS key for log encryption with automatic rotation
-- CloudTrail S3 bucket for organization-wide audit logs
-- AWS Config S3 bucket for configuration snapshots
-- VPC Flow Logs S3 bucket for network traffic logs
-- Optional S3 access logging bucket
-- Lifecycle policies with Glacier transition for cost optimization
-- Bucket policies enforcing secure access and encryption
+- Clave KMS para el cifrado de logs con rotación automática
+- Bucket S3 de CloudTrail para logs de auditoría de toda la organización
+- Bucket S3 de AWS Config para instantáneas de configuración
+- Bucket S3 de VPC Flow Logs para logs de tráfico de red
+- Bucket opcional para logs de acceso de S3
+- Políticas de ciclo de vida con transición a Glacier para optimización de costos
+- Políticas de bucket que imponen acceso seguro y cifrado
 
-## Usage
+## Uso {#usage}
 
 ```hcl
 module "log_archive" {
@@ -42,34 +42,34 @@ module "log_archive" {
 }
 ```
 
-## Inputs
+## Entradas {#inputs}
 
 | Name | Description | Type | Required |
 |------|-------------|------|----------|
-| `organization_name` | Organization name prefix for resource naming | `string` | Yes |
-| `organization_id` | AWS Organization ID | `string` | Yes |
-| `aws_region` | AWS region for log archive account | `string` | No (default: `us-east-1`) |
-| `cloudtrail_retention_days` | Number of days to retain CloudTrail logs | `number` | No (default: `365`) |
-| `config_retention_days` | Number of days to retain Config logs | `number` | No (default: `365`) |
-| `vpc_flow_log_retention_days` | Number of days to retain VPC Flow Logs | `number` | No (default: `90`) |
-| `enable_s3_access_logging` | Enable S3 access logging for log buckets | `bool` | No (default: `true`) |
-| `enable_glacier_transition` | Enable transition to Glacier for older logs | `bool` | No (default: `true`) |
-| `glacier_transition_days` | Days after which logs transition to Glacier | `number` | No (default: `90`) |
+| `organization_name` | Prefijo del nombre de la organización para el nombramiento de recursos | `string` | Yes |
+| `organization_id` | ID de AWS Organization | `string` | Yes |
+| `aws_region` | Región de AWS para la cuenta de archivo de logs | `string` | No (default: `us-east-1`) |
+| `cloudtrail_retention_days` | Número de días para retener los logs de CloudTrail | `number` | No (default: `365`) |
+| `config_retention_days` | Número de días para retener los logs de Config | `number` | No (default: `365`) |
+| `vpc_flow_log_retention_days` | Número de días para retener los VPC Flow Logs | `number` | No (default: `90`) |
+| `enable_s3_access_logging` | Habilitar el registro de acceso de S3 para los buckets de logs | `bool` | No (default: `true`) |
+| `enable_glacier_transition` | Habilitar la transición a Glacier para logs antiguos | `bool` | No (default: `true`) |
+| `glacier_transition_days` | Días tras los cuales los logs pasan a Glacier | `number` | No (default: `90`) |
 
-## Outputs
+## Salidas {#outputs}
 
 | Name | Description |
 |------|-------------|
-| `cloudtrail_bucket_name` | CloudTrail S3 bucket name |
-| `cloudtrail_bucket_arn` | CloudTrail S3 bucket ARN |
-| `config_bucket_name` | Config S3 bucket name |
-| `config_bucket_arn` | Config S3 bucket ARN |
-| `vpc_flow_logs_bucket_name` | VPC Flow Logs S3 bucket name |
-| `vpc_flow_logs_bucket_arn` | VPC Flow Logs S3 bucket ARN |
-| `kms_key_arn` | KMS key ARN for log encryption |
-| `kms_key_id` | KMS key ID for log encryption |
+| `cloudtrail_bucket_name` | Nombre del bucket S3 de CloudTrail |
+| `cloudtrail_bucket_arn` | ARN del bucket S3 de CloudTrail |
+| `config_bucket_name` | Nombre del bucket S3 de Config |
+| `config_bucket_arn` | ARN del bucket S3 de Config |
+| `vpc_flow_logs_bucket_name` | Nombre del bucket S3 de VPC Flow Logs |
+| `vpc_flow_logs_bucket_arn` | ARN del bucket S3 de VPC Flow Logs |
+| `kms_key_arn` | ARN de la clave KMS para el cifrado de logs |
+| `kms_key_id` | ID de la clave KMS para el cifrado de logs |
 
-## Architecture
+## Arquitectura {#architecture}
 
 ```mermaid
 flowchart TB
@@ -122,19 +122,19 @@ flowchart TB
     style Glacier fill:#ffa,stroke:#333,stroke-width:2px
 ```
 
-## Security Features
+## Características de Seguridad {#security-features}
 
-### Encryption at Rest
+### Cifrado en Reposo {#encryption-at-rest}
 
-All log buckets use KMS encryption with a dedicated key:
+Todos los buckets de logs utilizan cifrado KMS con una clave dedicada:
 
-- **Automatic key rotation** enabled for compliance
-- **Service-specific permissions** for CloudTrail, Config, and CloudWatch Logs
-- **Bucket key enabled** to reduce KMS API costs
+- **Rotación automática de claves** habilitada para cumplimiento
+- **Permisos específicos por servicio** para CloudTrail, Config y CloudWatch Logs
+- **Bucket key habilitado** para reducir los costos de la API de KMS
 
-### Encryption in Transit
+### Cifrado en Tránsito {#encryption-in-transit}
 
-All bucket policies enforce TLS:
+Todas las políticas de bucket imponen el uso de TLS:
 
 ```json
 {
@@ -151,58 +151,58 @@ All bucket policies enforce TLS:
 }
 ```
 
-### Public Access Prevention
+### Prevención de Acceso Público {#public-access-prevention}
 
-All buckets have public access blocks enabled:
+Todos los buckets tienen habilitados los bloqueos de acceso público:
 
 - `block_public_acls = true`
 - `block_public_policy = true`
 - `ignore_public_acls = true`
 - `restrict_public_buckets = true`
 
-### Versioning
+### Versionado {#versioning}
 
-CloudTrail, Config, and VPC Flow Logs buckets have versioning enabled to protect against accidental deletion or modification.
+Los buckets de CloudTrail, Config y VPC Flow Logs tienen habilitado el versionado para proteger contra eliminaciones o modificaciones accidentales.
 
-## Cost Optimization
+## Optimización de Costos {#cost-optimization}
 
-### Glacier Transition
+### Transición a Glacier {#glacier-transition}
 
-Logs automatically transition to Glacier storage class after 90 days (configurable):
+Los logs pasan automáticamente a la clase de almacenamiento Glacier después de 90 días (configurable):
 
-- **CloudTrail**: Glacier after 90 days, expire after 365 days
-- **Config**: Glacier after 90 days, expire after 365 days
-- **VPC Flow Logs**: Expire after 90 days (no Glacier transition)
+- **CloudTrail**: Glacier después de 90 días, expira después de 365 días
+- **Config**: Glacier después de 90 días, expira después de 365 días
+- **VPC Flow Logs**: Expira después de 90 días (sin transición a Glacier)
 
-This reduces storage costs by up to 90% for older logs while maintaining compliance.
+Esto reduce los costos de almacenamiento hasta en un 90% para logs antiguos manteniendo el cumplimiento.
 
-### Bucket Key
+### Bucket Key {#bucket-key}
 
-S3 Bucket Keys reduce KMS API costs by up to 99% by using bucket-level keys instead of object-level keys.
+Las S3 Bucket Keys reducen los costos de la API de KMS hasta en un 99% al utilizar claves a nivel de bucket en lugar de claves a nivel de objeto.
 
-## File Structure
+## Estructura de Archivos {#file-structure}
 
 ```
 terraform/log-archive/
-├── main.tf              # KMS key and alias
-├── buckets.tf           # S3 buckets and configurations
-├── variables.tf         # Input variables
-├── outputs.tf           # Output values
-├── providers.tf         # AWS provider configuration
-├── backend.tf           # Terraform state backend
+├── main.tf              # Clave KMS y alias
+├── buckets.tf           # Buckets S3 y configuraciones
+├── variables.tf         # Variables de entrada
+├── outputs.tf           # Valores de salida
+├── providers.tf         # Configuración del proveedor AWS
+├── backend.tf           # Backend del estado de Terraform
 └── terraform.tfvars.example
 ```
 
-## Dependencies
+## Dependencias {#dependencies}
 
-- **Organization Module**: Requires `organization_id` from the Organization module
-- **Management Account**: Organization CloudTrail must be configured to use the CloudTrail bucket
-- **Security Account**: AWS Config aggregator should reference the Config bucket
-- **Network Account**: VPC Flow Logs should be configured to use the VPC Flow Logs bucket
+- **Módulo de Organización**: Requiere el `organization_id` del módulo de Organización
+- **Management Account**: El CloudTrail de la organización debe estar configurado para usar el bucket de CloudTrail
+- **Security Account**: El agregador de AWS Config debe hacer referencia al bucket de Config
+- **Network Account**: Los VPC Flow Logs deben estar configurados para usar el bucket de VPC Flow Logs
 
-## Related
+## Relacionado {#related}
 
-- [Multi-Account Architecture](../architecture/multi-account)
-- [Security Model](../architecture/security-model)
-- [Organization Module](./organization)
-- [Security Baseline Module](./security-baseline)
+- [Arquitectura Multi-Cuenta](../architecture/multi-account)
+- [Modelo de Seguridad](../architecture/security-model)
+- [Módulo de Organización](./organization)
+- [Módulo de Línea Base de Seguridad](./security-baseline)

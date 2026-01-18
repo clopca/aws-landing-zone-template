@@ -2,36 +2,36 @@
 sidebar_position: 3
 ---
 
-# Troubleshooting Runbook
+# Guía Operativa de Solución de Problemas {#troubleshooting-runbook}
 
-This runbook provides guidance for common issues in the AWS Landing Zone.
+Esta guía operativa proporciona orientación para los problemas comunes en la AWS Landing Zone.
 
-## Quick Reference
+## Referencia Rápida {#quick-reference}
 
-| Symptom | Likely Cause | Jump to |
+| Síntoma | Causa Probable | Ir a |
 |---------|--------------|---------|
-| Can't create resources | SCP blocking | [SCP Issues](#scp-issues) |
-| GuardDuty finding | Security incident | [Security Alerts](#security-alerts) |
-| Cross-account access denied | IAM/SCP issue | [Access Issues](#access-issues) |
-| Network connectivity | Routing/TGW | [Network Issues](#network-issues) |
-| Terraform state locked | Stale lock | [Terraform Issues](#terraform-issues) |
+| No se pueden crear recursos | Bloqueo por SCP | [Problemas de SCP](#scp-issues) |
+| Hallazgo de GuardDuty | Incidente de seguridad | [Alertas de Seguridad](#security-alerts) |
+| Acceso entre cuentas denegado | Problema de IAM/SCP | [Problemas de Acceso](#access-issues) |
+| Conectividad de red | Ruteo/TGW | [Problemas de Red](#network-issues) |
+| Estado de Terraform bloqueado | Bloqueo antiguo (stale) | [Problemas de Terraform](#terraform-issues) |
 
-## SCP Issues
+## Problemas de SCP {#scp-issues}
 
-### Symptom: "Access Denied" when creating resources
+### Síntoma: "Access Denied" al crear recursos {#symptom-access-denied-when-creating-resources}
 
-**Diagnosis:**
+**Diagnóstico:**
 
-1. Check which SCP is blocking:
+1. Verifique qué SCP está bloqueando:
 
 ```bash
-# Get effective policies for account
+# Obtener las políticas efectivas para la cuenta
 aws organizations list-policies-for-target \
   --target-id <account-id> \
   --filter SERVICE_CONTROL_POLICY
 ```
 
-2. Test specific action with IAM policy simulator:
+2. Pruebe la acción específica con el simulador de políticas de IAM:
 
 ```bash
 aws iam simulate-principal-policy \
@@ -40,27 +40,27 @@ aws iam simulate-principal-policy \
   --resource-arns arn:aws:ec2:us-east-1:<account-id>:instance/*
 ```
 
-**Common SCPs that block:**
+**SCPs comunes que bloquean:**
 
-| SCP | Blocks | Solution |
+| SCP | Bloquea | Solución |
 |-----|--------|----------|
-| `restrict-regions` | Non-approved regions | Use approved region |
-| `require-imdsv2` | EC2 without IMDSv2 | Set `http_tokens = "required"` |
-| `deny-root-user` | Root user actions | Use IAM user/role |
+| `restrict-regions` | Regiones no aprobadas | Utilice una región aprobada |
+| `require-imdsv2` | EC2 sin IMDSv2 | Establezca `http_tokens = "required"` |
+| `deny-root-user` | Acciones del usuario raíz | Utilice un usuario/rol de IAM |
 
-**Resolution:**
+**Resolución:**
 
-1. If legitimate need, request SCP exception
-2. Modify resource to comply with SCP
-3. Move account to different OU (if appropriate)
+1. Si existe una necesidad legítima, solicite una excepción de SCP.
+2. Modifique el recurso para cumplir con la SCP.
+3. Mueva la cuenta a una OU diferente (si es apropiado).
 
-## Security Alerts
+## Alertas de Seguridad {#security-alerts}
 
-### GuardDuty Finding: High Severity
+### Hallazgo de GuardDuty: Severidad Alta {#guardduty-finding-high-severity}
 
-**Immediate Actions:**
+**Acciones Inmediatas:**
 
-1. Check finding details:
+1. Verifique los detalles del hallazgo:
 
 ```bash
 aws guardduty get-findings \
@@ -68,50 +68,50 @@ aws guardduty get-findings \
   --finding-ids <finding-id>
 ```
 
-2. For compromised credentials:
-   - Disable affected IAM user/role
-   - Rotate credentials
-   - Review CloudTrail for unauthorized actions
+2. Para credenciales comprometidas:
+   - Deshabilite el usuario/rol de IAM afectado.
+   - Rote las credenciales.
+   - Revise CloudTrail en busca de acciones no autorizadas.
 
-3. For EC2 instance compromise:
-   - Isolate instance (modify security group)
-   - Create EBS snapshot for forensics
-   - Do NOT terminate immediately
+3. Para una instancia EC2 comprometida:
+   - Aísle la instancia (modifique el grupo de seguridad).
+   - Cree una instantánea (snapshot) de EBS para análisis forense.
+   - NO la termine inmediatamente.
 
-**Escalation:**
+**Escalamiento:**
 
-| Severity | Response Time | Notify |
+| Severidad | Tiempo de Respuesta | Notificar |
 |----------|---------------|--------|
-| Critical | 15 minutes | Security team + Management |
-| High | 1 hour | Security team |
-| Medium | 24 hours | Security team |
-| Low | Weekly review | Logged only |
+| Crítica | 15 minutos | Equipo de seguridad + Gestión |
+| Alta | 1 hora | Equipo de seguridad |
+| Media | 24 horas | Equipo de seguridad |
+| Baja | Revisión semanal | Solo registro (log) |
 
-### Security Hub Finding: Failed Control
+### Hallazgo de Security Hub: Control Fallido {#security-hub-finding-failed-control}
 
-**Diagnosis:**
+**Diagnóstico:**
 
 ```bash
 aws securityhub get-findings \
   --filters '{"ComplianceStatus":[{"Value":"FAILED","Comparison":"EQUALS"}]}'
 ```
 
-**Common Findings:**
+**Hallazgos Comunes:**
 
-| Finding | Fix |
+| Hallazgo | Solución |
 |---------|-----|
-| S3 bucket public | Enable block public access |
-| EBS not encrypted | Enable default encryption |
-| Root MFA disabled | Enable MFA on root |
-| CloudTrail disabled | Verify organization trail |
+| Bucket S3 público | Habilitar el bloqueo de acceso público |
+| EBS no cifrado | Habilitar el cifrado por defecto |
+| MFA de raíz deshabilitado | Habilitar MFA en el usuario raíz |
+| CloudTrail deshabilitado | Verificar el trail de la organización |
 
-## Access Issues
+## Problemas de Acceso {#access-issues}
 
-### Can't Access Account via SSO
+### No se puede acceder a la cuenta a través de SSO {#cant-access-account-via-sso}
 
-**Diagnosis:**
+**Diagnóstico:**
 
-1. Verify SSO assignment:
+1. Verifique la asignación de SSO:
 
 ```bash
 aws sso-admin list-account-assignments \
@@ -120,7 +120,7 @@ aws sso-admin list-account-assignments \
   --permission-set-arn <permission-set-arn>
 ```
 
-2. Check permission set:
+2. Verifique el conjunto de permisos (permission set):
 
 ```bash
 aws sso-admin describe-permission-set \
@@ -128,48 +128,48 @@ aws sso-admin describe-permission-set \
   --permission-set-arn <permission-set-arn>
 ```
 
-**Resolution:**
+**Resolución:**
 
-1. Assign user/group to account
-2. Verify permission set policies
-3. Check if account is suspended
+1. Asigne el usuario/grupo a la cuenta.
+2. Verifique las políticas del conjunto de permisos.
+3. Compruebe si la cuenta está suspendida.
 
-### Cross-Account Role Assumption Failed
+### Fallo al Asumir Rol entre Cuentas {#cross-account-role-assumption-failed}
 
-**Diagnosis:**
+**Diagnóstico:**
 
 ```bash
-# Check trust policy
+# Verificar política de confianza
 aws iam get-role --role-name CrossAccountRole
 
-# Test assumption
+# Probar asunción
 aws sts assume-role \
   --role-arn arn:aws:iam::<target-account>:role/CrossAccountRole \
   --role-session-name test
 ```
 
-**Common Issues:**
+**Problemas Comunes:**
 
-| Error | Cause | Fix |
+| Error | Causa | Solución |
 |-------|-------|-----|
-| `AccessDenied` | Trust policy | Update trust relationship |
-| `MalformedPolicyDocument` | Invalid principal | Fix ARN format |
-| `InvalidIdentityToken` | STS regional endpoint | Use global endpoint |
+| `AccessDenied` | Política de confianza | Actualizar relación de confianza |
+| `MalformedPolicyDocument` | Principal inválido | Corregir formato del ARN |
+| `InvalidIdentityToken` | Endpoint regional de STS | Utilizar endpoint global |
 
-## Network Issues
+## Problemas de Red {#network-issues}
 
-### Can't Connect to Resources via Transit Gateway
+### No se puede conectar a los recursos a través de Transit Gateway {#cant-connect-to-resources-via-transit-gateway}
 
-**Diagnosis:**
+**Diagnóstico:**
 
-1. Check TGW attachment:
+1. Verifique el adjunto (attachment) de TGW:
 
 ```bash
 aws ec2 describe-transit-gateway-vpc-attachments \
   --filters "Name=vpc-id,Values=<vpc-id>"
 ```
 
-2. Check TGW route table:
+2. Verifique la tabla de ruteo de TGW:
 
 ```bash
 aws ec2 search-transit-gateway-routes \
@@ -177,203 +177,166 @@ aws ec2 search-transit-gateway-routes \
   --filters "Name=type,Values=static,propagated"
 ```
 
-3. Check VPC route table:
+3. Verifique la tabla de ruteo de la VPC:
 
 ```bash
 aws ec2 describe-route-tables \
   --filters "Name=vpc-id,Values=<vpc-id>"
 ```
 
-**Common Issues:**
+**Problemas Comunes:**
 
-| Issue | Symptoms | Fix |
+| Problema | Síntomas | Solución |
 |-------|----------|-----|
-| Missing route | Packets don't leave VPC | Add route to TGW |
-| Wrong route table | Asymmetric routing | Fix TGW RT association |
-| Security group | Connection timeout | Allow traffic in SG |
-| NACL | Connection refused | Check NACL rules |
+| Ruta faltante | Los paquetes no salen de la VPC | Añadir ruta hacia el TGW |
+| Tabla de ruteo errónea | Ruteo asimétrico | Corregir asociación de RT del TGW |
+| Grupo de seguridad | Tiempo de espera agotado | Permitir tráfico en el SG |
+| NACL | Conexión rechazada | Verificar reglas de NACL |
 
-### DNS Resolution Failing
+### Fallo en la Resolución de DNS {#dns-resolution-failing}
 
-**Diagnosis:**
+**Diagnóstico:**
 
 ```bash
-# Check Route53 Resolver rules
+# Verificar reglas del Resolver de Route53
 aws route53resolver list-resolver-rules
 
-# Check VPC DNS settings
+# Verificar ajustes de DNS de la VPC
 aws ec2 describe-vpc-attribute \
   --vpc-id <vpc-id> \
   --attribute enableDnsSupport
 ```
 
-**Resolution:**
+**Resolución:**
 
-1. Verify private hosted zone association
-2. Check resolver rule sharing (RAM)
-3. Verify enableDnsSupport and enableDnsHostnames
+1. Verifique la asociación de la zona alojada privada (PHZ).
+2. Verifique la compartición de reglas del resolver (RAM).
+3. Verifique `enableDnsSupport` y `enableDnsHostnames`.
 
-## Terraform Issues
+## Problemas de Terraform {#terraform-issues}
 
-### State Lock Not Released
+### Bloqueo del Estado no Liberado {#state-lock-not-released}
 
-**Symptom:** "Error acquiring the state lock"
+**Síntoma:** "Error acquiring the state lock"
 
-**Resolution:**
+**Resolución:**
 
-1. Verify no other process is running:
+1. Verifique que no haya otro proceso ejecutándose:
 
 ```bash
-# Check who has the lock
+# Verificar quién tiene el bloqueo
 aws dynamodb get-item \
   --table-name terraform-locks \
   --key '{"LockID":{"S":"<state-path>"}}'
 ```
 
-2. If stale, force unlock:
+2. Si es un bloqueo antiguo, fuerce el desbloqueo:
 
 ```bash
 terraform force-unlock <lock-id>
 ```
 
 :::warning
-Only force-unlock if you're certain no other process is running!
+¡Solo fuerce el desbloqueo si está seguro de que no hay otro proceso ejecutándose!
 :::
 
-### State Drift Detected
+### Desviación del Estado Detectada (Drift) {#state-drift-detected}
 
-**Diagnosis:**
+**Diagnóstico:**
 
 ```bash
 terraform plan -refresh-only
 ```
 
-**Resolution:**
+**Resolución:**
 
-1. If drift is expected, import or update state:
+1. Si la desviación es esperada, importe o actualice el estado:
 
 ```bash
-# Import existing resource
+# Importar recurso existente
 terraform import aws_instance.example i-1234567890abcdef0
 
-# Or refresh state
+# O refrescar el estado
 terraform apply -refresh-only
 ```
 
-2. If drift is unexpected, investigate who changed resource
+2. Si la desviación es inesperada, investigue quién cambió el recurso.
 
-## Security Remediation
+## Remediación de Seguridad {#security-remediation}
 
-### GuardDuty Finding Remediation
+### Remediación de Hallazgos de GuardDuty {#guardduty-finding-remediation}
 
-#### Severity Levels
-| Severity | Range | Response Time | Action |
+#### Niveles de Severidad {#severity-levels}
+| Severidad | Rango | Tiempo de Respuesta | Acción |
 |----------|-------|---------------|--------|
-| Critical | 9.0-10.0 | Immediate | Page on-call, isolate resource |
-| High | 7.0-8.9 | < 1 hour | Alert security team |
-| Medium | 4.0-6.9 | < 24 hours | Review and remediate |
-| Low | 1.0-3.9 | < 1 week | Scheduled review |
+| Crítica | 9.0-10.0 | Inmediata | Llamada al personal de guardia, aislar recurso |
+| Alta | 7.0-8.9 | < 1 hora | Alertar al equipo de seguridad |
+| Media | 4.0-6.9 | < 24 horas | Revisar y remediar |
+| Baja | 1.0-3.9 | < 1 semana | Revisión programada |
 
-#### Common Findings and Remediation
+#### Hallazgos Comunes y Remediación {#common-findings-and-remediation}
 
-##### UnauthorizedAccess:EC2/SSHBruteForce
-**Description**: SSH brute force attack detected
-**Remediation**:
-1. Check if instance should have SSH exposed
-2. Review Security Group rules
-3. Consider using Session Manager instead of SSH
-4. If compromised, isolate and investigate
+##### UnauthorizedAccess:EC2/SSHBruteForce {#unauthorizedaccess-ec2-sshbruteforce}
+**Descripción**: Ataque de fuerza bruta SSH detectado.
+**Remediación**:
+1. Verifique si la instancia debe tener el puerto SSH expuesto.
+2. Revise las reglas del Grupo de Seguridad.
+3. Considere usar Session Manager en lugar de SSH.
+4. Si está comprometida, aísle e investigue.
 
 ```bash
-# Isolate instance by removing all security groups
+# Aislar instancia eliminando todos los grupos de seguridad
 aws ec2 modify-instance-attribute \
   --instance-id i-1234567890abcdef0 \
   --groups sg-isolation-only
 ```
 
-##### Recon:EC2/PortProbeUnprotectedPort
-**Description**: Unprotected port being probed
-**Remediation**:
-1. Review Security Group for unnecessary open ports
-2. Close ports not required for application
-3. Consider using AWS WAF for web applications
+##### Recon:EC2/PortProbeUnprotectedPort {#recon-ec2-portprobeunprotectedport}
+**Descripción**: Sondeo de un puerto desprotegido.
+**Remediación**:
+1. Revise el Grupo de Seguridad en busca de puertos abiertos innecesarios.
+2. Cierre los puertos que no sean requeridos por la aplicación.
+3. Considere usar AWS WAF para aplicaciones web.
 
-##### CryptoCurrency:EC2/BitcoinTool.B
-**Description**: EC2 instance communicating with Bitcoin network
-**Remediation**:
-1. **Immediate**: Isolate instance
-2. Capture memory dump if possible
-3. Create AMI for forensics
-4. Terminate instance
-5. Investigate how instance was compromised
-6. Review IAM credentials used to launch instance
+##### CryptoCurrency:EC2/BitcoinTool.B {#cryptocurrency-ec2-bitcointool-b}
+**Descripción**: Instancia EC2 comunicándose con la red Bitcoin.
+**Remediación**:
+1. **Inmediata**: Aislar la instancia.
+2. Capturar volcado de memoria si es posible.
+3. Crear AMI para análisis forense.
+4. Terminar la instancia.
+5. Investigar cómo se comprometió la instancia.
+6. Revisar las credenciales de IAM usadas para lanzar la instancia.
 
-##### Trojan:EC2/DNSDataExfiltration
-**Description**: Data exfiltration via DNS queries
-**Remediation**:
-1. Isolate instance immediately
-2. Block DNS traffic at VPC level
-3. Investigate DNS query logs
-4. Check for compromised credentials
+##### Trojan:EC2/DNSDataExfiltration {#trojan-ec2-dnsdataexfiltration}
+**Descripción**: Exfiltración de datos a través de consultas DNS.
+**Remediación**:
+1. Aislar la instancia inmediatamente.
+2. Bloquear el tráfico DNS a nivel de VPC.
+3. Investigar los logs de consultas DNS.
+4. Verificar si hay credenciales comprometidas.
 
-### Security Hub Finding Remediation
+### Remediación de Hallazgos de Security Hub {#security-hub-finding-remediation}
 
-#### Automated Remediation Setup
+#### Controles Comunes de Security Hub {#common-security-hub-controls}
 
-```hcl
-# Lambda for automated remediation
-resource "aws_lambda_function" "remediation" {
-  filename         = "remediation.zip"
-  function_name    = "security-hub-remediation"
-  role             = aws_iam_role.remediation.arn
-  handler          = "index.handler"
-  runtime          = "python3.9"
-}
-
-# EventBridge rule for Security Hub findings
-resource "aws_cloudwatch_event_rule" "security_hub" {
-  name        = "security-hub-findings"
-  description = "Capture Security Hub findings"
-
-  event_pattern = jsonencode({
-    source      = ["aws.securityhub"]
-    detail-type = ["Security Hub Findings - Imported"]
-    detail = {
-      findings = {
-        Severity = {
-          Label = ["CRITICAL", "HIGH"]
-        }
-      }
-    }
-  })
-}
-
-resource "aws_cloudwatch_event_target" "remediation" {
-  rule      = aws_cloudwatch_event_rule.security_hub.name
-  target_id = "remediation-lambda"
-  arn       = aws_lambda_function.remediation.arn
-}
-```
-
-#### Common Security Hub Controls
-
-##### [S3.1] S3 Block Public Access should be enabled
+##### [S3.1] S3 Block Public Access should be enabled {#s3-1-s3-block-public-access-should-be-enabled}
 ```bash
-# Remediate: Enable block public access
+# Remediar: Habilitar el bloqueo de acceso público
 aws s3api put-public-access-block \
   --bucket my-bucket \
   --public-access-block-configuration \
   "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true"
 ```
 
-##### [EC2.19] Security groups should not allow unrestricted access to high risk ports
+##### [EC2.19] Security groups should not allow unrestricted access to high risk ports {#ec2-19-security-groups-should-not-allow-unrestricted-access-to-high-risk-ports}
 ```bash
-# Find and remove offending rules
+# Buscar y eliminar reglas infractoras
 aws ec2 describe-security-groups \
   --filters "Name=ip-permission.from-port,Values=22" \
             "Name=ip-permission.cidr,Values=0.0.0.0/0"
 
-# Revoke the rule
+# Revocar la regla
 aws ec2 revoke-security-group-ingress \
   --group-id sg-12345678 \
   --protocol tcp \
@@ -381,102 +344,69 @@ aws ec2 revoke-security-group-ingress \
   --cidr 0.0.0.0/0
 ```
 
-##### [IAM.1] IAM policies should not allow full "*" administrative privileges
+##### [IAM.1] IAM policies should not allow full "*" administrative privileges {#iam-1-iam-policies-should-not-allow-full-administrative-privileges}
 ```bash
-# Find policies with admin access
+# Buscar políticas con acceso de administrador
 aws iam list-policies --scope Local --query \
   'Policies[?contains(PolicyName, `Admin`)]'
 
-# Review and restrict policy
+# Revisar y restringir la política
 aws iam get-policy-version \
   --policy-arn arn:aws:iam::123456789012:policy/MyPolicy \
   --version-id v1
 ```
 
-### AWS Config Rule Remediation
-
-#### Manual Remediation Workflow
-1. Navigate to AWS Config → Rules
-2. Select non-compliant rule
-3. View non-compliant resources
-4. Click resource to see details
-5. Remediate based on rule type
-
-#### Automated Remediation with SSM
-
-```hcl
-resource "aws_config_remediation_configuration" "s3_encryption" {
-  config_rule_name = aws_config_config_rule.s3_encryption.name
-  target_type      = "SSM_DOCUMENT"
-  target_id        = "AWS-EnableS3BucketEncryption"
-  
-  parameter {
-    name         = "BucketName"
-    resource_value = "RESOURCE_ID"
-  }
-  
-  parameter {
-    name         = "SSEAlgorithm"
-    static_value = "AES256"
-  }
-  
-  automatic                  = true
-  maximum_automatic_attempts = 3
-  retry_attempt_seconds      = 60
-}
-```
-
-### Incident Response Workflow
+### Flujo de Trabajo de Respuesta ante Incidentes {#incident-response-workflow-1}
 
 ```mermaid
 flowchart TD
-    A[Finding Detected] --> B{Severity?}
-    B -->|Critical/High| C[Page On-Call]
-    B -->|Medium| D[Create Ticket]
-    B -->|Low| E[Queue for Review]
+    A[Hallazgo Detectado] --> B{¿Severidad?}
+    B -->|Crítica/Alta| C[Llamar a Guardia]
+    B -->|Media| D[Crear Ticket]
+    B -->|Baja| E[Cola para Revisión]
     
-    C --> F[Isolate Resource]
-    F --> G[Preserve Evidence]
-    G --> H[Investigate]
-    H --> I[Remediate]
+    C --> F[Aislar Recurso]
+    F --> G[Preservar Evidencia]
+    G --> H[Investigar]
+    H --> I[Remediar]
     I --> J[Post-Mortem]
     
     D --> H
-    E --> K[Scheduled Review]
+    E --> K[Revisión Programada]
     K --> I
 ```
 
-### Escalation Procedures
+### Procedimientos de Escalamiento {#escalation-procedures}
 
-| Level | Trigger | Contact | Response |
+| Nivel | Activador | Contacto | Respuesta |
 |-------|---------|---------|----------|
-| L1 | Medium finding | Security team Slack | Acknowledge within 4 hours |
-| L2 | High finding | Security team + manager | Acknowledge within 1 hour |
-| L3 | Critical finding | Security + Exec + Legal | Immediate response |
-| L4 | Data breach confirmed | CISO + Legal + PR | Incident commander assigned |
+| L1 | Hallazgo medio | Slack del equipo de seguridad | Acuse en 4 horas |
+| L2 | Hallazgo alto | Equipo de seguridad + gerente | Acuse en 1 hora |
+| L3 | Hallazgo crítico | Seguridad + Ejecutivos + Legal | Respuesta inmediata |
+| L4 | Brecha confirmada | CISO + Legal + PR | Comandante de incidentes asignado |
 
-### Evidence Preservation
+### Preservación de Evidencia {#evidence-preservation}
 
-Before remediating, preserve evidence:
+Antes de remediar, preserve la evidencia:
 
 ```bash
-# 1. Create snapshot of EBS volumes
+# 1. Crear instantánea de los volúmenes EBS
 aws ec2 create-snapshot \
   --volume-id vol-1234567890abcdef0 \
   --description "Forensics - Incident INC-001"
 
-# 2. Create AMI of instance
+# 2. Crear AMI de la instancia
 aws ec2 create-image \
   --instance-id i-1234567890abcdef0 \
   --name "Forensics-INC-001" \
   --no-reboot
 
-# 3. Export CloudTrail logs
+# 3. Exportar logs de CloudTrail
 aws s3 cp s3://cloudtrail-bucket/AWSLogs/ ./forensics/ --recursive \
   --exclude "*" \
   --include "*2024-01-15*"
 
-# 4. Export VPC Flow Logs
+# 4. Exportar VPC Flow Logs
 aws logs filter-log-events \
   --log-group-name vpc-flow-logs \
   --start-time 1705276800000 \
@@ -484,17 +414,17 @@ aws logs filter-log-events \
   > flow-logs-incident.json
 ```
 
-### Post-Incident Actions
+### Acciones Post-Incidente {#post-incident-actions}
 
-1. **Document**: Create incident report with timeline
-2. **Review**: Identify gaps in detection/prevention
-3. **Improve**: Update runbooks and automation
-4. **Train**: Share learnings with team
-5. **Test**: Validate remediation effectiveness
+1. **Documentar**: Crear informe de incidente con cronología.
+2. **Revisar**: Identificar brechas en detección/prevención.
+3. **Mejorar**: Actualizar guías operativas y automatización.
+4. **Capacitar**: Compartir aprendizajes con el equipo.
+5. **Probar**: Validar la efectividad de la remediación.
 
-## Log Locations
+## Ubicación de Logs {#log-locations}
 
-| Log Type | Location |
+| Tipo de Log | Ubicación |
 |----------|----------|
 | CloudTrail | s3://acme-log-archive-cloudtrail/ |
 | VPC Flow Logs | s3://acme-log-archive-vpc-flow-logs/ |
@@ -502,16 +432,16 @@ aws logs filter-log-events \
 | GuardDuty | s3://acme-security-guardduty-findings/ |
 | ALB Access Logs | s3://acme-log-archive-alb-logs/ |
 
-## Escalation Contacts
+## Contactos de Escalamiento {#escalation-contacts}
 
-| Issue Type | Primary | Secondary |
+| Tipo de Problema | Primario | Secundario |
 |------------|---------|-----------|
-| Security Incident | security-team@acme.com | CISO |
-| Infrastructure | platform-team@acme.com | Cloud Architect |
-| Access Issues | it-helpdesk@acme.com | Platform team |
+| Incidente de Seguridad | security-team@acme.com | CISO |
+| Infraestructura | platform-team@acme.com | Arquitecto Cloud |
+| Problemas de Acceso | it-helpdesk@acme.com | Equipo de Plataforma |
 
-## Related
+## Relacionado {#related}
 
-- [Security Model](../architecture/security-model)
-- [Network Design](../architecture/network-design)
-- [Deployment Runbook](./deployment)
+- [Modelo de Seguridad](../architecture/security-model)
+- [Diseño de Red](../architecture/network-design)
+- [Guía Operativa de Despliegue](./deployment)
