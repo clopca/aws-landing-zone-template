@@ -14,5 +14,9 @@
   "sidebar.landingZoneSidebar.category.Runbooks": {
     "message": "Guías de Operación",
     "description": "The label for category 'Runbooks' in sidebar 'landingZoneSidebar'"
+  },
+  "sidebar.landingZoneSidebar.doc.architecture/control-tower": {
+    "message": "Configuración de Control Tower",
+    "description": "The label for the doc item 'architecture/control-tower'"
   }
 }

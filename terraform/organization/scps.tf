@@ -1,5 +1,13 @@
+# Custom Service Control Policies
+#
+# These SCPs extend Control Tower's guardrails with additional restrictions.
+# Control Tower guardrails should be enabled first via the Control Tower console.
+#
+# These are CUSTOM SCPs that complement Control Tower guardrails.
+
+# Deny accounts from leaving the organization (complements CT guardrails)
 resource "aws_organizations_policy" "deny_leave_org" {
-  name        = "DenyLeaveOrganization"
+  name        = "${var.organization_name}-DenyLeaveOrganization"
   description = "Prevents accounts from leaving the organization"
   type        = "SERVICE_CONTROL_POLICY"
 
@@ -16,8 +24,9 @@ resource "aws_organizations_policy" "deny_leave_org" {
   })
 }
 
+# Require IMDSv2 for EC2 instances (defense in depth)
 resource "aws_organizations_policy" "require_imdsv2" {
-  name        = "RequireIMDSv2"
+  name        = "${var.organization_name}-RequireIMDSv2"
   description = "Requires EC2 instances to use IMDSv2"
   type        = "SERVICE_CONTROL_POLICY"
 
@@ -39,8 +48,9 @@ resource "aws_organizations_policy" "require_imdsv2" {
   })
 }
 
+# Deny most root user actions (complements CT guardrails)
 resource "aws_organizations_policy" "deny_root_user" {
-  name        = "DenyRootUser"
+  name        = "${var.organization_name}-DenyRootUser"
   description = "Denies most actions by the root user"
   type        = "SERVICE_CONTROL_POLICY"
 
@@ -72,10 +82,11 @@ resource "aws_organizations_policy" "deny_root_user" {
   })
 }
 
+# Region restriction (beyond CT guardrails)
 resource "aws_organizations_policy" "restrict_regions" {
   count = length(var.scp_allowed_regions) > 0 ? 1 : 0
 
-  name        = "RestrictRegions"
+  name        = "${var.organization_name}-RestrictRegions"
   description = "Restricts operations to approved AWS regions"
   type        = "SERVICE_CONTROL_POLICY"
 
@@ -140,28 +151,31 @@ resource "aws_organizations_policy" "restrict_regions" {
   })
 }
 
+# Attach SCPs to OUs managed by Control Tower
+# Reference OUs by looking them up from Control Tower
+
 resource "aws_organizations_policy_attachment" "deny_leave_org_root" {
   policy_id = aws_organizations_policy.deny_leave_org.id
-  target_id = local.root_ou_id
+  target_id = local.root_id
 }
 
 resource "aws_organizations_policy_attachment" "require_imdsv2_workloads" {
-  count = contains(keys(aws_organizations_organizational_unit.ous), "Workloads") ? 1 : 0
+  count = lookup(local.ou_name_to_id, "Workloads", null) != null ? 1 : 0
 
   policy_id = aws_organizations_policy.require_imdsv2.id
-  target_id = aws_organizations_organizational_unit.ous["Workloads"].id
+  target_id = local.ou_name_to_id["Workloads"]
 }
 
 resource "aws_organizations_policy_attachment" "require_imdsv2_sandbox" {
-  count = contains(keys(aws_organizations_organizational_unit.ous), "Sandbox") ? 1 : 0
+  count = lookup(local.ou_name_to_id, "Sandbox", null) != null ? 1 : 0
 
   policy_id = aws_organizations_policy.require_imdsv2.id
-  target_id = aws_organizations_organizational_unit.ous["Sandbox"].id
+  target_id = local.ou_name_to_id["Sandbox"]
 }
 
 resource "aws_organizations_policy_attachment" "restrict_regions_workloads" {
-  count = length(var.scp_allowed_regions) > 0 && contains(keys(aws_organizations_organizational_unit.ous), "Workloads") ? 1 : 0
+  count = length(var.scp_allowed_regions) > 0 && lookup(local.ou_name_to_id, "Workloads", null) != null ? 1 : 0
 
   policy_id = aws_organizations_policy.restrict_regions[0].id
-  target_id = aws_organizations_organizational_unit.ous["Workloads"].id
+  target_id = local.ou_name_to_id["Workloads"]
 }

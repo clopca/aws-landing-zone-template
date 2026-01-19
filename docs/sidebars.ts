@@ -21,6 +21,7 @@ const sidebars: SidebarsConfig = {
       label: 'Architecture',
       items: [
         'architecture/overview',
+        'architecture/control-tower',
         'architecture/multi-account',
         'architecture/security-model',
         'architecture/network-design',

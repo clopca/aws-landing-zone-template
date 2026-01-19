@@ -1,24 +1,264 @@
-/**
- * CSS files with the .module.css suffix will be treated as CSS modules
- * and scoped locally.
- */
-
+/* Hero Section */
 .heroBanner {
-  /* Styles are handled by global .hero class in custom.css */
-  /* We keep this class for specific overrides if needed */
+  padding: 8rem 0 6rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background: var(--site-hero-gradient);
+  background-color: var(--ifm-background-color);
+}
+
+.heroContainer {
+  position: relative;
+  z-index: 10;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.heroTitle {
+  font-size: clamp(3rem, 5vw, 5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.heroSubtitle {
+  font-size: clamp(1.125rem, 2vw, 1.5rem);
+  max-width: 700px;
+  margin: 0 auto 2.5rem;
+  color: var(--ifm-font-color-base);
+  opacity: 0.8;
+  line-height: 1.6;
+  font-weight: 400;
+  animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s forwards;
+  opacity: 0; /* Start hidden for animation */
 }
 
 .buttons {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1.5rem; /* Add gap for better spacing */
-  margin-top: 2rem;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.4s forwards;
+  opacity: 0; /* Start hidden for animation */
 }
 
+/* Architecture Section */
+.architectureSection {
+  padding: 6rem 0;
+  background-color: var(--ifm-background-surface-color);
+  border-top: 1px solid var(--ifm-border-color);
+  border-bottom: 1px solid var(--ifm-border-color);
+  position: relative;
+}
+
+.sectionTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.sectionDescription {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto 3rem;
+  font-size: 1.2rem;
+  color: var(--ifm-color-content-secondary);
+}
+
+.architectureDiagram {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 3rem;
+  background: var(--ifm-card-background-color);
+  border: 1px solid var(--ifm-border-color);
+  border-radius: 24px;
+  box-shadow: var(--ifm-global-shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Diagram Grid Layout */
+.diagramGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.5rem;
+  position: relative;
+  padding-top: 4rem; /* Space for Org Root */
+}
+
+.orgRoot {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  z-index: 2;
+}
+
+.accountBox {
+  background: var(--ifm-background-color);
+  border: 1px solid var(--ifm-border-color);
+  border-radius: 12px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  transition: all var(--transition-fast);
+  position: relative;
+  z-index: 1;
+}
+
+.accountBox:hover {
+  transform: translateY(-5px);
+  border-color: var(--ifm-color-primary);
+  box-shadow: 0 8px 24px rgba(var(--site-primary-glow), 0.15);
+}
+
+.accountIcon {
+  color: var(--ifm-color-primary);
+  margin-bottom: 0.75rem;
+}
+
+.accountTitle {
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.accountDesc {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+/* Connection Lines (CSS Art) */
+.connectorLine {
+  position: absolute;
+  background: var(--ifm-border-color);
+  z-index: 0;
+}
+
+.connectorVertical {
+  width: 2px;
+  height: 3rem;
+  top: 2.5rem; /* Below Org Root */
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.connectorHorizontal {
+  height: 2px;
+  width: 80%;
+  top: 5.5rem;
+  left: 10%;
+}
+
+.connectorDrop {
+  width: 2px;
+  height: 1.5rem;
+  top: 5.5rem;
+  background: var(--ifm-border-color);
+  position: absolute;
+}
+
+/* Quick Start Section */
+.quickStart {
+  padding: 6rem 0;
+  background-color: var(--ifm-background-color);
+}
+
+.stepsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.stepCard {
+  background: var(--ifm-card-background-color);
+  border: 1px solid var(--ifm-border-color);
+  border-radius: 16px;
+  padding: 2rem;
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.stepCard:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--ifm-global-shadow-md);
+  border-color: var(--ifm-color-primary);
+}
+
+.stepHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stepNumber {
+  width: 36px;
+  height: 36px;
+  background: var(--ifm-color-primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  box-shadow: 0 4px 10px rgba(var(--site-primary-glow), 0.4);
+}
+
+.stepTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.codeBlock {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 1rem;
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  font-size: 0.85rem;
+  color: #e6edf3;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+/* Responsive */
 @media screen and (max-width: 996px) {
-  .buttons {
-    flex-direction: column;
+  .heroTitle {
+    font-size: 3rem;
+  }
+  
+  .diagramGrid {
+    grid-template-columns: 1fr;
     gap: 1rem;
+    padding-top: 0;
+  }
+  
+  .orgRoot {
+    position: relative;
+    left: auto;
+    transform: none;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+  
+  .connectorLine, .connectorDrop {
+    display: none;
   }
 }

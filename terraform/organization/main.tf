@@ -1,56 +1,37 @@
+# Organization Customizations
+#
+# This module provides ADDITIONAL customizations on top of AWS Control Tower.
+# It does NOT create AWS Organizations or OUs - those are managed by Control Tower.
+#
+# Use this for:
+# - Custom SCPs beyond Control Tower guardrails
+# - Additional tag policies
+# - Delegated administrator setup for security services
+#
+# Prerequisites:
+# - AWS Control Tower must be deployed
+# - Run from the Management Account
+
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
-resource "aws_organizations_organization" "main" {
-  aws_service_access_principals = [
-    "cloudtrail.amazonaws.com",
-    "config.amazonaws.com",
-    "guardduty.amazonaws.com",
-    "securityhub.amazonaws.com",
-    "ram.amazonaws.com",
-    "sso.amazonaws.com",
-    "tagpolicies.tag.amazonaws.com",
-    "account.amazonaws.com",
-    "member.org.stacksets.cloudformation.amazonaws.com",
-  ]
+# Reference the existing organization (created by Control Tower)
+data "aws_organizations_organization" "main" {}
 
-  enabled_policy_types = [
-    "SERVICE_CONTROL_POLICY",
-    "TAG_POLICY",
-  ]
+locals {
+  account_id = data.aws_caller_identity.current.account_id
+  region     = data.aws_region.current.id
+  root_id    = data.aws_organizations_organization.main.roots[0].id
+}
 
-  feature_set = "ALL"
+# Get existing OUs from Control Tower
+data "aws_organizations_organizational_units" "root" {
+  parent_id = local.root_id
 }
 
 locals {
-  root_ou_id = aws_organizations_organization.main.roots[0].id
-
-  ou_parent_map = {
-    for k, v in var.organizational_units : k => (
-      v.parent == "Root" ? local.root_ou_id : aws_organizations_organizational_unit.ous[v.parent].id
-    )
-  }
-
-  ous_first_level = {
-    for k, v in var.organizational_units : k => v
-    if v.parent == "Root"
-  }
-
-  ous_second_level = {
-    for k, v in var.organizational_units : k => v
-    if v.parent != "Root"
-  }
-}
-
-resource "aws_organizations_organizational_unit" "ous" {
-  for_each = var.organizational_units
-
-  name      = each.key
-  parent_id = each.value.parent == "Root" ? local.root_ou_id : aws_organizations_organizational_unit.ous[each.value.parent].id
-
-  depends_on = [aws_organizations_organization.main]
-
-  lifecycle {
-    create_before_destroy = true
+  ou_name_to_id = {
+    for ou in data.aws_organizations_organizational_units.root.children :
+    ou.name => ou.id
   }
 }
