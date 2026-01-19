@@ -35,16 +35,32 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: docs/package-lock.json
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
       - name: Install Dependencies
         working-directory: docs
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build Documentation
         working-directory: docs
-        run: npm run build
+        run: pnpm run build
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
@@ -71,8 +87,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: infra/package-lock.json
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
 
       - name: Download Build Artifact
         uses: actions/download-artifact@v4
@@ -82,7 +101,7 @@ jobs:
 
       - name: Install SST Dependencies
         working-directory: infra
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -94,7 +113,7 @@ jobs:
         working-directory: infra
         run: |
           STAGE=${{ github.event.inputs.stage || 'dev' }}
-          npx sst deploy --stage $STAGE
+          pnpm exec sst deploy --stage $STAGE
 
       - name: Output Deployment URL
         run: |
