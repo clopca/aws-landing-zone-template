@@ -1,9 +1,9 @@
-output "ebs_encryption_enabled" {
-  description = "Whether EBS encryption is enabled by default"
-  value       = var.enable_ebs_encryption
+output "account_id" {
+  description = "AWS Account ID"
+  value       = local.account_id
 }
 
-output "s3_public_access_blocked" {
-  description = "Whether S3 public access is blocked"
-  value       = var.enable_s3_block_public_access
+output "account_name" {
+  description = "Account name from tags"
+  value       = local.account_name
 }

@@ -1,10 +1,27 @@
+# Terraform AWS Provider Configuration
+# Generated from Jinja2 template
+
+terraform {
+  required_version = ">= 1.0"
+  
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+# Default AWS Provider
 provider "aws" {
   region = "{{ region }}"
 
+  {% if assume_role | default(true) %}
   assume_role {
     role_arn     = "arn:aws:iam::{{ account_id }}:role/{{ role_name }}"
     session_name = "{{ session_name | default('terraform-session') }}"
   }
+  {% endif %}
 
   default_tags {
     tags = {
@@ -15,15 +32,43 @@ provider "aws" {
   }
 }
 
+{% if additional_regions is defined %}
+# Additional Regional Providers
+{% for additional_region in additional_regions %}
+provider "aws" {
+  alias  = "{{ additional_region | replace('-', '_') }}"
+  region = "{{ additional_region }}"
+
+  {% if assume_role | default(true) %}
+  assume_role {
+    role_arn     = "arn:aws:iam::{{ account_id }}:role/{{ role_name }}"
+    session_name = "{{ session_name | default('terraform-session') }}-{{ additional_region }}"
+  }
+  {% endif %}
+
+  default_tags {
+    tags = {
+      ManagedBy   = "Terraform"
+      Environment = "{{ environment | default('production') }}"
+      AccountId   = "{{ account_id }}"
+    }
+  }
+}
+{% endfor %}
+{% endif %}
+
 {% if secondary_region is defined %}
+# Secondary Region Provider (legacy support)
 provider "aws" {
   alias  = "secondary"
   region = "{{ secondary_region }}"
 
+  {% if assume_role | default(true) %}
   assume_role {
     role_arn     = "arn:aws:iam::{{ account_id }}:role/{{ role_name }}"
-    session_name = "{{ session_name | default('terraform-session') }}"
+    session_name = "{{ session_name | default('terraform-session') }}-secondary"
   }
+  {% endif %}
 
   default_tags {
     tags = {
@@ -33,4 +78,29 @@ provider "aws" {
     }
   }
 }
+{% endif %}
+
+{% if cross_account_roles is defined %}
+# Cross-Account Providers
+{% for cross_account in cross_account_roles %}
+provider "aws" {
+  alias  = "{{ cross_account.alias }}"
+  region = "{{ cross_account.region | default(region) }}"
+
+  assume_role {
+    role_arn     = "arn:aws:iam::{{ cross_account.account_id }}:role/{{ cross_account.role_name }}"
+    session_name = "{{ session_name | default('terraform-session') }}-{{ cross_account.alias }}"
+  }
+
+  default_tags {
+    tags = {
+      ManagedBy   = "Terraform"
+      Environment = "{{ environment | default('production') }}"
+      {% if cross_account.account_name is defined %}
+      AccountName = "{{ cross_account.account_name }}"
+      {% endif %}
+    }
+  }
+}
+{% endfor %}
 {% endif %}

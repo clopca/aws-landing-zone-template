@@ -1,0 +1,82 @@
+# Checkov Skip Rules Configuration
+# This file defines rules that are skipped during Checkov scans with justifications.
+# Each skip rule should have a clear reason why it's being skipped.
+
+# S3 Bucket Security Rules
+# These are handled by our storage module with configurable variables
+skip_checks:
+  # S3 bucket logging - we handle this at the module level with optional logging
+  - check_id: CKV_AWS_18
+    reason: "S3 bucket logging is handled by the storage module with enable_logging variable"
+    applies_to:
+      - "aws_s3_bucket"
+    
+  # S3 bucket versioning - handled by module with enable_versioning variable
+  - check_id: CKV_AWS_21
+    reason: "S3 bucket versioning is handled by the storage module with enable_versioning variable"
+    applies_to:
+      - "aws_s3_bucket"
+
+# VPC Security Rules
+# VPC Flow Logs are managed by our VPC module
+  - check_id: CKV2_AWS_11
+    reason: "VPC Flow Logs are handled by the VPC module with enable_flow_logs variable"
+    applies_to:
+      - "aws_vpc"
+
+# EBS Encryption Rules
+# EBS encryption is enforced at the account level by security-baseline module
+  - check_id: CKV_AWS_3
+    reason: "EBS encryption is enforced at the account level by the security-baseline module"
+    applies_to:
+      - "aws_ebs_volume"
+      - "aws_instance"
+
+# IAM Password Policy Rules
+# These are all handled by the security-baseline module which sets organization-wide password policies
+  - check_id: CKV_AWS_9
+    reason: "IAM password minimum length is enforced by security-baseline module"
+    applies_to:
+      - "aws_iam_account_password_policy"
+    
+  - check_id: CKV_AWS_10
+    reason: "IAM password uppercase requirement is enforced by security-baseline module"
+    applies_to:
+      - "aws_iam_account_password_policy"
+    
+  - check_id: CKV_AWS_11
+    reason: "IAM password lowercase requirement is enforced by security-baseline module"
+    applies_to:
+      - "aws_iam_account_password_policy"
+    
+  - check_id: CKV_AWS_12
+    reason: "IAM password number requirement is enforced by security-baseline module"
+    applies_to:
+      - "aws_iam_account_password_policy"
+    
+  - check_id: CKV_AWS_13
+    reason: "IAM password symbol requirement is enforced by security-baseline module"
+    applies_to:
+      - "aws_iam_account_password_policy"
+    
+  - check_id: CKV_AWS_14
+    reason: "IAM password max age is enforced by security-baseline module"
+    applies_to:
+      - "aws_iam_account_password_policy"
+    
+  - check_id: CKV_AWS_15
+    reason: "IAM password reuse prevention is enforced by security-baseline module"
+    applies_to:
+      - "aws_iam_account_password_policy"
+    
+  - check_id: CKV_AWS_16
+    reason: "IAM password hard expiry is enforced by security-baseline module"
+    applies_to:
+      - "aws_iam_account_password_policy"
+
+# Guidelines for Adding New Skip Rules:
+# 1. Only skip rules when the security control is implemented elsewhere
+# 2. Document the check_id, reason, and what resources it applies to
+# 3. Never skip critical security rules without strong justification
+# 4. Review skip rules quarterly to ensure they're still valid
+# 5. Consider using inline suppressions for one-off exceptions instead of global skips

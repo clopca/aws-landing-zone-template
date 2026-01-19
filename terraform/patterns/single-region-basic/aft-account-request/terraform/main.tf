@@ -2,8 +2,8 @@ module "workload_account" {
   source = "./modules/aft-account-request"
 
   control_tower_parameters = {
-    AccountEmail              = "workload@example.com"
-    AccountName               = "Workload-Production"
+    AccountEmail              = "workload-prod@example.com"
+    AccountName               = "workload-prod"
     ManagedOrganizationalUnit = "Workloads"
     SSOUserEmail              = "admin@example.com"
     SSOUserFirstName          = "Admin"
@@ -12,19 +12,19 @@ module "workload_account" {
 
   account_tags = {
     Environment = "production"
-    CostCenter  = "engineering"
-    Project     = "landing-zone"
+    AccountName = "workload-prod"
+    ManagedBy   = "AFT"
+    Pattern     = "single-region-basic"
   }
 
   change_management_parameters = {
-    change_requested_by = "Platform Team"
-    change_reason       = "Initial account provisioning"
+    change_requested_by = "Infrastructure Team"
+    change_reason       = "New production workload account"
   }
 
   custom_fields = {
-    vpc_cidr           = "10.1.0.0/16"
-    environment        = "production"
-    enable_nat_gateway = "true"
+    vpc_cidr     = "10.10.0.0/16"
+    requires_tgw = "false"
   }
 
   account_customizations_name = "WORKLOAD"

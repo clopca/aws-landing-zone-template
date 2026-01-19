@@ -1,17 +1,43 @@
+# Checkov Security Scanning Configuration for AWS Landing Zone
+# https://www.checkov.io/2.Basics/CLI%20Command%20Reference.html
+
+# Frameworks to scan
 framework:
   - terraform
+  - terraform_plan
 
+# Directories to scan
 directory:
   - terraform/
 
+# Output formats
+# - cli: Human-readable console output
+# - json: Machine-readable JSON for CI/CD integration
+# - sarif: SARIF format for GitHub Security tab integration
 output:
   - cli
   - json
+  - sarif
 
+# Output file paths
+output-file-path: checkov-results.json
+
+# Soft fail mode
+# Set to false to fail builds on security issues (recommended for CI/CD)
+# Set to true for local development to see all issues without blocking
 soft-fail: false
 
+# Compact output for cleaner CI logs
 compact: true
 
+# Download external modules for comprehensive scanning
+# Set to false to speed up scans if modules are already present
+download-external-modules: true
+
+# External modules download timeout (seconds)
+external-modules-download-timeout: 30
+
+# Skip checks - see terraform/.checkov/skip-rules.yaml for detailed justifications
 skip-check:
   # S3 bucket logging - we handle this at the module level with optional logging
   - CKV_AWS_18
@@ -31,7 +57,43 @@ skip-check:
   - CKV_AWS_15
   - CKV_AWS_16
 
+# Custom checks directory
+# Contains organization-specific security policies (e.g., required tags)
 external-checks-dir:
   - terraform/.checkov/custom-checks
 
-download-external-modules: false
+# Enable quiet mode (only show failed checks)
+quiet: false
+
+# Enable color output for better readability
+no-color: false
+
+# Enable deep analysis for more thorough scanning
+deep-analysis: true
+
+# Enable parallel execution for faster scans
+parallel: true
+
+# Repository root for relative paths in terraform_plan scans
+repo-root-for-plan-enrichment: .
+
+# Enable CKV2 checks (cross-resource relationship checks)
+# These checks validate relationships between resources (e.g., VPC has flow logs)
+enable-ckv2: true
+
+# Baseline file to track known issues (optional)
+# Uncomment to use baseline tracking for gradual remediation
+# baseline: .checkov.baseline
+
+# Severity threshold - uncomment to fail only on specific severities
+# Options: CRITICAL, HIGH, MEDIUM, LOW
+# check-threshold: HIGH
+
+# Prisma Cloud integration (optional)
+# Uncomment and set environment variables for Prisma Cloud integration
+# prisma-api-url: https://api.prismacloud.io
+# bc-api-key: ${PRISMA_API_KEY}
+
+# Enable secret scanning across all files
+# Set to true to scan for hardcoded secrets in all files
+enable-secret-scan-all-files: false

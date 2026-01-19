@@ -1,19 +1,24 @@
+output "account_id" {
+  description = "AWS Account ID"
+  value       = local.account_id
+}
+
 output "vpc_id" {
-  description = "ID of the VPC"
+  description = "VPC ID"
   value       = module.vpc.vpc_id
 }
 
+output "vpc_cidr" {
+  description = "VPC CIDR block"
+  value       = local.vpc_cidr
+}
+
 output "private_subnet_ids" {
-  description = "IDs of private subnets"
+  description = "Private subnet IDs"
   value       = module.vpc.private_subnet_ids
 }
 
 output "public_subnet_ids" {
-  description = "IDs of public subnets"
+  description = "Public subnet IDs"
   value       = module.vpc.public_subnet_ids
-}
-
-output "database_subnet_ids" {
-  description = "IDs of database subnets"
-  value       = module.vpc.database_subnet_ids
 }

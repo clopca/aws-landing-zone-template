@@ -1,15 +1,13 @@
 #!/bin/bash
-set -euo pipefail
+# Post-API helpers - runs after Terraform apply
+# Use this for any cleanup or validation tasks after infrastructure deployment
 
-echo "Running post-API helpers for WORKLOAD account customization"
-echo "Account ID: ${AWS_ACCOUNT_ID:-unknown}"
-echo "Region: ${AWS_REGION:-us-east-1}"
+set -e
 
-# Add any post-provisioning steps here
-# Examples:
-# - Validate deployment
-# - Send notifications
-# - Update external systems
-# - Clean up temporary resources
+echo "Running post-API helpers for account customizations..."
+
+# Example: Verify VPC was created
+echo "Verifying VPC deployment..."
+aws ec2 describe-vpcs --filters "Name=tag:Name,Values=${account_name}" --query 'Vpcs[0].VpcId' --output text
 
 echo "Post-API helpers completed successfully"
