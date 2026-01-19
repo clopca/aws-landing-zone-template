@@ -325,5 +325,134 @@
   "theme.tags.tagsPageTitle": {
     "message": "Etiquetas",
     "description": "The title of the tag list page"
+  },
+  "homepage.badge": {
+    "message": "v1.0 Listo para Produccion"
+  },
+  "homepage.hero.title.line1": {
+    "message": "Landing Zone AWS"
+  },
+  "homepage.hero.title.line2": {
+    "message": "Listo para Produccion"
+  },
+  "homepage.hero.subtitle": {
+    "message": "Despliega una Organizacion AWS segura y multi-cuenta con Terraform en minutos. Construido siguiendo las mejores practicas de AWS y la Arquitectura de Referencia de Seguridad."
+  },
+  "homepage.cta.getStarted": {
+    "message": "Comenzar"
+  },
+  "homepage.cta.viewGithub": {
+    "message": "Ver en GitHub"
+  },
+  "homepage.architecture.title": {
+    "message": "Arquitectura de Nivel Empresarial"
+  },
+  "homepage.architecture.subtitle": {
+    "message": "Una estructura multi-cuenta totalmente automatizada, disenada para seguridad y escalabilidad."
+  },
+  "homepage.architecture.management": {
+    "message": "Administracion"
+  },
+  "homepage.architecture.management.desc": {
+    "message": "Cuenta Raiz y SCPs"
+  },
+  "homepage.architecture.securityOU": {
+    "message": "OU de Seguridad"
+  },
+  "homepage.architecture.security": {
+    "message": "Seguridad"
+  },
+  "homepage.architecture.logArchive": {
+    "message": "Archivo de Logs"
+  },
+  "homepage.architecture.infraOU": {
+    "message": "OU de Infraestructura"
+  },
+  "homepage.architecture.network": {
+    "message": "Red"
+  },
+  "homepage.architecture.sharedSvcs": {
+    "message": "Svcs Compartidos"
+  },
+  "homepage.architecture.workloadsOU": {
+    "message": "OU de Cargas de Trabajo"
+  },
+  "homepage.architecture.aft.desc": {
+    "message": "Fabrica de Cuentas"
+  },
+  "homepage.architecture.vendedAccounts": {
+    "message": "+ Cuentas Aprovisionadas"
+  },
+  "homepage.quickstart.title": {
+    "message": "Comienza en 3 Pasos"
+  },
+  "homepage.quickstart.subtitle": {
+    "message": "De cero a landing zone desplegado en menos de una hora."
+  },
+  "homepage.quickstart.step1.title": {
+    "message": "Clonar Repositorio"
+  },
+  "homepage.quickstart.step1.desc": {
+    "message": "Clona la plantilla en tu maquina local para comenzar con el codigo de infraestructura."
+  },
+  "homepage.quickstart.step2.title": {
+    "message": "Configurar"
+  },
+  "homepage.quickstart.step2.desc": {
+    "message": "Ejecuta el script de configuracion para inicializar tu entorno e instalar dependencias."
+  },
+  "homepage.quickstart.step3.title": {
+    "message": "Desplegar"
+  },
+  "homepage.quickstart.step3.desc": {
+    "message": "Inicia el bucle Ralph para desplegar automaticamente los componentes de tu landing zone."
+  },
+  "homepage.title": {
+    "message": "Plantilla AWS Landing Zone"
+  },
+  "homepage.description": {
+    "message": "Plantilla Terraform lista para produccion para AWS Organizations"
+  },
+  "homepage.features.title": {
+    "message": "Todo lo que Necesitas"
+  },
+  "homepage.features.subtitle": {
+    "message": "Una base completa para tu viaje a la nube AWS, construida con herramientas modernas."
+  },
+  "homepage.features.governance.title": {
+    "message": "Gobierno Multi-Cuenta"
+  },
+  "homepage.features.governance.desc": {
+    "message": "AWS Organizations con estructura de OUs, Politicas de Control de Servicios (SCPs), y facturacion centralizada para gestion a escala empresarial."
+  },
+  "homepage.features.security.title": {
+    "message": "Linea Base de Seguridad"
+  },
+  "homepage.features.security.desc": {
+    "message": "Deteccion de amenazas GuardDuty, cumplimiento Security Hub, reglas AWS Config e IAM Access Analyzer habilitados por defecto."
+  },
+  "homepage.features.network.title": {
+    "message": "Hub de Red"
+  },
+  "homepage.features.network.desc": {
+    "message": "Topologia hub-and-spoke con Transit Gateway, egress/ingress centralizado, endpoints VPC y preparado para conectividad hibrida."
+  },
+  "homepage.features.aft.title": {
+    "message": "Fabrica de Cuentas (AFT)"
+  },
+  "homepage.features.aft.desc": {
+    "message": "Aprovisionamiento automatizado de cuentas con flujo GitOps, lineas base personalizables y capacidades de autoservicio para equipos."
+  },
+  "homepage.features.compliance.title": {
+    "message": "Listo para Cumplimiento"
+  },
+  "homepage.features.compliance.desc": {
+    "message": "Alineado con CIS Benchmarks y Arquitectura de Referencia de Seguridad. Incluye pistas de auditoria con CloudTrail y recoleccion de evidencia."
+  },
+  "homepage.features.iac.title": {
+    "message": "Infraestructura como Codigo"
+  },
+  "homepage.features.iac.desc": {
+    "message": "Arquitectura 100% Terraform con componentes modulares y reutilizables. Disenado para pipelines CI/CD y pruebas automatizadas."
   }
 }

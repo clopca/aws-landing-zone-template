@@ -4,6 +4,20 @@
  * work well for content-centric websites.
  */
 
+/* Tailwind CSS v4 - Scoped to avoid breaking Docusaurus */
+@import "tailwindcss/theme.css" layer(theme);
+
+@layer base {
+  #tw-scope {
+    @import "tailwindcss/preflight.css" layer(base);
+  }
+}
+
+@import "tailwindcss/utilities.css" layer(utilities);
+
+/* Custom dark mode variant for Docusaurus */
+@custom-variant dark (&:is([data-theme="dark"] *));
+
 /* Modern Color Palette & Variables */
 :root {
   /* AWS Orange Primary - Refined Palette */
@@ -40,8 +54,6 @@
   --site-primary-glow: 255, 153, 0;
   --site-card-bg: rgba(255, 255, 255, 0.8);
   --site-card-border: rgba(0, 0, 0, 0.05);
-  --site-hero-gradient: radial-gradient(circle at 80% 20%, rgba(255, 153, 0, 0.15) 0%, transparent 40%),
-                        radial-gradient(circle at 20% 80%, rgba(255, 153, 0, 0.05) 0%, transparent 40%);
   
   /* Transitions */
   --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -76,8 +88,6 @@
   /* Custom Design Tokens */
   --site-card-bg: rgba(22, 27, 34, 0.6);
   --site-card-border: rgba(255, 255, 255, 0.1);
-  --site-hero-gradient: radial-gradient(circle at 80% 20%, rgba(255, 153, 0, 0.15) 0%, transparent 50%),
-                        radial-gradient(circle at 20% 80%, rgba(9, 105, 218, 0.1) 0%, transparent 50%);
 }
 
 /* Global Reset & Typography */
@@ -98,10 +108,14 @@ body {
   border-bottom: 1px solid var(--ifm-border-color);
 }
 
+[data-theme='light'] .navbar {
+  background-color: rgba(255, 255, 255, 0.85);
+}
+
 /* Button Overrides */
 .button {
   font-weight: 600;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   transition: all var(--transition-fast);
   border-radius: 8px;
 }
@@ -149,19 +163,24 @@ body {
   background: var(--ifm-color-primary);
 }
 
-/* Utility Classes */
+/* Custom Utilities */
+.bg-grid-pattern {
+  background-size: 40px 40px;
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+}
+
+[data-theme='dark'] .bg-grid-pattern {
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+}
+
 .text-gradient {
   background: linear-gradient(120deg, var(--ifm-heading-color) 0%, var(--ifm-color-primary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-}
-
-.glass-card {
-  background: var(--site-card-bg);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--site-card-border);
-  border-radius: var(--ifm-global-border-radius);
 }
 
 /* Animations */
