@@ -1,41 +1,50 @@
-# Website
+# AWS Landing Zone Documentation
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+This documentation site is built using [Docusaurus](https://docusaurus.io/) and deployed to AWS CloudFront via [SST](https://sst.dev/).
 
 ## Installation
 
 ```bash
-yarn
+pnpm install
 ```
 
 ## Local Development
 
 ```bash
-yarn start
+pnpm start
 ```
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
+This command starts a local development server and opens a browser window. Most changes are reflected live without having to restart the server.
 
 ## Build
 
 ```bash
-yarn build
+pnpm build
 ```
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
+This generates static content into the `build` directory.
 
 ## Deployment
 
-Using SSH:
+Deploy to AWS using SST (from the repository root):
 
 ```bash
-USE_SSH=true yarn deploy
+./scripts/docs-deploy.sh dev      # Deploy to dev stage
+./scripts/docs-deploy.sh staging  # Deploy to staging stage
+./scripts/docs-deploy.sh prod     # Deploy to production
 ```
 
-Not using SSH:
+Or manually:
 
 ```bash
-GIT_USER=<Your GitHub username> yarn deploy
+cd ../infra
+pnpm exec sst deploy --stage dev
 ```
 
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+## Internationalization
+
+This site supports multiple languages:
+- English (default)
+- Spanish (`/es/`)
+
+To add translations, edit files in `i18n/es/`.
