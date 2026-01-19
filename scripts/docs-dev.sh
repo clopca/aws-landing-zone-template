@@ -13,8 +13,8 @@ fi
 
 if [[ ! -d "node_modules" ]]; then
     echo "Installing dependencies..."
-    npm install
+    pnpm install
 fi
 
 echo "Starting Docusaurus dev server..."
-npm run start
+pnpm run start

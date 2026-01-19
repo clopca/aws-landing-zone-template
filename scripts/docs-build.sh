@@ -13,11 +13,11 @@ fi
 
 if [[ ! -d "node_modules" ]]; then
     echo "Installing dependencies..."
-    npm install
+    pnpm install
 fi
 
 echo "Building documentation..."
-npm run build
+pnpm run build
 
 echo ""
 echo "Build complete! Output in docs/build/"

@@ -15,14 +15,14 @@ A production-ready Terraform template for deploying a multi-account AWS Organiza
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/aws-landing-zone-template.git
+git clone https://github.com/clopca/aws-landing-zone-template.git
 cd aws-landing-zone-template
 
 # Run setup (installs Beads, dependencies)
 ./scripts/setup.sh
 
 # View documentation locally
-cd docs && npm run start
+cd docs && pnpm install && pnpm start
 
 # See available tasks
 bd ready

@@ -18,19 +18,19 @@ fi
 
 if [[ ! -d "node_modules" ]]; then
     echo "Installing SST dependencies..."
-    npm install
+    pnpm install
 fi
 
 # Build docs first
 echo "Building documentation..."
 cd ../docs
-npm run build
+pnpm run build
 cd ../infra
 
 # Deploy with SST
 echo ""
 echo "Deploying with SST..."
-npx sst deploy --stage "$STAGE"
+pnpm exec sst deploy --stage "$STAGE"
 
 echo ""
 echo "=========================================="

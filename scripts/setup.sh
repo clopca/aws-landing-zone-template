@@ -51,10 +51,10 @@ if ! check_tool node; then
     exit 1
 fi
 
-# Check npm
-if ! check_tool npm; then
-    print_error "npm is required. Install Node.js from: https://nodejs.org"
-    exit 1
+# Check pnpm
+if ! check_tool pnpm; then
+    print_warning "pnpm not found. Installing..."
+    npm install -g pnpm
 fi
 
 # Check Terraform
@@ -141,7 +141,7 @@ if [[ -f "docs/package.json" ]]; then
     echo ""
     echo "Installing documentation dependencies..."
     cd docs
-    npm install
+    pnpm install
     cd ..
     print_status "Documentation dependencies installed"
 fi
@@ -151,7 +151,7 @@ if [[ -f "infra/package.json" ]]; then
     echo ""
     echo "Installing SST dependencies..."
     cd infra
-    npm install
+    pnpm install
     cd ..
     print_status "SST dependencies installed"
 fi
