@@ -12,6 +12,37 @@ override.tf.json
 *_override.tf
 *_override.tf.json
 
+# Node.js
+node_modules/
+.pnpm-store/
+.pnpm-debug.log
+
+# Build outputs
+docs/build/
+docs/.docusaurus/
+infra/.sst/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Beads
+.beads/*.sock
+.beads/*.lock
+.beads/*.startlock
+
 # Python
 __pycache__/
 *.py[cod]

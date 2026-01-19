@@ -72,7 +72,7 @@ The documentation site can be run locally or deployed to AWS:
 
 ```bash
 # Local development
-cd docs && npm run start
+cd docs && pnpm install && pnpm start
 
 # Deploy to AWS (via SST)
 ./scripts/docs-deploy.sh dev
@@ -116,12 +116,12 @@ bd ready
 
 ## CI/CD
 
-GitHub Actions workflows are included but disabled by default:
+GitHub Actions workflows are included and enabled:
 
-- `terraform-validate.yml.disabled` - Validates Terraform on PR
-- `docs-deploy.yml.disabled` - Deploys docs to AWS
+- `terraform-validate.yml` - Validates Terraform on PR and push to main
+- `docs-deploy.yml` - Deploys docs to AWS on push to main or manual trigger
 
-To enable, remove the `.disabled` suffix.
+To deploy docs, configure the `AWS_ROLE_ARN` secret in your GitHub repository settings.
 
 ## Contributing
 
