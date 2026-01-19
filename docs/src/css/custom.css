@@ -4,157 +4,257 @@
  * work well for content-centric websites.
  */
 
-/* You can override the default Infima variables here. */
+/* Modern Color Palette & Variables */
 :root {
-  /* AWS Orange Primary */
+  /* AWS Orange Primary - Refined Palette */
   --ifm-color-primary: #FF9900;
-  --ifm-color-primary-dark: #EC7211;
-  --ifm-color-primary-darker: #D45B07;
-  --ifm-color-primary-darkest: #A84300;
-  --ifm-color-primary-light: #FFAC31;
-  --ifm-color-primary-lighter: #FFBE56;
-  --ifm-color-primary-lightest: #FFD78A;
-  
-  --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --ifm-color-primary-dark: #E68A00;
+  --ifm-color-primary-darker: #CC7A00;
+  --ifm-color-primary-darkest: #995C00;
+  --ifm-color-primary-light: #FFAD33;
+  --ifm-color-primary-lighter: #FFC266;
+  --ifm-color-primary-lightest: #FFD699;
 
-  /* AWS Squid Ink / Dark Mode Backgrounds */
-  --aws-squid-ink: #232F3E;
-  --aws-squid-ink-light: #37475A;
-  --aws-bg-dark: #0D1117;
-  --aws-bg-darker: #010409;
+  /* Light Mode Base */
+  --ifm-background-color: #ffffff;
+  --ifm-background-surface-color: #f6f8fa;
+  --ifm-font-color-base: #24292f;
+  --ifm-heading-color: #1f2328;
+  --ifm-link-color: #0969da;
+  --ifm-link-hover-color: #1a7f37;
+  
+  /* Borders & UI Elements */
+  --ifm-border-color: #d0d7de;
+  --ifm-global-border-radius: 8px;
+  --ifm-global-shadow-lw: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  --ifm-global-shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+
+  /* Typography */
+  --ifm-font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --ifm-code-font-size: 90%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.05);
+  
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-medium: 0.3s ease;
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
+/* Dark Mode - GitHub/VS Code Inspired */
 [data-theme='dark'] {
-  --ifm-color-primary: #FF9900;
-  --ifm-color-primary-dark: #EC7211;
-  --ifm-color-primary-darker: #D45B07;
-  --ifm-color-primary-darkest: #A84300;
-  --ifm-color-primary-light: #FFAC31;
-  --ifm-color-primary-lighter: #FFBE56;
-  --ifm-color-primary-lightest: #FFD78A;
+  /* Adjusted Primary for Dark Mode (slightly lighter/softer) */
+  --ifm-color-primary: #FFAC31;
+  --ifm-color-primary-dark: #FF9900;
+  --ifm-color-primary-darker: #E68A00;
+  --ifm-color-primary-darkest: #CC7A00;
+  --ifm-color-primary-light: #FFBE56;
+  --ifm-color-primary-lighter: #FFD78A;
+  --ifm-color-primary-lightest: #FFE6B3;
+
+  /* Dark Mode Base */
+  --ifm-background-color: #0d1117; /* GitHub Dark Bg */
+  --ifm-background-surface-color: #161b22; /* GitHub Dark Surface */
+  --ifm-font-color-base: #c9d1d9;
+  --ifm-heading-color: #f0f6fc;
+  --ifm-link-color: #58a6ff;
+  --ifm-link-hover-color: #7ee787;
   
-  --ifm-background-color: var(--aws-bg-dark);
-  --ifm-navbar-background-color: #161B22;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  /* Navbar & UI */
+  --ifm-navbar-background-color: #010409;
+  --ifm-border-color: #30363d;
+  --docusaurus-highlighted-code-line-bg: rgba(255, 255, 255, 0.05);
+  
+  /* Cards */
+  --ifm-card-background-color: #161b22;
 }
 
-/* Custom Landing Page Styles */
+/* Global Smooth Transitions */
+body {
+  transition: background-color var(--transition-medium), color var(--transition-medium);
+}
+
+/* Navbar Styling */
+.navbar {
+  box-shadow: none;
+  border-bottom: 1px solid var(--ifm-border-color);
+}
+
+/* Hero Section - Modernized */
 .hero {
-  background-color: var(--aws-squid-ink);
-  color: white;
-  padding: 4rem 0;
+  background: radial-gradient(circle at top right, rgba(255, 153, 0, 0.1), transparent 40%),
+              var(--ifm-background-color);
+  padding: 6rem 0;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme='dark'] .hero {
+  background: radial-gradient(circle at top right, rgba(255, 153, 0, 0.15), transparent 50%),
+              var(--ifm-background-color);
 }
 
 .hero__title {
-  font-size: 3.5rem;
+  font-size: 4rem;
   font-weight: 800;
+  letter-spacing: -0.02em;
   margin-bottom: 1.5rem;
-  background: linear-gradient(to right, #FF9900, #FFD78A);
+  background: linear-gradient(120deg, var(--ifm-heading-color) 0%, var(--ifm-color-primary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .hero__subtitle {
   font-size: 1.5rem;
   max-width: 800px;
-  margin: 0 auto 2rem;
-  color: #e0e0e0;
-  line-height: 1.5;
+  margin: 0 auto 2.5rem;
+  color: var(--ifm-font-color-base);
+  opacity: 0.8;
+  line-height: 1.6;
+  font-weight: 400;
 }
 
 /* Architecture Section */
 .architectureSection {
-  padding: 4rem 0;
+  padding: 5rem 0;
   text-align: center;
-  background-color: var(--ifm-background-color);
+  background-color: var(--ifm-background-surface-color);
+  border-top: 1px solid var(--ifm-border-color);
+  border-bottom: 1px solid var(--ifm-border-color);
 }
 
 .architectureSection h2 {
   font-size: 2.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
 }
 
 .architectureDiagram {
   max-width: 900px;
-  margin: 2rem auto;
+  margin: 3rem auto;
   padding: 2rem;
-  border: 1px solid var(--ifm-color-emphasis-200);
-  border-radius: 12px;
+  border: 1px solid var(--ifm-border-color);
+  border-radius: 16px;
   background: var(--ifm-card-background-color);
-  box-shadow: var(--ifm-global-shadow-lw);
+  box-shadow: var(--ifm-global-shadow-md);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.architectureDiagram:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
 }
 
 /* Quick Start Section */
 .quickStart {
-  padding: 4rem 0;
-  background-color: var(--ifm-color-emphasis-100);
+  padding: 5rem 0;
+  background-color: var(--ifm-background-color);
 }
 
 .quickStart h2 {
   text-align: center;
   font-size: 2.5rem;
-  margin-bottom: 3rem;
+  margin-bottom: 4rem;
+  font-weight: 700;
 }
 
 .steps {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 2rem;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 1.5rem;
 }
 
 .stepCard {
   background: var(--ifm-card-background-color);
-  padding: 2rem;
-  border-radius: 12px;
+  padding: 2.5rem;
+  border-radius: 16px;
   box-shadow: var(--ifm-global-shadow-lw);
-  border: 1px solid var(--ifm-color-emphasis-200);
-  transition: transform 0.2s ease;
+  border: 1px solid var(--ifm-border-color);
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
 }
 
 .stepCard:hover {
   transform: translateY(-5px);
+  box-shadow: var(--ifm-global-shadow-md);
+  border-color: var(--ifm-color-primary);
 }
 
 .stepNumber {
-  display: inline-block;
-  width: 40px;
-  height: 40px;
-  line-height: 40px;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
   background: var(--ifm-color-primary);
-  color: white;
-  border-radius: 50%;
-  font-weight: bold;
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
+  color: white; /* Always white for contrast on orange */
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 6px rgba(255, 153, 0, 0.3);
 }
 
 .stepTitle {
   font-size: 1.5rem;
   margin-bottom: 1rem;
-  font-weight: 600;
+  font-weight: 700;
+  color: var(--ifm-heading-color);
 }
 
+/* Code Blocks */
 .codeBlock {
-  background: #1b1b1b;
-  color: #f8f8f2;
-  padding: 1rem;
-  border-radius: 6px;
-  font-family: var(--ifm-font-family-monospace);
+  background: #161b22; /* Always dark for code */
+  color: #e6edf3;
+  padding: 1.25rem;
+  border-radius: 8px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
   font-size: 0.9rem;
   overflow-x: auto;
+  border: 1px solid #30363d;
+  margin-top: 1rem;
 }
 
-/* Feature Cards Override */
+/* Feature Icons */
 .featureSvg {
   height: 48px;
   width: 48px;
   color: var(--ifm-color-primary);
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Button Overrides */
+.button--primary {
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  transition: all var(--transition-fast);
+}
+
+.button--primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 153, 0, 0.3);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--ifm-background-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ifm-border-color);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ifm-color-primary);
 }

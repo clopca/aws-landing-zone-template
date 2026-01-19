@@ -72,7 +72,9 @@ const config: Config = {
   themeConfig: {
     image: 'img/aws-landing-zone-social-card.jpg',
     colorMode: {
-      respectPrefersColorScheme: true,
+      defaultMode: 'dark',
+      disableSwitch: false,
+      respectPrefersColorScheme: false,
     },
     navbar: {
       title: 'AWS Landing Zone',

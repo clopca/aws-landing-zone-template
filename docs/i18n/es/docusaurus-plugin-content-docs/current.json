@@ -1,18 +1,18 @@
 {
   "version.label": {
-    "message": "Next",
+    "message": "Actual",
     "description": "The label for version current"
   },
   "sidebar.landingZoneSidebar.category.Architecture": {
-    "message": "Architecture",
+    "message": "Arquitectura",
     "description": "The label for category 'Architecture' in sidebar 'landingZoneSidebar'"
   },
   "sidebar.landingZoneSidebar.category.Modules": {
-    "message": "Modules",
+    "message": "Módulos",
     "description": "The label for category 'Modules' in sidebar 'landingZoneSidebar'"
   },
   "sidebar.landingZoneSidebar.category.Runbooks": {
-    "message": "Runbooks",
+    "message": "Guías de Operación",
     "description": "The label for category 'Runbooks' in sidebar 'landingZoneSidebar'"
   }
 }
