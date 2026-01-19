@@ -4,7 +4,7 @@
 set -e
 
 ACCOUNT=${1:-all}
-ROOT_DIR="$(dirname "$0")/.."
+ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
 validate_account() {
     local account=$1
