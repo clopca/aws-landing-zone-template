@@ -1,12 +1,21 @@
 {
 	"$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
 	"google_auth": false,
-	"ralph_loop": { 
-		"enabled": true, 
-		"default_max_iterations": 50 
-	},
+	"ralph_loop": { "enabled": true, "default_max_iterations": 100 },
 	"agents": {
 		"Sisyphus": {
+			"model": "amazon-bedrock/global.anthropic.claude-opus-4-5-20251101-v1:0"
+		},
+		"OpenCode-Builder": {
+			"model": "amazon-bedrock/global.anthropic.claude-opus-4-5-20251101-v1:0"
+		},
+		"Prometheus (Planner)": {
+			"model": "amazon-bedrock/global.anthropic.claude-opus-4-5-20251101-v1:0"
+		},
+		"Metis (Plan Consultant)": {
+			"model": "amazon-bedrock/global.anthropic.claude-opus-4-5-20251101-v1:0"
+		},
+		"Sisyphus-Junior": {
 			"model": "amazon-bedrock/global.anthropic.claude-opus-4-5-20251101-v1:0"
 		},
 		"librarian": {
