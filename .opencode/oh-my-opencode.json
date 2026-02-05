@@ -4,19 +4,19 @@
 	"ralph_loop": { "enabled": true, "default_max_iterations": 100 },
 	"agents": {
 		"Sisyphus": {
-			"model": "amazon-bedrock/global.anthropic.claude-opus-4-6-v1:0"
+			"model": "amazon-bedrock/global.anthropic.claude-opus-4-6-v1"
 		},
 		"OpenCode-Builder": {
-			"model": "amazon-bedrock/global.anthropic.claude-opus-4-6-v1:0"
+			"model": "amazon-bedrock/global.anthropic.claude-opus-4-6-v1"
 		},
 		"Prometheus (Planner)": {
-			"model": "amazon-bedrock/global.anthropic.claude-opus-4-6-v1:0"
+			"model": "amazon-bedrock/global.anthropic.claude-opus-4-6-v1"
 		},
 		"Metis (Plan Consultant)": {
-			"model": "amazon-bedrock/global.anthropic.claude-opus-4-6-v1:0"
+			"model": "amazon-bedrock/global.anthropic.claude-opus-4-6-v1"
 		},
 		"Sisyphus-Junior": {
-			"model": "amazon-bedrock/global.anthropic.claude-opus-4-6-v1:0"
+			"model": "amazon-bedrock/global.anthropic.claude-opus-4-6-v1"
 		},
 		"librarian": {
 			"model": "google/gemini-3-flash"
@@ -37,7 +37,7 @@
 			"model": "google/gemini-3-pro-high"
 		},
 		"infrastructure-architect": {
-			"model": "amazon-bedrock/global.anthropic.claude-opus-4-6-v1:0"
+			"model": "amazon-bedrock/global.anthropic.claude-opus-4-6-v1"
 		}
 	}
 }

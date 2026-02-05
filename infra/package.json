@@ -6,12 +6,24 @@
   "scripts": {
     "dev": "sst dev",
     "deploy": "sst deploy",
-    "remove": "sst remove"
+    "remove": "sst remove",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --write .",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "check": "biome check .",
+    "check:fix": "biome check --write ."
   },
-  "keywords": ["sst", "aws", "infrastructure", "docusaurus"],
+  "keywords": [
+    "sst",
+    "aws",
+    "infrastructure",
+    "docusaurus"
+  ],
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@biomejs/biome": "^2.3.11",
     "@types/node": "^25.0.9",
     "sst": "^3.17.25",
     "typescript": "^5.9.3"
