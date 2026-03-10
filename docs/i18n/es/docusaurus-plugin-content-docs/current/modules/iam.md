@@ -2,7 +2,7 @@
 sidebar_position: 11
 ---
 
-# Módulo de IAM {#iam-module}
+# Módulo de IAM
 
 El módulo de IAM proporciona gestión integral de IAM para despliegues de AWS Landing Zone.
 

@@ -2,7 +2,7 @@
 sidebar_position: 3
 ---
 
-# Módulo de Redes {#networking-module}
+# Módulo de Redes
 
 El módulo de Redes crea la arquitectura de red hub-and-spoke utilizando Transit Gateway.
 

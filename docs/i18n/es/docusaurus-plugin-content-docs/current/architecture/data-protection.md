@@ -2,7 +2,7 @@
 sidebar_position: 7
 ---
 
-# Protección de Datos y Respaldos {#proteccion-de-datos-y-respaldos}
+# Protección de Datos y Respaldos
 
 Este documento describe la estrategia de protección de datos y respaldos (backups) para la AWS Landing Zone, incluyendo la gestión centralizada de respaldos, la estrategia de claves de cifrado, los procedimientos de recuperación ante desastres y las consideraciones de cumplimiento.
 

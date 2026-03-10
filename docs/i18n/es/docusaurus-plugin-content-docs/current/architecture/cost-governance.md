@@ -2,7 +2,7 @@
 sidebar_position: 6
 ---
 
-# Gestión de Costos y Gobernanza {#gestion-de-costos-y-gobernanza}
+# Gestión de Costos y Gobernanza
 
 Este documento describe la estrategia de gestión de costos y gobernanza para la AWS Landing Zone, incluyendo la asignación de costos, presupuestos, detección de anomalías y recomendaciones de optimización.
 

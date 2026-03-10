@@ -2,7 +2,7 @@
 sidebar_position: 8
 ---
 
-# Mapeo de Cumplimiento {#mapeo-de-cumplimiento}
+# Mapeo de Cumplimiento
 
 Este documento mapea la implementación de la AWS Landing Zone con los marcos de cumplimiento comunes y proporciona orientación para la preparación de auditorías.
 

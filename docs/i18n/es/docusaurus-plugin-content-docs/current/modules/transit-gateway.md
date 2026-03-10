@@ -2,7 +2,7 @@
 sidebar_position: 14
 ---
 
-# Módulo de Transit Gateway {#transit-gateway-module}
+# Módulo de Transit Gateway
 
 El módulo de Transit Gateway crea un AWS Transit Gateway con tablas de ruteo y compartición opcional a nivel de organización.
 

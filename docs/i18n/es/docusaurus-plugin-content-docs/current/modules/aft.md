@@ -2,7 +2,7 @@
 sidebar_position: 4
 ---
 
-# Account Factory for Terraform (AFT) {#account-factory-for-terraform-aft}
+# Account Factory for Terraform (AFT)
 
 AFT automatiza el aprovisionamiento y la personalización de cuentas de AWS en su organización.
 

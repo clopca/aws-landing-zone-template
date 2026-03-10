@@ -2,7 +2,7 @@
 sidebar_position: 5
 ---
 
-# Estrategia de IAM {#estrategia-de-iam}
+# Estrategia de IAM
 
 Este documento describe la estrategia de Identity and Access Management (IAM) para la AWS Landing Zone, incluyendo patrones de acceso entre cuentas, federación de identidades y mejores prácticas de seguridad.
 

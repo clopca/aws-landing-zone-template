@@ -3,9 +3,9 @@ import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const SITE_URL = process.env.SITE_URL || 'https://landing-zone.example.com';
-const GITHUB_ORG = process.env.GITHUB_ORG || 'your-org';
+const GITHUB_ORG = process.env.GITHUB_ORG || 'clopca';
 const GITHUB_REPO = process.env.GITHUB_REPO || 'aws-landing-zone-template';
-const COPYRIGHT_HOLDER = process.env.COPYRIGHT_HOLDER || 'Your Organization';
+const COPYRIGHT_HOLDER = process.env.COPYRIGHT_HOLDER || 'clopca';
 
 const config: Config = {
   title: 'AWS Landing Zone Template',

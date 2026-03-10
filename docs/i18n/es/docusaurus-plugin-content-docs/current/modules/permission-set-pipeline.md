@@ -2,7 +2,7 @@
 sidebar_position: 12
 ---
 
-# Módulo de Permission Set Pipeline {#permission-set-pipeline-module}
+# Módulo de Permission Set Pipeline
 
 El módulo de Permission Set Pipeline crea un pipeline CI/CD para gestionar permission sets de IAM Identity Center usando principios GitOps.
 

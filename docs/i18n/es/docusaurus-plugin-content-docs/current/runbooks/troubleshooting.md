@@ -2,7 +2,7 @@
 sidebar_position: 3
 ---
 
-# Guía Operativa de Solución de Problemas {#troubleshooting-runbook}
+# Guía Operativa de Solución de Problemas
 
 Esta guía operativa proporciona orientación para los problemas comunes en la AWS Landing Zone.
 

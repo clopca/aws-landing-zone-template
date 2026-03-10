@@ -2,7 +2,7 @@
 sidebar_position: 2
 ---
 
-# Guía Operativa de Despliegue {#deployment-runbook}
+# Guía Operativa de Despliegue
 
 Esta guía operativa describe cómo desplegar y actualizar la infraestructura de la AWS Landing Zone.
 

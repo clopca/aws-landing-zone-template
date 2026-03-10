@@ -92,3 +92,13 @@ ALL PHASES COMPLETE - Template ready for use
 - Verified with `cd docs && npm run build`; generated Spanish output now links to `/es/docs/modules/aft#...`
 - `cd docs && npm run lint` still fails due pre-existing Biome issues in `docs/src/plugins/tailwind-config.js`, `docs/src/pages/index.tsx`, and `docs/src/css/custom.css`
 - Follow-up issue created: `lz-jh0` to clean up existing docs lint failures
+
+[2026-03-10 16:13] Fix Spanish docs runtime/branding regressions (lz-wto) - COMPLETADA
+- Removed manual H1 anchor syntax from Spanish docs so Docusaurus generates consistent metadata and locale permalinks
+- Rewrote [docs/docs/intro.md] and [docs/i18n/es/docusaurus-plugin-content-docs/current/intro.md] as content-focused docs pages with frontmatter descriptions and stable internal links
+- Translated Spanish generated-index category metadata in architecture/modules/runbooks
+- Replaced the starter logo with a simpler navbar-safe SVG in [docs/static/img/logo.svg]
+- Updated [docs/docusaurus.config.ts] defaults to the real GitHub org/repo branding (`clopca/aws-landing-zone-template`)
+- Fixed docs lint blockers by enabling Biome Tailwind CSS parsing in [biome.json] and removing trivial unused imports/params in docs source files
+- Verified with `cd docs && npm run build`; regenerated Spanish intro metadata now uses `/es/docs/intro` and valid descriptions
+- Verified with `cd docs && npm run lint`; lint now passes

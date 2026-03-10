@@ -2,7 +2,7 @@
 sidebar_position: 4
 ---
 
-# Diseño de Red {#diseno-de-red}
+# Diseño de Red
 
 Este documento describe la arquitectura de red utilizando una topología hub-and-spoke de Transit Gateway.
 

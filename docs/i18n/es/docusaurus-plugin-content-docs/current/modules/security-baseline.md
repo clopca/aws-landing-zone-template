@@ -2,7 +2,7 @@
 sidebar_position: 2
 ---
 
-# Módulo de Línea Base de Seguridad {#security-baseline-module}
+# Módulo de Línea Base de Seguridad
 
 El módulo de Línea Base de Seguridad configura los servicios de seguridad en todas las cuentas.
 

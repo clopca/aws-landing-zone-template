@@ -2,7 +2,7 @@
 sidebar_position: 2
 ---
 
-# Estrategia de Cuentas Múltiples {#estrategia-de-cuentas-multiples}
+# Estrategia de Cuentas Múltiples
 
 Este documento describe la estrategia de cuentas múltiples y la estructura de Unidades Organizativas (OU).
 

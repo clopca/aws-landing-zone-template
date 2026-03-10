@@ -2,7 +2,7 @@
 sidebar_position: 8
 ---
 
-# Módulo de Compute {#compute-module}
+# Módulo de Compute
 
 El módulo de Compute crea recursos de cómputo seguros incluyendo hosts bastión con acceso SSM Session Manager.
 

@@ -2,7 +2,7 @@
 sidebar_position: 4
 ---
 
-# Guía Operativa de Configuración de CI/CD {#cicd-setup-runbook}
+# Guía Operativa de Configuración de CI/CD
 
 Esta guía operativa describe cómo configurar y gestionar los pipelines de CI/CD para la AWS Landing Zone utilizando GitHub Actions.
 

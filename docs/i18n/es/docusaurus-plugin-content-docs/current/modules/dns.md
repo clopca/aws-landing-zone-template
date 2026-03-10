@@ -2,7 +2,7 @@
 sidebar_position: 10
 ---
 
-# Módulo de DNS {#dns-module}
+# Módulo de DNS
 
 El módulo de DNS gestiona zonas hospedadas privadas de Route53 y endpoints de Route53 Resolver para resolución DNS híbrida.
 

@@ -2,7 +2,7 @@
 sidebar_position: 13
 ---
 
-# Módulo de Storage {#storage-module}
+# Módulo de Storage
 
 El módulo de Storage crea buckets S3 seguros con mejores prácticas de AWS para despliegues de Landing Zone.
 

@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# Módulo de Organización {#organization-module}
+# Módulo de Organización
 
 El módulo de Organización gestiona AWS Organizations, Unidades Organizativas (OUs) y Políticas de Control de Servicios (SCPs).
 

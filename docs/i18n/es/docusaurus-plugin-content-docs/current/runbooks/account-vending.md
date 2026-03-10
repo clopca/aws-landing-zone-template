@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# Guía Operativa de Aprovisionamiento de Cuentas {#account-vending-runbook}
+# Guía Operativa de Aprovisionamiento de Cuentas
 
 Esta guía operativa describe cómo aprovisionar nuevas cuentas de AWS utilizando Account Factory for Terraform (AFT).
 

@@ -1,8 +1,8 @@
 {
-  "label": "Runbooks",
+  "label": "Guías de Operación",
   "position": 4,
   "link": {
     "type": "generated-index",
-    "description": "Operational runbooks for common tasks and troubleshooting."
+    "description": "Runbooks operativos para despliegue, aprovisionamiento, solución de problemas y operación continua."
   }
 }

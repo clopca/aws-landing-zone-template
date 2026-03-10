@@ -2,7 +2,7 @@
 sidebar_position: 6
 ---
 
-# Módulo de Servicios Compartidos {#shared-services-module}
+# Módulo de Servicios Compartidos
 
 El módulo de Servicios Compartidos crea una VPC centralizada para la infraestructura y los servicios compartidos accesibles para todas las cuentas de carga de trabajo (workload accounts) a través de Transit Gateway.
 

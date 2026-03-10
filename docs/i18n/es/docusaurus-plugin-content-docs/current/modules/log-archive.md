@@ -2,7 +2,7 @@
 sidebar_position: 5
 ---
 
-# Módulo de Archivo de Logs {#log-archive-module}
+# Módulo de Archivo de Logs
 
 El módulo de Archivo de Logs centraliza todos los logs de auditoría y cumplimiento de toda la AWS Organization en una cuenta dedicada con almacenamiento seguro y gestión de ciclo de vida.
 

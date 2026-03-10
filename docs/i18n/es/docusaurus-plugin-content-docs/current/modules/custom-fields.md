@@ -2,7 +2,7 @@
 sidebar_position: 9
 ---
 
-# Módulo de Custom Fields {#custom-fields-module}
+# Módulo de Custom Fields
 
 El módulo de Custom Fields lee metadatos de solicitudes de cuentas AFT desde SSM Parameter Store para uso en blueprints de personalización de cuentas.
 

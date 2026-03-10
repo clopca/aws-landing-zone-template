@@ -2,7 +2,7 @@
 sidebar_position: 15
 ---
 
-# Módulo de VPC {#vpc-module}
+# Módulo de VPC
 
 El módulo de VPC crea una VPC con arquitectura de subredes multi-nivel diseñada para despliegues de AWS Landing Zone.
 

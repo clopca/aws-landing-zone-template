@@ -2,7 +2,7 @@
 sidebar_position: 7
 ---
 
-# Módulo de Backup {#backup-module}
+# Módulo de Backup
 
 El módulo de Backup crea recursos de AWS Backup para la gestión centralizada de copias de seguridad en la Landing Zone.
 

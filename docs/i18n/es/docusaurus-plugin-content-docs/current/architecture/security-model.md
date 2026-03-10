@@ -2,7 +2,7 @@
 sidebar_position: 3
 ---
 
-# Modelo de Seguridad {#modelo-de-seguridad}
+# Modelo de Seguridad
 
 Este documento describe la arquitectura de seguridad y los controles implementados en la Landing Zone.
 
