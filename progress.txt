@@ -84,3 +84,11 @@ Next: Run `bd ready` to see available tasks (lz-cni is ready)
   - aws-samples/aws-security-reference-architecture-examples (security)
 
 ALL PHASES COMPLETE - Template ready for use
+
+[2026-03-10 16:04] Fix Spanish docs navigation (lz-pcm) - COMPLETADA
+- Fixed broken "Próximos Pasos" links in [docs/i18n/es/docusaurus-plugin-content-docs/current/architecture/control-tower.md] to point to valid Spanish AFT sections
+- Fixed the same broken "Next Steps" links in [docs/docs/architecture/control-tower.md] to keep English and Spanish docs aligned
+- Added stable anchors in [docs/docs/modules/aft.md] for `aft-setup`, `account-request`, and `account-specific-customizations`
+- Verified with `cd docs && npm run build`; generated Spanish output now links to `/es/docs/modules/aft#...`
+- `cd docs && npm run lint` still fails due pre-existing Biome issues in `docs/src/plugins/tailwind-config.js`, `docs/src/pages/index.tsx`, and `docs/src/css/custom.css`
+- Follow-up issue created: `lz-jh0` to clean up existing docs lint failures

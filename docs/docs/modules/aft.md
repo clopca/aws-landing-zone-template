@@ -101,7 +101,7 @@ terraform/aft/
 
 ## Usage
 
-### 1. AFT Setup
+### 1. AFT Setup {#aft-setup}
 
 Deploy AFT infrastructure in the AFT management account:
 
@@ -129,7 +129,7 @@ module "aft" {
 }
 ```
 
-### 2. Account Request
+### 2. Account Request {#account-request}
 
 Create a new account by adding to `account-requests/terraform/`:
 
@@ -199,7 +199,7 @@ resource "aws_s3_account_public_access_block" "block" {
 # etc.
 ```
 
-### 4. Account-Specific Customizations
+### 4. Account-Specific Customizations {#account-specific-customizations}
 
 For specific accounts:
 

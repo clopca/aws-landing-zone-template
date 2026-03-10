@@ -125,9 +125,9 @@ Collect these account IDs for AFT setup:
 
 Once Control Tower is deployed:
 
-1. [Create AFT Management Account](../runbooks/deployment#step-1-create-aft-account)
-2. [Deploy AFT](../runbooks/deployment#step-2-deploy-aft)
-3. [Configure Account Customizations](../modules/aft)
+1. [Deploy AFT infrastructure](../modules/aft#aft-setup)
+2. [Create an account request](../modules/aft#account-request)
+3. [Configure account-specific customizations](../modules/aft#account-specific-customizations)
 
 ## Troubleshooting
 
