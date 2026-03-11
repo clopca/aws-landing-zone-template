@@ -283,10 +283,8 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "vpc_flow_logs" {
 
   rule {
     apply_server_side_encryption_by_default {
-      kms_master_key_id = aws_kms_key.logs.arn
-      sse_algorithm     = "aws:kms"
+      sse_algorithm = "AES256"
     }
-    bucket_key_enabled = true
   }
 }
 
@@ -319,7 +317,7 @@ resource "aws_s3_bucket_policy" "vpc_flow_logs" {
     Version = "2012-10-17"
     Statement = [
       {
-        Sid    = "AllowVPCFlowLogs"
+        Sid    = "AWSLogDeliveryWrite"
         Effect = "Allow"
         Principal = {
           Service = "delivery.logs.amazonaws.com"
@@ -328,19 +326,24 @@ resource "aws_s3_bucket_policy" "vpc_flow_logs" {
         Resource = "${aws_s3_bucket.vpc_flow_logs.arn}/*"
         Condition = {
           StringEquals = {
-            "s3:x-amz-acl"      = "bucket-owner-full-control"
-            "aws:SourceAccount" = local.account_id
+            "s3:x-amz-acl"    = "bucket-owner-full-control"
+            "aws:SourceOrgID" = var.organization_id
           }
         }
       },
       {
-        Sid    = "AllowVPCFlowLogsAclCheck"
+        Sid    = "AWSLogDeliveryAclCheck"
         Effect = "Allow"
         Principal = {
           Service = "delivery.logs.amazonaws.com"
         }
         Action   = "s3:GetBucketAcl"
         Resource = aws_s3_bucket.vpc_flow_logs.arn
+        Condition = {
+          StringEquals = {
+            "aws:SourceOrgID" = var.organization_id
+          }
+        }
       },
       {
         Sid       = "DenyInsecureTransport"

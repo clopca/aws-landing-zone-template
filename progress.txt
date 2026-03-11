@@ -153,3 +153,9 @@ ALL PHASES COMPLETE - Template ready for use
 - Added the new architecture page to [docs/sidebars.ts] so it is part of the published navigation
 - Created follow-up issue `lz-0o5` to implement the documented profile contract and validation in code
 - Verified with `cd docs && pnpm build` and `cd docs && pnpm lint`
+
+[2026-03-11 10:15] Centralized VPC Flow Logs delivery (lz-9h8) - COMPLETADA
+- Fixed [terraform/log-archive/buckets.tf] so the centralized VPC Flow Logs bucket uses SSE-S3 and an organization-scoped `delivery.logs.amazonaws.com` bucket policy instead of the previous same-account-only `aws:SourceAccount` restriction
+- Removed the broken SSE-KMS dependency for cross-account flow-log delivery while keeping the dedicated KMS key for CloudTrail and Config in [terraform/log-archive/main.tf]
+- Updated [docs/docs/modules/log-archive.md] to document the centralized flow-log design, including why SSE-S3 is used for this bucket and how `aws:SourceOrgID` scopes the writer policy
+- Verified with `terraform fmt`, `./scripts/tf-validate.sh`, `cd docs && pnpm build`, and `cd docs && pnpm lint`

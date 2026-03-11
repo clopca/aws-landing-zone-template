@@ -10,13 +10,13 @@ The Log Archive module centralizes all audit and compliance logs from across the
 
 This module is deployed in the **Log Archive Account** and creates:
 
-- KMS key for log encryption with automatic rotation
+- KMS key for CloudTrail and Config encryption with automatic rotation
 - CloudTrail S3 bucket for organization-wide audit logs
 - AWS Config S3 bucket for configuration snapshots
-- VPC Flow Logs S3 bucket for network traffic logs
+- VPC Flow Logs S3 bucket for organization-scoped network traffic logs
 - Optional S3 access logging bucket
 - Lifecycle policies with Glacier transition for cost optimization
-- Bucket policies enforcing secure access and encryption
+- Bucket policies enforcing secure access and organization-scoped delivery
 
 ## Usage
 
@@ -88,7 +88,7 @@ flowchart TB
         subgraph S3Buckets["S3 Buckets"]
             CloudTrailBucket[CloudTrail Bucket<br/>Versioning enabled]
             ConfigBucket[Config Bucket<br/>Versioning enabled]
-            FlowLogsBucket[VPC Flow Logs Bucket<br/>Versioning enabled]
+            FlowLogsBucket[VPC Flow Logs Bucket<br/>SSE-S3 + versioning]
             AccessLogsBucket[Access Logs Bucket<br/>Optional]
         end
         
@@ -100,11 +100,10 @@ flowchart TB
     
     OrgTrail -->|Encrypted| KMS
     Config -->|Encrypted| KMS
-    VPCs -->|Encrypted| KMS
+    VPCs -->|Central delivery| FlowLogsBucket
     
     KMS -->|Encrypts| CloudTrailBucket
     KMS -->|Encrypts| ConfigBucket
-    KMS -->|Encrypts| FlowLogsBucket
     
     CloudTrailBucket -->|Access logs| AccessLogsBucket
     ConfigBucket -->|Access logs| AccessLogsBucket
@@ -126,11 +125,13 @@ flowchart TB
 
 ### Encryption at Rest
 
-All log buckets use KMS encryption with a dedicated key:
+CloudTrail and Config use KMS encryption with a dedicated key:
 
 - **Automatic key rotation** enabled for compliance
 - **Service-specific permissions** for CloudTrail, Config, and CloudWatch Logs
 - **Bucket key enabled** to reduce KMS API costs
+
+The VPC Flow Logs bucket uses **SSE-S3** instead of SSE-KMS so centralized cross-account delivery can scale without per-account KMS policy updates. AWS documents SSE-S3 as the simplest supported encryption strategy for centralized flow log buckets.
 
 ### Encryption in Transit
 
@@ -198,7 +199,15 @@ terraform/log-archive/
 - **Organization Module**: Requires `organization_id` from the Organization module
 - **Management Account**: Organization CloudTrail must be configured to use the CloudTrail bucket
 - **Security Account**: AWS Config aggregator should reference the Config bucket
-- **Network Account**: VPC Flow Logs should be configured to use the VPC Flow Logs bucket
+- **Network and workload accounts**: VPC Flow Logs should be configured to use the VPC Flow Logs bucket
+
+## Centralized VPC Flow Logs
+
+The VPC Flow Logs bucket is designed for centralized delivery from multiple accounts in the same AWS Organization.
+
+- The bucket policy trusts `delivery.logs.amazonaws.com`, not individual member-account principals.
+- The policy is scoped with `aws:SourceOrgID` so only accounts in the organization can write flow logs.
+- SSE-S3 is used for this bucket because AWS notes that centralized flow log delivery requires either SSE-S3 or a customer managed KMS key that you explicitly share with member accounts.
 
 ## Related
 
