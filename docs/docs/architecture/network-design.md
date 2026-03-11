@@ -6,6 +6,12 @@ sidebar_position: 4
 
 This document describes the network architecture using Transit Gateway hub-and-spoke topology.
 
+:::info Profile Selection First
+Do not treat this page as the only valid network topology. Use [Landing Zone Profiles](./landing-zone-profiles) to choose whether the customer needs decentralized ingress, centralized egress, centralized inspection, or a third-party Gateway Load Balancer design.
+:::
+
+The diagrams below show the most control-heavy target topology. The current repository implementation is closer to the baseline hub-and-spoke profile, with centralized ingress and inspection left as profile-driven extensions.
+
 ## Network Topology
 
 ```mermaid

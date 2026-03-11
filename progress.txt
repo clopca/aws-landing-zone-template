@@ -146,3 +146,10 @@ ALL PHASES COMPLETE - Template ready for use
   - `lz-3jt` backup immutability and org-wide backup policies
   - `lz-aw1` centralized inspection/egress strategy
 - Used official AWS guidance as the comparison baseline for the review
+
+[2026-03-11 10:02] Customer architecture questionnaire and landing zone profile matrix (lz-6jy) - COMPLETADA
+- Added [docs/docs/architecture/landing-zone-profiles.md] with a customer questionnaire, supported profile matrix, profile mapping rules, and a recommended future repo contract for profile-driven architecture selection
+- Updated [docs/docs/architecture/overview.md], [docs/docs/architecture/network-design.md], and [docs/docs/runbooks/deployment.md] so the docs stop implying a single mandatory network topology and instead require profile selection before deployment
+- Added the new architecture page to [docs/sidebars.ts] so it is part of the published navigation
+- Created follow-up issue `lz-0o5` to implement the documented profile contract and validation in code
+- Verified with `cd docs && pnpm build` and `cd docs && pnpm lint`

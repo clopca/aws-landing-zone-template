@@ -27,6 +27,7 @@ const sidebars: SidebarsConfig = {
         'architecture/overview',
         'architecture/control-tower',
         'architecture/multi-account',
+        'architecture/landing-zone-profiles',
         'architecture/security-model',
         'architecture/network-design',
         'architecture/iam-strategy',

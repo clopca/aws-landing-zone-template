@@ -27,7 +27,8 @@ This template assumes Control Tower is already deployed. We **extend** Control T
 2. **Extend, Don't Replace**: Add customizations on top of Control Tower baseline
 3. **AFT for Account Vending**: Use Account Factory for Terraform for automated provisioning
 4. **Terraform for Customizations**: Infrastructure beyond Control Tower's scope
-5. **GitOps Workflow**: All changes through version-controlled repositories
+5. **Profile-Driven Architecture**: Map customer requirements to a supported landing zone blueprint
+6. **GitOps Workflow**: All changes through version-controlled repositories
 
 ## Account Structure
 
@@ -119,6 +120,8 @@ flowchart LR
     Customizations --> Workloads
 ```
 
+Before the first infrastructure deployment, choose a supported landing zone profile for ingress, egress, and inspection behavior. See [Landing Zone Profiles](./landing-zone-profiles).
+
 ## Repository Structure
 
 ```
@@ -141,5 +144,6 @@ aws-landing-zone-template/
 
 - [Control Tower Setup](./control-tower) - Prerequisites and Control Tower deployment
 - [Multi-Account Strategy](./multi-account) - OU structure and account design
+- [Landing Zone Profiles](./landing-zone-profiles) - Customer questionnaire and supported architecture blueprints
 - [Security Model](./security-model) - Guardrails and security controls
 - [Network Design](./network-design) - Network topology and connectivity

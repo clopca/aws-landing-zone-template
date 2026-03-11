@@ -13,6 +13,7 @@ This runbook describes how to deploy and update the AWS Landing Zone infrastruct
 - [ ] Access to Management account
 - [ ] Backend S3 bucket and DynamoDB table exist
 - [ ] `terraform/backend/common.hcl` created from `terraform/backend/common.hcl.example`
+- [ ] Landing zone profile selected from [Landing Zone Profiles](../architecture/landing-zone-profiles)
 
 ## Deployment Order
 
@@ -45,6 +46,17 @@ graph LR
 | 7 | AFT Global Customizations | AFT-managed accounts | AFT Setup |
 | 8 | AFT Account Provisioning | AFT-managed accounts | AFT Setup |
 | 9 | AFT Account Customizations | AFT-managed accounts | AFT Setup, Network, Log Archive |
+
+## Select the Architecture Profile First
+
+Before deploying any shared stacks, answer the landing-zone questionnaire and choose one supported profile:
+
+- `baseline-spoke`
+- `central-egress`
+- `central-security-edge`
+- `third-party-inspection`
+
+This repo should treat profile selection as an architecture decision, not a late-stage toggle. The selected profile determines whether future networking work should keep workload-owned ingress, move egress to the network account, or introduce centralized inspection paths.
 
 ## Initial Deployment
 
