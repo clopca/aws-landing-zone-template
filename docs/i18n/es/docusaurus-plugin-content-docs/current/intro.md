@@ -1,5 +1,6 @@
 ---
 sidebar_position: 1
+slug: /
 description: Empiece aquí para entender AWS Landing Zone Template, sus componentes principales y la ruta de despliegue recomendada.
 ---
 

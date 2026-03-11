@@ -19,6 +19,10 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'Architecture',
+      link: {
+        type: 'generated-index',
+        slug: '/architecture',
+      },
       items: [
         'architecture/overview',
         'architecture/control-tower',
@@ -34,6 +38,10 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'Modules',
+      link: {
+        type: 'generated-index',
+        slug: '/modules',
+      },
       items: [
         'modules/organization',
         'modules/security-baseline',
@@ -55,6 +63,10 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'Runbooks',
+      link: {
+        type: 'generated-index',
+        slug: '/runbooks',
+      },
       items: [
         'runbooks/account-vending',
         'runbooks/deployment',

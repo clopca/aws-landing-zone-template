@@ -13,7 +13,7 @@
   },
   "link.item.label.Getting Started": {
     "message": "Primeros Pasos",
-    "description": "The label of footer link with label=Getting Started linking to /docs/intro"
+    "description": "The label of footer link with label=Getting Started linking to /docs"
   },
   "link.item.label.Architecture": {
     "message": "Arquitectura",
@@ -37,14 +37,14 @@
   },
   "link.item.label.GitHub": {
     "message": "GitHub",
-    "description": "The label of footer link with label=GitHub linking to https://github.com/your-org/aws-landing-zone-template"
+    "description": "The label of footer link with label=GitHub linking to https://github.com/clopca/aws-landing-zone-template"
   },
   "link.item.label.Issues": {
     "message": "Incidencias",
-    "description": "The label of footer link with label=Issues linking to https://github.com/your-org/aws-landing-zone-template/issues"
+    "description": "The label of footer link with label=Issues linking to https://github.com/clopca/aws-landing-zone-template/issues"
   },
   "copyright": {
-    "message": "Copyright © 2026 Your Organization. Desarrollado con Docusaurus.",
+    "message": "Copyright © 2026 clopca. Desarrollado con Docusaurus.",
     "description": "The footer copyright"
   }
 }

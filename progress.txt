@@ -102,3 +102,11 @@ ALL PHASES COMPLETE - Template ready for use
 - Fixed docs lint blockers by enabling Biome Tailwind CSS parsing in [biome.json] and removing trivial unused imports/params in docs source files
 - Verified with `cd docs && npm run build`; regenerated Spanish intro metadata now uses `/es/docs/intro` and valid descriptions
 - Verified with `cd docs && npm run lint`; lint now passes
+
+[2026-03-10 16:21] Fix docs root/category 404s in en/es (lz-7u5) - COMPLETADA
+- Added generated index routes for Architecture, Modules, and Runbooks in [docs/sidebars.ts]
+- Moved the intro docs landing page to `/docs` and `/es/docs` via `slug: /` in the English and Spanish intro docs
+- Added static compatibility redirects for legacy `/docs/intro` and `/es/docs/intro` URLs
+- Updated homepage/footer links to target docs roots instead of only `/docs/intro`
+- Verified with `cd docs && npm run build`, `cd docs && npm run lint`, and `curl` checks against `docusaurus serve`
+- Confirmed `200` responses for `/docs`, `/docs/intro`, `/docs/architecture`, `/docs/modules`, `/docs/runbooks`, `/es/docs`, `/es/docs/intro`, `/es/docs/architecture`, `/es/docs/modules`, and `/es/docs/runbooks`
