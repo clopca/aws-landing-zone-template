@@ -9,6 +9,3 @@ tgw_route_tables = ["shared", "production", "nonproduction"]
 
 enable_dns_firewall      = true
 private_hosted_zone_name = "aws.internal"
-
-enable_network_firewall = true
-vpc_flow_log_bucket_arn = "arn:aws:s3:::acme-vpc-flow-logs-123456789012"

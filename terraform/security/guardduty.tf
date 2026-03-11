@@ -27,14 +27,6 @@ resource "aws_guardduty_detector" "main" {
   }
 }
 
-resource "aws_guardduty_organization_admin_account" "main" {
-  count = var.enable_guardduty ? 1 : 0
-
-  admin_account_id = data.aws_caller_identity.current.account_id
-
-  depends_on = [aws_guardduty_detector.main]
-}
-
 resource "aws_guardduty_organization_configuration" "main" {
   count = var.enable_guardduty ? 1 : 0
 
@@ -59,5 +51,5 @@ resource "aws_guardduty_organization_configuration" "main" {
     }
   }
 
-  depends_on = [aws_guardduty_organization_admin_account.main]
+  depends_on = [aws_guardduty_detector.main]
 }

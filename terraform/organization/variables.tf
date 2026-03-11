@@ -16,8 +16,8 @@ variable "scp_allowed_regions" {
   default     = ["us-east-1", "us-west-2", "eu-west-1"]
 }
 
-variable "delegated_admin_account_id" {
-  description = "Account ID to delegate admin for security services (Audit account)"
+variable "security_admin_account_id" {
+  description = "Account ID for the delegated security administrator"
   type        = string
   default     = ""
 }

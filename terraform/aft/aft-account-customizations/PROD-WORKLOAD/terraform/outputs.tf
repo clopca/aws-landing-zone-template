@@ -10,5 +10,5 @@ output "private_subnet_ids" {
 
 output "tgw_attachment_id" {
   description = "Transit Gateway attachment ID"
-  value       = local.requires_tgw ? aws_ec2_transit_gateway_vpc_attachment.main[0].id : null
+  value       = local.requires_tgw ? module.tgw_attachment[0].attachment_id : null
 }

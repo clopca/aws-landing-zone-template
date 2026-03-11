@@ -36,7 +36,10 @@ module "iam" {
 
   # Cross-Account Roles
   create_cross_account_roles = true
-  trusted_account_ids        = ["123456789012", "234567890123"]
+  trusted_principal_arns     = [
+    "arn:aws:iam::123456789012:role/ci-deployer",
+    "arn:aws:iam::234567890123:role/security-audit"
+  ]
   require_mfa_for_cross_account = true
 
   cross_account_roles = {
@@ -71,7 +74,7 @@ module "iam" {
 
 ## Default Permission Sets
 
-When `create_default_permission_sets = true`, the following permission sets are created:
+When `create_default_permission_sets = true`, the following permission sets are created. These defaults are now opt-in:
 
 | Permission Set | Description | Session Duration |
 |----------------|-------------|------------------|
@@ -84,7 +87,7 @@ When `create_default_permission_sets = true`, the following permission sets are 
 
 ## Default Cross-Account Roles
 
-When `create_default_cross_account_roles = true`, the following roles are created:
+When `create_default_cross_account_roles = true`, the following roles are created. These defaults are now opt-in:
 
 | Role | Description |
 |------|-------------|
@@ -101,11 +104,12 @@ When `create_default_cross_account_roles = true`, the following roles are create
 | create_permission_sets | Whether to create permission sets | `bool` | `false` | no |
 | sso_instance_arn | ARN of IAM Identity Center instance | `string` | `""` | no |
 | permission_sets | Map of permission sets to create | `map(object)` | `{}` | no |
-| create_default_permission_sets | Create default permission sets | `bool` | `true` | no |
+| create_default_permission_sets | Create default permission sets | `bool` | `false` | no |
 | create_cross_account_roles | Whether to create cross-account roles | `bool` | `true` | no |
-| trusted_account_ids | Account IDs that can assume roles | `list(string)` | `[]` | no |
+| trusted_principal_arns | Explicit IAM principal ARNs that can assume cross-account roles | `list(string)` | `[]` | no |
+| trusted_account_ids | Deprecated compatibility input. Account IDs are expanded to root principals | `list(string)` | `[]` | no |
 | cross_account_roles | Map of cross-account roles to create | `map(object)` | `{}` | no |
-| create_default_cross_account_roles | Create default cross-account roles | `bool` | `true` | no |
+| create_default_cross_account_roles | Create default cross-account roles | `bool` | `false` | no |
 | require_mfa_for_cross_account | Require MFA for role assumption | `bool` | `true` | no |
 | enable_permission_boundary | Attach permission boundary to roles | `bool` | `false` | no |
 | permission_boundary_arn | ARN of permission boundary policy | `string` | `""` | no |
@@ -125,8 +129,9 @@ When `create_default_cross_account_roles = true`, the following roles are create
 
 ## Security Considerations
 
-1. **MFA Requirement**: Cross-account roles require MFA by default
-2. **Permission Boundaries**: Can be enforced on all roles
-3. **Break-Glass User**: Disabled by default, enable only for emergency access
-4. **Session Duration**: Default permission sets have appropriate session limits
-5. **Password Policy**: Enforces strong password requirements by default
+1. **Explicit Trust**: Prefer `trusted_principal_arns` over trusting whole account roots
+2. **MFA Requirement**: Cross-account roles require MFA by default
+3. **Permission Boundaries**: Can be enforced on all roles
+4. **Break-Glass User**: Disabled by default, enable only for emergency access
+5. **Session Duration**: Default permission sets have appropriate session limits
+6. **Password Policy**: Enforces strong password requirements by default

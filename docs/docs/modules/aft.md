@@ -221,11 +221,46 @@ module "vpc" {
   single_nat_gateway = false
 }
 
-# Transit Gateway attachment
-resource "aws_ec2_transit_gateway_vpc_attachment" "tgw" {
-  subnet_ids         = module.vpc.private_subnets
-  transit_gateway_id = data.aws_ssm_parameter.tgw_id.value
-  vpc_id             = module.vpc.vpc_id
+data "aws_ssm_parameter" "network_catalog" {
+  name = "/org/network/catalog"
+}
+
+data "aws_ssm_parameter" "log_archive_catalog" {
+  name = "/org/log-archive/catalog"
+}
+
+locals {
+  network_catalog     = jsondecode(data.aws_ssm_parameter.network_catalog.value)
+  log_archive_catalog = jsondecode(data.aws_ssm_parameter.log_archive_catalog.value)
+}
+
+module "vpc" {
+  source = "../../../../modules/vpc"
+
+  name                     = "prod-ecommerce"
+  cidr_block               = "10.10.0.0/16"
+  availability_zones       = ["us-east-1a", "us-east-1b", "us-east-1c"]
+  create_database_subnets  = false
+  create_transit_subnets   = true
+  enable_nat_gateway       = true
+  enable_flow_logs         = true
+  flow_log_destination_arn = local.log_archive_catalog.vpc_flow_logs_bucket_arn
+}
+
+module "tgw_attachment" {
+  source = "../../../../modules/tgw-attachment"
+
+  name                       = "prod-ecommerce"
+  subnet_ids                 = module.vpc.transit_subnet_ids
+  transit_gateway_id         = local.network_catalog.transit_gateway_id
+  vpc_id                     = module.vpc.vpc_id
+  association_route_table_id = local.network_catalog.route_table_ids.production
+  propagation_route_table_ids = [
+    local.network_catalog.route_table_ids.production,
+    local.network_catalog.route_table_ids.shared,
+  ]
+  spoke_route_table_ids = module.vpc.private_route_table_ids
+  destination_cidrs     = ["10.0.0.0/8"]
 }
 ```
 
@@ -327,30 +362,39 @@ Account-specific customizations allow you to provision resources unique to each 
 ```hcl
 # aft-account-customizations/PROD-WORKLOAD/terraform/main.tf
 
-# Production VPC with Transit Gateway attachment
+# Assumes `local.network_catalog` and `local.log_archive_catalog`
+# are decoded from /org/network/catalog and /org/log-archive/catalog.
 module "vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 5.0"
+  source = "../../../../modules/vpc"
 
-  name = "prod-workload"
-  cidr = "10.10.0.0/16"
+  name                     = "prod-workload"
+  cidr_block               = "10.10.0.0/16"
+  availability_zones       = ["us-east-1a", "us-east-1b", "us-east-1c"]
+  create_public_subnets    = false
+  create_database_subnets  = false
+  create_transit_subnets   = true
+  enable_nat_gateway       = false
+  enable_flow_logs         = true
+  flow_log_destination_arn = local.log_archive_catalog.vpc_flow_logs_bucket_arn
 
-  azs             = ["us-east-1a", "us-east-1b", "us-east-1c"]
-  private_subnets = ["10.10.1.0/24", "10.10.2.0/24", "10.10.3.0/24"]
-  
-  # No public subnets - egress via Transit Gateway
-  enable_nat_gateway = false
+  tags = var.account_tags
 }
 
 # TGW attachment
-resource "aws_ec2_transit_gateway_vpc_attachment" "main" {
-  subnet_ids         = module.vpc.private_subnets
-  transit_gateway_id = data.aws_ssm_parameter.tgw_id.value
-  vpc_id             = module.vpc.vpc_id
-  
-  tags = {
-    Name = "prod-workload-attachment"
-  }
+module "tgw_attachment" {
+  source = "../../../../modules/tgw-attachment"
+
+  name                       = "prod-workload"
+  subnet_ids                 = module.vpc.transit_subnet_ids
+  transit_gateway_id         = local.network_catalog.transit_gateway_id
+  vpc_id                     = module.vpc.vpc_id
+  association_route_table_id = local.network_catalog.route_table_ids.production
+  propagation_route_table_ids = [
+    local.network_catalog.route_table_ids.production,
+    local.network_catalog.route_table_ids.shared,
+  ]
+  spoke_route_table_ids = module.vpc.private_route_table_ids
+  destination_cidrs     = ["10.0.0.0/8"]
 }
 
 # Production-specific monitoring
@@ -374,18 +418,17 @@ resource "aws_cloudwatch_metric_alarm" "high_cpu" {
 
 # Sandbox with direct internet access (for experimentation)
 module "vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 5.0"
+  source = "../../../../modules/vpc"
 
-  name = "sandbox"
-  cidr = "10.100.0.0/16"
+  name                    = "sandbox"
+  cidr_block              = "10.100.0.0/16"
+  availability_zones      = ["us-east-1a", "us-east-1b"]
+  create_database_subnets = false
+  create_transit_subnets  = false
+  enable_nat_gateway      = true
+  single_nat_gateway      = true
 
-  azs             = ["us-east-1a", "us-east-1b"]
-  private_subnets = ["10.100.1.0/24", "10.100.2.0/24"]
-  public_subnets  = ["10.100.101.0/24", "10.100.102.0/24"]
-
-  enable_nat_gateway = true
-  single_nat_gateway = true  # Cost savings for sandbox
+  tags = var.account_tags
 }
 
 # Budget alert for sandbox

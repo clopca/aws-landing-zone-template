@@ -30,5 +30,5 @@ output "backup_vault_arn" {
 
 output "replication_bucket_id" {
   description = "S3 replication bucket ID"
-  value       = module.storage.replication_bucket_id
+  value       = module.storage_replica.bucket_id
 }

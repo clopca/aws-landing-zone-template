@@ -28,6 +28,16 @@ output "vpc_flow_logs_bucket_arn" {
   value       = aws_s3_bucket.vpc_flow_logs.arn
 }
 
+output "access_logs_bucket_name" {
+  description = "Access logs S3 bucket name"
+  value       = var.enable_s3_access_logging ? aws_s3_bucket.access_logs[0].id : null
+}
+
+output "access_logs_bucket_arn" {
+  description = "Access logs S3 bucket ARN"
+  value       = var.enable_s3_access_logging ? aws_s3_bucket.access_logs[0].arn : null
+}
+
 output "kms_key_arn" {
   description = "KMS key ARN for log encryption"
   value       = aws_kms_key.logs.arn

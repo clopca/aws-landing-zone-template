@@ -1,11 +1,16 @@
 output "vpc_id" {
   description = "Shared Services VPC ID"
-  value       = aws_vpc.main.id
+  value       = module.shared_services_vpc.vpc_id
 }
 
 output "private_subnet_ids" {
   description = "Private subnet IDs"
-  value       = aws_subnet.private[*].id
+  value       = module.shared_services_vpc.private_subnet_ids
+}
+
+output "transit_subnet_ids" {
+  description = "Transit subnet IDs"
+  value       = module.shared_services_vpc.transit_subnet_ids
 }
 
 output "ecr_repository_urls" {

@@ -40,5 +40,5 @@ output "private_route_table_ids" {
 
 output "transit_route_table_id" {
   description = "Transit route table ID"
-  value       = aws_route_table.transit.id
+  value       = try(aws_route_table.transit[0].id, null)
 }

@@ -55,12 +55,6 @@ variable "enable_access_analyzer" {
   default     = true
 }
 
-variable "log_archive_bucket_name" {
-  description = "S3 bucket name in log archive account for security findings"
-  type        = string
-  default     = ""
-}
-
 variable "security_notification_emails" {
   description = "Email addresses for security alerts"
   type        = list(string)

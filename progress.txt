@@ -110,3 +110,16 @@ ALL PHASES COMPLETE - Template ready for use
 - Updated homepage/footer links to target docs roots instead of only `/docs/intro`
 - Verified with `cd docs && npm run build`, `cd docs && npm run lint`, and `curl` checks against `docusaurus serve`
 - Confirmed `200` responses for `/docs`, `/docs/intro`, `/docs/architecture`, `/docs/modules`, `/docs/runbooks`, `/es/docs`, `/es/docs/intro`, `/es/docs/architecture`, `/es/docs/modules`, and `/es/docs/runbooks`
+
+[2026-03-11 07:54] Terraform landing zone hardening and scalability plan (lz-yqv) - COMPLETADA
+- Added `terraform/validation-manifest.txt` and rewrote [scripts/tf-validate.sh] to validate only supported Terraform roots and modules
+- Fixed broken AFT/pattern module source paths, removed runnable pattern-local account-request roots, and added README pointers to the canonical AFT account-request examples
+- Added JSON SSM catalogs for `network` and `log-archive`, created the reusable `terraform/modules/tgw-attachment` module, and refactored `network`, `shared-services`, and `aft-account-customizations/PROD-WORKLOAD` to consume the catalogs instead of raw TGW IDs
+- Refactored `network` and `shared-services` into thinner composition layers over shared modules and added `moved` blocks to preserve state addresses during migration
+- Moved delegated-admin registration into `terraform/organization`, removed security-account admin designation resources from `terraform/security`, and hardened reusable module interfaces (`vpc`, `storage`, `iam`)
+- Standardized Terraform version/provider ranges, partial backend configuration, and default tags across runnable roots plus AFT/pattern packages; added `terraform/backend/common.hcl.example`
+- Updated root/module/runbook docs to reflect the supported stack matrix, SSM catalogs, canonical AFT request examples, and the new deployment/migration workflow
+- Follow-up issues created:
+  - `lz-b1i` for remaining non-fatal Terraform warnings in `log-archive` and upstream AFT
+  - `lz-y9p` for remaining doc translation/reference refresh work
+- Verified with `./scripts/tf-validate.sh`, `cd docs && pnpm build`, and `cd docs && pnpm lint`

@@ -12,6 +12,7 @@ This runbook describes how to deploy and update the AWS Landing Zone infrastruct
 - [ ] AWS CLI v2 configured
 - [ ] Access to Management account
 - [ ] Backend S3 bucket and DynamoDB table exist
+- [ ] `terraform/backend/common.hcl` created from `terraform/backend/common.hcl.example`
 
 ## Deployment Order
 
@@ -22,27 +23,34 @@ Modules must be deployed in the correct order due to dependencies.
 ```mermaid
 graph LR
     A[1. Organization] --> B[2. Log Archive]
-    B --> C[3. Security]
-    B --> D[4. Network]
+    A --> C[3. Network]
+    A --> D[4. Security]
+    B --> C
     C --> E[5. Shared Services]
     D --> E
-    E --> F[6. AFT]
+    E --> F[6. AFT Setup]
+    F --> G[7. AFT Global Customizations]
+    G --> H[8. AFT Account Provisioning]
+    H --> I[9. AFT Account Customizations]
 ```
 
 | Order | Module | Account | Dependencies |
 |-------|--------|---------|--------------|
 | 1 | Organization | Management | None |
 | 2 | Log Archive | Log Archive | Organization |
-| 3 | Security | Security | Log Archive |
-| 4 | Network | Network Hub | Log Archive |
+| 3 | Network | Network Hub | Organization, Log Archive |
+| 4 | Security | Security | Organization |
 | 5 | Shared Services | Shared Services | Security, Network |
-| 6 | AFT | AFT | All above |
+| 6 | AFT Setup | AFT | Organization, Log Archive, Network, Security, Shared Services |
+| 7 | AFT Global Customizations | AFT-managed accounts | AFT Setup |
+| 8 | AFT Account Provisioning | AFT-managed accounts | AFT Setup |
+| 9 | AFT Account Customizations | AFT-managed accounts | AFT Setup, Network, Log Archive |
 
 ## Initial Deployment
 
 ### Step 1: Configure Backend
 
-Create the Terraform backend resources (run once):
+Create the Terraform backend resources (run once), then store the shared backend settings outside git:
 
 ```bash
 # Create S3 bucket for state
@@ -61,6 +69,9 @@ aws dynamodb create-table \
   --attribute-definitions AttributeName=LockID,AttributeType=S \
   --key-schema AttributeName=LockID,KeyType=HASH \
   --billing-mode PAY_PER_REQUEST
+
+# Create the local backend config file used by all roots
+cp terraform/backend/common.hcl.example terraform/backend/common.hcl
 ```
 
 ### Step 2: Deploy Organization Module
@@ -94,7 +105,7 @@ export AWS_PROFILE=log-archive
 cp terraform.tfvars.example terraform.tfvars
 vim terraform.tfvars
 
-terraform init
+terraform init -backend-config=../backend/common.hcl
 terraform plan -out=tfplan
 terraform apply tfplan
 ```
@@ -109,7 +120,7 @@ export AWS_PROFILE=security
 cp terraform.tfvars.example terraform.tfvars
 vim terraform.tfvars
 
-terraform init
+terraform init -backend-config=../backend/common.hcl
 terraform plan -out=tfplan
 terraform apply tfplan
 ```
@@ -124,7 +135,7 @@ export AWS_PROFILE=network
 cp terraform.tfvars.example terraform.tfvars
 vim terraform.tfvars
 
-terraform init
+terraform init -backend-config=../backend/common.hcl
 terraform plan -out=tfplan
 terraform apply tfplan
 ```
@@ -139,7 +150,7 @@ export AWS_PROFILE=shared-services
 cp terraform.tfvars.example terraform.tfvars
 vim terraform.tfvars
 
-terraform init
+terraform init -backend-config=../backend/common.hcl
 terraform plan -out=tfplan
 terraform apply tfplan
 ```
@@ -151,76 +162,28 @@ cd ../aft/aft-setup
 
 export AWS_PROFILE=aft
 
-terraform init
+terraform init -backend-config=../../backend/common.hcl
 terraform plan -out=tfplan
 terraform apply tfplan
 ```
 
+## Supported Roots and Validation
+
+Only the directories listed in `terraform/validation-manifest.txt` are treated as runnable Terraform packages. Pattern-local `aft-account-request` directories are examples only and should not be validated or applied as roots.
+
+Validate the full supported matrix with:
+
+```bash
+./scripts/tf-validate.sh
+```
+
 ## State Management
 
-### The Bootstrap Problem
+Each runnable root keeps its own backend key in configuration and reads shared backend settings from `terraform/backend/common.hcl`.
 
-When deploying a Landing Zone, you face a chicken-and-egg problem:
-- Terraform state should be stored in S3 with DynamoDB locking
-- But the S3 bucket and DynamoDB table don't exist yet
-- You need Terraform to create them, but Terraform needs state storage
+### State File Per Root
 
-### Solution: Two-Phase Deployment
-
-#### Phase 1: Local State Bootstrap
-
-Start with local state to create the state infrastructure:
-
-```hcl
-# terraform/organization/backend.tf (initial)
-terraform {
-  # Start with local backend
-  backend "local" {
-    path = "terraform.tfstate"
-  }
-}
-```
-
-Create state infrastructure:
-```bash
-cd terraform/organization
-terraform init
-terraform apply -target=aws_s3_bucket.terraform_state
-terraform apply -target=aws_dynamodb_table.terraform_locks
-```
-
-#### Phase 2: Migrate to S3 Backend
-
-Update backend configuration:
-```hcl
-# terraform/organization/backend.tf (final)
-terraform {
-  backend "s3" {
-    bucket         = "acme-terraform-state"
-    key            = "organization/terraform.tfstate"
-    region         = "us-east-1"
-    encrypt        = true
-    dynamodb_table = "terraform-locks"
-  }
-}
-```
-
-Migrate state:
-```bash
-terraform init -migrate-state
-```
-
-Terraform will prompt:
-```
-Do you want to copy existing state to the new backend?
-  Enter "yes" to copy and "no" to start with an empty state.
-```
-
-Enter `yes` to migrate.
-
-### State File Per Account
-
-Each account module has its own state file:
+Each root has its own state file:
 
 | Module | State Key |
 |--------|-----------|
@@ -229,7 +192,16 @@ Each account module has its own state file:
 | security | `security/terraform.tfstate` |
 | network | `network/terraform.tfstate` |
 | shared-services | `shared-services/terraform.tfstate` |
-| aft | `aft/terraform.tfstate` |
+| aft-setup | `aft/terraform.tfstate` |
+| control-tower | `control-tower/terraform.tfstate` |
+
+### Root Refactors and No-Destroy Plans
+
+The `network` and `shared-services` stacks use `moved` blocks to preserve resource addresses during the refactor to shared modules. Before applying those stacks in an existing environment:
+
+1. Run `terraform plan`
+2. Confirm the plan shows zero destroys
+3. Investigate any destroy actions before proceeding
 
 ### State Locking
 
@@ -479,3 +451,8 @@ aws ec2 describe-transit-gateways
 - [Troubleshooting Runbook](./troubleshooting)
 - [Account Vending Runbook](./account-vending)
 - [Architecture Overview](../architecture/overview)
+Use the shared backend config for every runnable root:
+
+```bash
+terraform init -backend-config=../backend/common.hcl
+```

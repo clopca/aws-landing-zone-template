@@ -6,6 +6,7 @@ Creates a VPC with multi-tier subnet architecture designed for AWS Landing Zone 
 
 - **Multi-AZ Deployment**: Subnets across multiple availability zones
 - **Tiered Subnets**: Public, private, database, and transit subnets
+- **Selective Subnet Tiers**: Disable public, database, or transit tiers when a stack does not need them
 - **NAT Gateway**: Optional NAT gateway (single or per-AZ)
 - **VPC Flow Logs**: Optional flow logging to S3 or CloudWatch
 - **Secure Defaults**: Default security group with no rules
@@ -48,8 +49,10 @@ module "vpc" {
   cidr_block         = "10.0.0.0/16"
   availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
 
-  enable_nat_gateway = true
-  single_nat_gateway = false  # One NAT per AZ for HA
+  create_database_subnets = false
+  create_transit_subnets  = true
+  enable_nat_gateway      = true
+  single_nat_gateway      = false  # One NAT per AZ for HA
 
   enable_flow_logs         = true
   flow_log_destination_arn = "arn:aws:s3:::my-flow-logs-bucket"
@@ -81,10 +84,13 @@ Given a `/16` VPC CIDR, subnets are allocated as follows:
 | availability_zones | List of AZs | `list(string)` | n/a | yes |
 | enable_dns_support | Enable DNS support | `bool` | `true` | no |
 | enable_dns_hostnames | Enable DNS hostnames | `bool` | `true` | no |
+| create_public_subnets | Create public subnets and routing | `bool` | `true` | no |
+| create_database_subnets | Create database subnets and subnet group | `bool` | `true` | no |
+| create_transit_subnets | Create transit attachment subnets and route table | `bool` | `true` | no |
 | enable_nat_gateway | Create NAT gateways | `bool` | `true` | no |
 | single_nat_gateway | Use single NAT gateway | `bool` | `false` | no |
 | enable_flow_logs | Enable VPC flow logs | `bool` | `true` | no |
-| flow_log_destination_arn | Flow logs destination ARN | `string` | `""` | no |
+| flow_log_destination_arn | Flow logs destination ARN. Required when flow logs are enabled | `string` | `""` | no |
 | tags | Tags for resources | `map(string)` | `{}` | no |
 
 ## Outputs
@@ -107,3 +113,4 @@ Given a `/16` VPC CIDR, subnets are allocated as follows:
 2. **Private Subnets**: No direct internet access
 3. **Database Isolation**: Separate subnets for databases
 4. **Transit Subnets**: Dedicated subnets for Transit Gateway attachments
+5. **Validation Guardrails**: NAT requires public subnets and flow logs require an explicit destination ARN

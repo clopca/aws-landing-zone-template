@@ -14,8 +14,6 @@ security_hub_standards = [
 enable_config_aggregator = true
 enable_access_analyzer   = true
 
-log_archive_bucket_name = "acme-log-archive-security-findings"
-
 security_notification_emails = [
   "security-team@example.com",
 ]

@@ -38,10 +38,11 @@ git clone https://git-codecommit.us-east-1.amazonaws.com/v1/repos/aft-account-re
 cd aft-account-request
 ```
 
-2. Create a new Terraform file:
+2. Start from the canonical example in this repository:
 
 ```bash
-touch terraform/prod-ecommerce.tf
+cp /path/to/aws-landing-zone-template/terraform/aft/account-requests/account-request.tf.example \
+   terraform/prod-ecommerce.tf
 ```
 
 3. Add the account request configuration:
@@ -92,38 +93,55 @@ mkdir -p ../aft-account-customizations/PROD-ECOMMERCE/terraform
 
 ```hcl
 # aft-account-customizations/PROD-ECOMMERCE/terraform/main.tf
+data "aws_ssm_parameter" "network_catalog" {
+  name = "/org/network/catalog"
+}
 
-# Create workload VPC
+data "aws_ssm_parameter" "log_archive_catalog" {
+  name = "/org/log-archive/catalog"
+}
+
+locals {
+  network_catalog     = jsondecode(data.aws_ssm_parameter.network_catalog.value)
+  log_archive_catalog = jsondecode(data.aws_ssm_parameter.log_archive_catalog.value)
+}
+
 module "vpc" {
-  source = "terraform-aws-modules/vpc/aws"
-  version = "5.0.0"
+  source = "../../../../modules/vpc"
 
-  name = "prod-ecommerce"
-  cidr = local.custom_fields.vpc_cidr
-
-  azs             = ["us-east-1a", "us-east-1b", "us-east-1c"]
-  private_subnets = [for i in range(3) : cidrsubnet(local.custom_fields.vpc_cidr, 4, i)]
-  public_subnets  = [for i in range(3) : cidrsubnet(local.custom_fields.vpc_cidr, 4, i + 8)]
-
-  enable_nat_gateway = true
-  single_nat_gateway = false
+  name                     = "prod-ecommerce"
+  cidr_block               = local.custom_fields.vpc_cidr
+  availability_zones       = ["us-east-1a", "us-east-1b", "us-east-1c"]
+  create_transit_subnets   = true
+  create_database_subnets  = false
+  enable_nat_gateway       = true
+  single_nat_gateway       = false
+  enable_flow_logs         = true
+  flow_log_destination_arn = local.log_archive_catalog.vpc_flow_logs_bucket_arn
 
   tags = local.tags
 }
 
-# Attach to Transit Gateway
-resource "aws_ec2_transit_gateway_vpc_attachment" "main" {
-  count = local.custom_fields.requires_tgw == "true" ? 1 : 0
+module "tgw_attachment" {
+  count  = local.custom_fields.requires_tgw == "true" ? 1 : 0
+  source = "../../../../modules/tgw-attachment"
 
-  subnet_ids         = module.vpc.private_subnets
-  transit_gateway_id = data.aws_ssm_parameter.tgw_id.value
-  vpc_id             = module.vpc.vpc_id
-
-  tags = merge(local.tags, {
-    Name = "prod-ecommerce-tgw-attachment"
-  })
+  name                       = "prod-ecommerce"
+  transit_gateway_id         = local.network_catalog.transit_gateway_id
+  vpc_id                     = module.vpc.vpc_id
+  subnet_ids                 = module.vpc.transit_subnet_ids
+  association_route_table_id = local.network_catalog.route_table_ids.production
+  propagation_route_table_ids = [
+    local.network_catalog.route_table_ids.production,
+    local.network_catalog.route_table_ids.shared,
+  ]
+  spoke_route_table_ids = module.vpc.private_route_table_ids
+  destination_cidrs     = ["10.0.0.0/8"]
+  tags                  = local.tags
 }
 ```
+
+Pattern directories in this repository only provide runnable customization examples. Account-request examples are centralized under `terraform/aft/account-requests/`.
 
 ### Step 4: Submit Pull Request
 

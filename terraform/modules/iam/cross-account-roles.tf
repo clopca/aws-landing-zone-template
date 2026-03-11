@@ -13,7 +13,7 @@ data "aws_iam_policy_document" "cross_account_trust" {
 
     principals {
       type        = "AWS"
-      identifiers = [for account_id in var.trusted_account_ids : "arn:aws:iam::${account_id}:root"]
+      identifiers = local.trusted_principals
     }
 
     # Optional: Add condition for MFA
@@ -104,7 +104,7 @@ data "aws_iam_policy_document" "default_cross_account_trust" {
 
     principals {
       type        = "AWS"
-      identifiers = [for account_id in var.trusted_account_ids : "arn:aws:iam::${account_id}:root"]
+      identifiers = local.trusted_principals
     }
 
     dynamic "condition" {
@@ -119,7 +119,7 @@ data "aws_iam_policy_document" "default_cross_account_trust" {
 }
 
 resource "aws_iam_role" "default_cross_account" {
-  for_each = var.create_cross_account_roles && var.create_default_cross_account_roles && length(var.trusted_account_ids) > 0 ? local.default_cross_account_roles : {}
+  for_each = var.create_cross_account_roles && var.create_default_cross_account_roles && length(local.trusted_principals) > 0 ? local.default_cross_account_roles : {}
 
   name                 = each.key
   description          = each.value.description
@@ -134,7 +134,7 @@ resource "aws_iam_role" "default_cross_account" {
 }
 
 resource "aws_iam_role_policy_attachment" "default_cross_account_managed" {
-  for_each = var.create_cross_account_roles && var.create_default_cross_account_roles && length(var.trusted_account_ids) > 0 ? {
+  for_each = var.create_cross_account_roles && var.create_default_cross_account_roles && length(local.trusted_principals) > 0 ? {
     for item in flatten([
       for role_key, role_value in local.default_cross_account_roles : [
         for policy in role_value.managed_policies : {

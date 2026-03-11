@@ -86,6 +86,26 @@ resource "aws_route53_resolver_rule" "forward" {
   tags = var.tags
 }
 
+resource "aws_route53_resolver_rule" "internal_forward" {
+  count = var.create_inbound_endpoint && var.create_outbound_endpoint && var.create_internal_forward_rule ? 1 : 0
+
+  domain_name          = var.internal_forward_rule_domain_name != "" ? var.internal_forward_rule_domain_name : var.private_zone_name
+  name                 = "${var.name_prefix}-forward-internal"
+  rule_type            = "FORWARD"
+  resolver_endpoint_id = aws_route53_resolver_endpoint.outbound[0].id
+
+  dynamic "target_ip" {
+    for_each = aws_route53_resolver_endpoint.inbound[0].ip_address
+    content {
+      ip = target_ip.value.ip
+    }
+  }
+
+  tags = merge(var.tags, {
+    Name = "${var.name_prefix}-forward-internal"
+  })
+}
+
 resource "aws_ram_resource_share" "resolver_rules" {
   count = var.create_outbound_endpoint && var.share_rules_with_organization ? 1 : 0
 
@@ -99,6 +119,13 @@ resource "aws_ram_resource_association" "resolver_rules" {
   for_each = var.create_outbound_endpoint && var.share_rules_with_organization ? var.forward_rules : {}
 
   resource_arn       = aws_route53_resolver_rule.forward[each.key].arn
+  resource_share_arn = aws_ram_resource_share.resolver_rules[0].arn
+}
+
+resource "aws_ram_resource_association" "internal_forward" {
+  count = var.create_outbound_endpoint && var.share_rules_with_organization && var.create_internal_forward_rule ? 1 : 0
+
+  resource_arn       = aws_route53_resolver_rule.internal_forward[0].arn
   resource_share_arn = aws_ram_resource_share.resolver_rules[0].arn
 }
 

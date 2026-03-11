@@ -184,6 +184,15 @@ aws ec2 describe-route-tables \
   --filters "Name=vpc-id,Values=<vpc-id>"
 ```
 
+4. Check the published network catalog:
+
+```bash
+aws ssm get-parameter \
+  --name /org/network/catalog \
+  --query 'Parameter.Value' \
+  --output text | jq .
+```
+
 **Common Issues:**
 
 | Issue | Symptoms | Fix |
@@ -192,6 +201,7 @@ aws ec2 describe-route-tables \
 | Wrong route table | Asymmetric routing | Fix TGW RT association |
 | Security group | Connection timeout | Allow traffic in SG |
 | NACL | Connection refused | Check NACL rules |
+| Missing SSM catalog | Customizations cannot discover TGW or route tables | Re-apply `terraform/network` |
 
 ### DNS Resolution Failing
 

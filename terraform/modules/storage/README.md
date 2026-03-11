@@ -11,7 +11,7 @@ This module creates secure S3 buckets with AWS best practices for Landing Zone d
 - **Lifecycle Rules**: Configurable object lifecycle management
 - **Cross-Region Replication**: Optional replication for DR
 - **Object Lock**: Optional WORM compliance support
-- **Secure Transport**: Enforces HTTPS-only access
+- **Secure Transport**: HTTPS-only access is always enforced and cannot be replaced by caller policy JSON
 
 ## Usage
 
@@ -24,6 +24,10 @@ module "storage" {
   enable_versioning  = true
   enable_encryption  = true
   enable_logging     = true
+  additional_bucket_policy_json = jsonencode({
+    Version = "2012-10-17"
+    Statement = []
+  })
 
   lifecycle_rules = [
     {
@@ -88,7 +92,9 @@ module "storage" {
 | enable_public_access_block | Block all public access | `bool` | `true` | no |
 | lifecycle_rules | List of lifecycle rules | `list(object)` | `[]` | no |
 | enable_replication | Enable cross-region replication | `bool` | `false` | no |
-| enable_object_lock | Enable object lock (WORM) | `bool` | `false` | no |
+| enable_object_lock | Enable object lock at bucket creation time (requires versioning) | `bool` | `false` | no |
+| additional_bucket_policy_json | Extra bucket policy JSON merged into the mandatory baseline policy | `string` | `null` | no |
+| bucket_policy | Deprecated compatibility alias for `additional_bucket_policy_json` | `string` | `null` | no |
 | force_destroy | Allow destroying non-empty bucket | `bool` | `false` | no |
 | tags | Tags to apply to resources | `map(string)` | `{}` | no |
 
@@ -109,4 +115,4 @@ module "storage" {
 2. **Public Access Blocked**: All public access settings blocked by default
 3. **Encryption**: Server-side encryption enabled by default
 4. **Versioning**: Protects against accidental deletion
-5. **Object Lock**: Optional WORM compliance for regulatory requirements
+5. **Object Lock**: Greenfield-only WORM compliance for regulatory requirements

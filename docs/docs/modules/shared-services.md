@@ -2,26 +2,27 @@
 sidebar_position: 6
 ---
 
-# Shared Services Module
+# Shared Services Stack
 
 The Shared Services module creates a centralized VPC for shared infrastructure and services accessible to all workload accounts via Transit Gateway.
 
 ## Overview
 
-This module is deployed in the **Shared Services Account** and creates:
+This stack is deployed in the **Shared Services Account** and creates:
 
 - VPC with DNS support enabled
 - Private subnets across multiple availability zones
 - Transit subnets for Transit Gateway attachment
 - Route tables with Transit Gateway routing
-- Transit Gateway VPC attachment
+- Transit Gateway VPC attachment via the shared `tgw-attachment` module
 - ECR repositories with image scanning and lifecycle policies
+- Automatic consumption of `/org/network/catalog` and `/org/log-archive/catalog`
 
 ## Usage
 
 ```hcl
 module "shared_services" {
-  source = "../modules/shared-services"
+  source = "../shared-services"
 
   organization_name = "acme-corp"
   vpc_cidr          = "10.1.0.0/16"
@@ -32,8 +33,7 @@ module "shared_services" {
     "us-east-1c"
   ]
 
-  transit_gateway_id  = "tgw-0123456789abcdef0"
-  tgw_route_table_id  = "tgw-rtb-0123456789abcdef0"
+  organization_cidrs = ["10.0.0.0/8"]
 
   enable_ecr = true
   ecr_repositories = [
@@ -51,8 +51,7 @@ module "shared_services" {
 | `organization_name` | Organization name prefix for resource naming | `string` | Yes |
 | `vpc_cidr` | CIDR block for shared services VPC | `string` | No (default: `10.1.0.0/16`) |
 | `availability_zones` | List of availability zones to use | `list(string)` | No (default: `["us-east-1a", "us-east-1b", "us-east-1c"]`) |
-| `transit_gateway_id` | Transit Gateway ID to attach VPC to | `string` | Yes |
-| `tgw_route_table_id` | Transit Gateway route table ID for association | `string` | Yes |
+| `organization_cidrs` | CIDRs that should be routed from the shared-services VPC through the TGW | `list(string)` | No |
 | `enable_ecr` | Whether to create ECR repositories | `bool` | No (default: `true`) |
 | `ecr_repositories` | List of ECR repository names to create | `list(string)` | No (default: `[]`) |
 | `aws_region` | AWS region for deployment | `string` | No (default: `us-east-1`) |
@@ -146,7 +145,7 @@ The Shared Services VPC is configured with:
 
 ### Transit Gateway Integration
 
-The module creates a Transit Gateway VPC attachment using the transit subnets and associates it with the specified Transit Gateway route table. This enables:
+The stack creates a Transit Gateway VPC attachment from the shared network catalog and routes only the configured organization CIDRs to the TGW. This enables:
 
 - Hub-and-spoke connectivity to all workload accounts
 - Centralized access to shared services
@@ -214,9 +213,9 @@ terraform/shared-services/
 
 ## Dependencies
 
-- **Network Module**: Must be deployed first to create Transit Gateway
-- **Transit Gateway ID**: Required from Network module output
-- **Transit Gateway Route Table**: Required from Network module output
+- **Network Stack**: Must be deployed first to publish `/org/network/catalog`
+- **Log Archive Stack**: Must be deployed first to publish `/org/log-archive/catalog`
+- **Transit Gateway Catalog**: The stack no longer takes raw TGW IDs as inputs
 
 ## Related
 

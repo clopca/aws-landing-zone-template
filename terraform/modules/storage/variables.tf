@@ -113,6 +113,10 @@ variable "enable_object_lock" {
   description = "Enable object lock for the S3 bucket (requires versioning)"
   type        = bool
   default     = false
+  validation {
+    condition     = var.enable_object_lock ? var.enable_versioning : true
+    error_message = "enable_versioning must be true when enable_object_lock is enabled."
+  }
 }
 
 variable "object_lock_mode" {
@@ -132,7 +136,13 @@ variable "object_lock_days" {
 }
 
 variable "bucket_policy" {
-  description = "Custom bucket policy JSON. If not provided, a default secure policy will be applied"
+  description = "Deprecated: additional bucket policy JSON to merge with the baseline secure transport policy"
+  type        = string
+  default     = null
+}
+
+variable "additional_bucket_policy_json" {
+  description = "Additional bucket policy JSON to merge with the baseline secure transport policy"
   type        = string
   default     = null
 }

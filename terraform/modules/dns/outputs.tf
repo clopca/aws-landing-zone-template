@@ -45,17 +45,28 @@ output "resolver_security_group_id" {
 
 output "resolver_rule_ids" {
   description = "Map of resolver rule names to IDs"
-  value       = { for k, v in aws_route53_resolver_rule.forward : k => v.id }
+  value = merge(
+    { for k, v in aws_route53_resolver_rule.forward : k => v.id },
+    try({ internal = aws_route53_resolver_rule.internal_forward[0].id }, {})
+  )
 }
 
 output "resolver_rule_arns" {
   description = "Map of resolver rule names to ARNs"
-  value       = { for k, v in aws_route53_resolver_rule.forward : k => v.arn }
+  value = merge(
+    { for k, v in aws_route53_resolver_rule.forward : k => v.arn },
+    try({ internal = aws_route53_resolver_rule.internal_forward[0].arn }, {})
+  )
 }
 
 output "dns_ram_share_id" {
   description = "ID of the DNS RAM resource share"
   value       = try(aws_ram_resource_share.dns[0].id, null)
+}
+
+output "dns_ram_share_arn" {
+  description = "ARN of the DNS RAM resource share"
+  value       = try(aws_ram_resource_share.dns[0].arn, null)
 }
 
 output "resolver_rules_ram_share_id" {

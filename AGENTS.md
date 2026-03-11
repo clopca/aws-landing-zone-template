@@ -1,6 +1,15 @@
 # Agent Instructions
 
-This project uses **bd** (Beads) for issue tracking. Run `bd onboard` to get started.
+This project uses **bd** (Beads) for issue tracking.
+
+## Issue Tracking with bd (Beads)
+
+Use `bd` for all task tracking in this repository. Do not create markdown TODO lists or duplicate tracking systems.
+
+- Always prefer `bd ... --json` when scripting
+- Link discovered follow-up work with `discovered-from:<issue-id>`
+- Commit `.beads/issues.jsonl` with related code changes
+- Keep ephemeral planning artifacts under `history/` instead of the repo root
 
 ## Quick Reference
 

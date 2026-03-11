@@ -25,4 +25,4 @@ organizational_units = {
 scp_allowed_regions = ["us-east-1", "us-west-2", "eu-west-1"]
 
 enable_iam_identity_center = true
-delegated_admin_account_id = ""
+security_admin_account_id = ""

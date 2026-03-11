@@ -1,87 +1,49 @@
-data "aws_caller_identity" "current" {}
+data "aws_ssm_parameter" "network_catalog" {
+  name = "/org/network/catalog"
+}
+
+data "aws_ssm_parameter" "log_archive_catalog" {
+  name = "/org/log-archive/catalog"
+}
 
 locals {
-  account_id = data.aws_caller_identity.current.account_id
-  az_count   = length(var.availability_zones)
+  network_catalog     = jsondecode(data.aws_ssm_parameter.network_catalog.value)
+  log_archive_catalog = jsondecode(data.aws_ssm_parameter.log_archive_catalog.value)
 }
 
-resource "aws_vpc" "main" {
-  cidr_block           = var.vpc_cidr
-  enable_dns_support   = true
-  enable_dns_hostnames = true
+module "shared_services_vpc" {
+  source = "../modules/vpc"
+
+  name                     = "${var.organization_name}-shared-services"
+  cidr_block               = var.vpc_cidr
+  availability_zones       = var.availability_zones
+  create_database_subnets  = false
+  create_transit_subnets   = true
+  enable_nat_gateway       = true
+  single_nat_gateway       = false
+  enable_flow_logs         = true
+  flow_log_destination_arn = local.log_archive_catalog.vpc_flow_logs_bucket_arn
 
   tags = {
-    Name = "${var.organization_name}-shared-services"
+    Component = "shared-services"
   }
 }
 
-resource "aws_subnet" "private" {
-  count = local.az_count
+module "shared_services_attachment" {
+  source = "../modules/tgw-attachment"
 
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = cidrsubnet(var.vpc_cidr, 4, count.index)
-  availability_zone = var.availability_zones[count.index]
-
-  tags = {
-    Name = "${var.organization_name}-shared-private-${var.availability_zones[count.index]}"
-  }
-}
-
-resource "aws_subnet" "transit" {
-  count = local.az_count
-
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = cidrsubnet(var.vpc_cidr, 4, count.index + 4)
-  availability_zone = var.availability_zones[count.index]
+  name                        = "${var.organization_name}-shared-services-attachment"
+  transit_gateway_id          = local.network_catalog.transit_gateway_id
+  vpc_id                      = module.shared_services_vpc.vpc_id
+  subnet_ids                  = module.shared_services_vpc.transit_subnet_ids
+  association_route_table_id  = local.network_catalog.route_table_ids.shared
+  propagation_route_table_ids = [local.network_catalog.route_table_ids.shared]
+  spoke_route_table_ids       = module.shared_services_vpc.private_route_table_ids
+  destination_cidrs           = var.organization_cidrs
 
   tags = {
-    Name = "${var.organization_name}-shared-transit-${var.availability_zones[count.index]}"
+    Component = "shared-services"
   }
-}
-
-resource "aws_route_table" "private" {
-  vpc_id = aws_vpc.main.id
-
-  tags = {
-    Name = "${var.organization_name}-shared-private-rt"
-  }
-}
-
-resource "aws_route" "private_tgw" {
-  route_table_id         = aws_route_table.private.id
-  destination_cidr_block = "0.0.0.0/0"
-  transit_gateway_id     = var.transit_gateway_id
-}
-
-resource "aws_route_table_association" "private" {
-  count = local.az_count
-
-  subnet_id      = aws_subnet.private[count.index].id
-  route_table_id = aws_route_table.private.id
-}
-
-resource "aws_route_table_association" "transit" {
-  count = local.az_count
-
-  subnet_id      = aws_subnet.transit[count.index].id
-  route_table_id = aws_route_table.private.id
-}
-
-resource "aws_ec2_transit_gateway_vpc_attachment" "main" {
-  subnet_ids                                      = aws_subnet.transit[*].id
-  transit_gateway_id                              = var.transit_gateway_id
-  vpc_id                                          = aws_vpc.main.id
-  transit_gateway_default_route_table_association = false
-  transit_gateway_default_route_table_propagation = false
-
-  tags = {
-    Name = "${var.organization_name}-shared-services-attachment"
-  }
-}
-
-resource "aws_ec2_transit_gateway_route_table_association" "main" {
-  transit_gateway_attachment_id  = aws_ec2_transit_gateway_vpc_attachment.main.id
-  transit_gateway_route_table_id = var.tgw_route_table_id
 }
 
 resource "aws_ecr_repository" "main" {
@@ -99,7 +61,8 @@ resource "aws_ecr_repository" "main" {
   }
 
   tags = {
-    Name = each.value
+    Name      = each.value
+    Component = "shared-services"
   }
 }
 

@@ -2,12 +2,12 @@
 # Generated from Jinja2 template
 
 terraform {
-  required_version = ">= 1.0"
+  required_version = ">= 1.5.0, < 2.0.0"
   
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.0"
+      version = ">= 5.0, < 6.0"
     }
   }
 }
@@ -25,9 +25,10 @@ provider "aws" {
 
   default_tags {
     tags = {
-      ManagedBy   = "Terraform"
+      Project     = "aws-landing-zone"
       Environment = "{{ environment | default('production') }}"
-      AccountId   = "{{ account_id }}"
+      ManagedBy   = "terraform"
+      Component   = "{{ component | default('infrastructure') }}"
     }
   }
 }
@@ -48,9 +49,10 @@ provider "aws" {
 
   default_tags {
     tags = {
-      ManagedBy   = "Terraform"
+      Project     = "aws-landing-zone"
       Environment = "{{ environment | default('production') }}"
-      AccountId   = "{{ account_id }}"
+      ManagedBy   = "terraform"
+      Component   = "{{ component | default('infrastructure') }}"
     }
   }
 }
@@ -72,9 +74,10 @@ provider "aws" {
 
   default_tags {
     tags = {
-      ManagedBy   = "Terraform"
+      Project     = "aws-landing-zone"
       Environment = "{{ environment | default('production') }}"
-      AccountId   = "{{ account_id }}"
+      ManagedBy   = "terraform"
+      Component   = "{{ component | default('infrastructure') }}"
     }
   }
 }
@@ -94,8 +97,10 @@ provider "aws" {
 
   default_tags {
     tags = {
-      ManagedBy   = "Terraform"
+      Project     = "aws-landing-zone"
       Environment = "{{ environment | default('production') }}"
+      ManagedBy   = "terraform"
+      Component   = "{{ component | default(cross_account.alias) }}"
       {% if cross_account.account_name is defined %}
       AccountName = "{{ cross_account.account_name }}"
       {% endif %}

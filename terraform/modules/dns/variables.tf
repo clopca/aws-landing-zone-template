@@ -86,6 +86,18 @@ variable "forward_rules" {
   default = {}
 }
 
+variable "create_internal_forward_rule" {
+  description = "Whether to create an internal forwarding rule that targets the inbound resolver endpoint"
+  type        = bool
+  default     = false
+}
+
+variable "internal_forward_rule_domain_name" {
+  description = "Domain name for the internal forwarding rule. Defaults to the private hosted zone name when omitted."
+  type        = string
+  default     = ""
+}
+
 variable "share_rules_with_organization" {
   description = "Whether to share resolver rules with the organization via RAM"
   type        = bool

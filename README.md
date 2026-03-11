@@ -55,14 +55,28 @@ aws-landing-zone-template/
 └── .opencode/             # OpenCode configuration
 ```
 
+## Supported Terraform Roots
+
+The runnable Terraform packages are explicitly tracked in `terraform/validation-manifest.txt`. CI and local validation should only treat those directories as Terraform roots.
+
+- Top-level roots: `control-tower`, `organization`, `network`, `security`, `log-archive`, `shared-services`
+- AFT roots: `aft/aft-setup`, `aft/aft-global-customizations/terraform`, `aft/aft-account-provisioning/terraform`, `aft/aft-account-customizations/PROD-WORKLOAD/terraform`
+- Pattern packages: the runnable account/global customization packages under `terraform/patterns/...`
+- Reusable modules: the directories listed under `terraform/modules/`
+
+Pattern-local `aft-account-request/terraform/` directories are documentation pointers only. Canonical account-request examples live under `terraform/aft/account-requests/`.
+
 ## Deployment Order
 
 1. **Organization** (Management Account)
 2. **Log Archive** (Log Archive Account)
-3. **Security** (Security Account)
-4. **Network** (Network Hub Account)
+3. **Network** (Network Hub Account)
+4. **Security** (Security Account)
 5. **Shared Services** (Shared Services Account)
-6. **AFT** (AFT Account)
+6. **AFT Setup** (AFT Account)
+7. **AFT Global Customizations**
+8. **AFT Account Provisioning**
+9. **AFT Account Customizations**
 
 See [Deployment Runbook](docs/docs/runbooks/deployment.md) for detailed instructions.
 
@@ -83,9 +97,12 @@ cd docs && pnpm install && pnpm start
 Each Terraform directory has a `terraform.tfvars.example` file. Copy and customize:
 
 ```bash
+cp terraform/backend/common.hcl.example terraform/backend/common.hcl
+
 cd terraform/organization
 cp terraform.tfvars.example terraform.tfvars
-# Edit terraform.tfvars with your values
+# Edit terraform.tfvars and terraform/backend/common.hcl with your values
+terraform init -backend-config=../backend/common.hcl
 ```
 
 ## Reference Implementations

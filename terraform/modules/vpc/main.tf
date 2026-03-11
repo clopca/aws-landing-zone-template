@@ -14,7 +14,7 @@ resource "aws_vpc" "main" {
 }
 
 resource "aws_internet_gateway" "main" {
-  count = var.enable_nat_gateway ? 1 : 0
+  count = var.create_public_subnets && var.enable_nat_gateway ? 1 : 0
 
   vpc_id = aws_vpc.main.id
 
@@ -24,7 +24,7 @@ resource "aws_internet_gateway" "main" {
 }
 
 resource "aws_subnet" "public" {
-  count = var.enable_nat_gateway ? local.az_count : 0
+  count = var.create_public_subnets ? local.az_count : 0
 
   vpc_id                  = aws_vpc.main.id
   cidr_block              = cidrsubnet(var.cidr_block, 4, count.index)
@@ -51,7 +51,7 @@ resource "aws_subnet" "private" {
 }
 
 resource "aws_subnet" "database" {
-  count = local.az_count
+  count = var.create_database_subnets ? local.az_count : 0
 
   vpc_id            = aws_vpc.main.id
   cidr_block        = cidrsubnet(var.cidr_block, 4, count.index + 8)
@@ -64,7 +64,7 @@ resource "aws_subnet" "database" {
 }
 
 resource "aws_subnet" "transit" {
-  count = local.az_count
+  count = var.create_transit_subnets ? local.az_count : 0
 
   vpc_id            = aws_vpc.main.id
   cidr_block        = cidrsubnet(var.cidr_block, 6, count.index + 48)
@@ -77,7 +77,7 @@ resource "aws_subnet" "transit" {
 }
 
 resource "aws_eip" "nat" {
-  count = local.nat_gateway_count
+  count = var.create_public_subnets ? local.nat_gateway_count : 0
 
   domain = "vpc"
 
@@ -89,7 +89,7 @@ resource "aws_eip" "nat" {
 }
 
 resource "aws_nat_gateway" "main" {
-  count = local.nat_gateway_count
+  count = var.create_public_subnets ? local.nat_gateway_count : 0
 
   allocation_id = aws_eip.nat[count.index].id
   subnet_id     = aws_subnet.public[count.index].id
@@ -102,7 +102,7 @@ resource "aws_nat_gateway" "main" {
 }
 
 resource "aws_route_table" "public" {
-  count = var.enable_nat_gateway ? 1 : 0
+  count = var.create_public_subnets && var.enable_nat_gateway ? 1 : 0
 
   vpc_id = aws_vpc.main.id
 
@@ -112,7 +112,7 @@ resource "aws_route_table" "public" {
 }
 
 resource "aws_route" "public_internet" {
-  count = var.enable_nat_gateway ? 1 : 0
+  count = var.create_public_subnets && var.enable_nat_gateway ? 1 : 0
 
   route_table_id         = aws_route_table.public[0].id
   destination_cidr_block = "0.0.0.0/0"
@@ -120,7 +120,7 @@ resource "aws_route" "public_internet" {
 }
 
 resource "aws_route_table_association" "public" {
-  count = var.enable_nat_gateway ? local.az_count : 0
+  count = var.create_public_subnets ? local.az_count : 0
 
   subnet_id      = aws_subnet.public[count.index].id
   route_table_id = aws_route_table.public[0].id
@@ -137,7 +137,7 @@ resource "aws_route_table" "private" {
 }
 
 resource "aws_route" "private_nat" {
-  count = var.enable_nat_gateway ? local.az_count : 0
+  count = var.enable_nat_gateway && var.create_public_subnets ? local.az_count : 0
 
   route_table_id         = aws_route_table.private[count.index].id
   destination_cidr_block = "0.0.0.0/0"
@@ -152,13 +152,15 @@ resource "aws_route_table_association" "private" {
 }
 
 resource "aws_route_table_association" "database" {
-  count = local.az_count
+  count = var.create_database_subnets ? local.az_count : 0
 
   subnet_id      = aws_subnet.database[count.index].id
   route_table_id = aws_route_table.private[count.index].id
 }
 
 resource "aws_route_table" "transit" {
+  count = var.create_transit_subnets ? 1 : 0
+
   vpc_id = aws_vpc.main.id
 
   tags = merge(var.tags, {
@@ -167,14 +169,14 @@ resource "aws_route_table" "transit" {
 }
 
 resource "aws_route_table_association" "transit" {
-  count = local.az_count
+  count = var.create_transit_subnets ? local.az_count : 0
 
   subnet_id      = aws_subnet.transit[count.index].id
-  route_table_id = aws_route_table.transit.id
+  route_table_id = aws_route_table.transit[0].id
 }
 
 resource "aws_flow_log" "main" {
-  count = var.enable_flow_logs && var.flow_log_destination_arn != "" ? 1 : 0
+  count = var.enable_flow_logs ? 1 : 0
 
   log_destination_type = var.flow_log_destination_type
   log_destination      = var.flow_log_destination_arn

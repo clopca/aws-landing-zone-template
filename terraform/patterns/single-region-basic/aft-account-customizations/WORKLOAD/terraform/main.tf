@@ -1,16 +1,20 @@
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
+data "aws_ssm_parameter" "log_archive_catalog" {
+  name = "/org/log-archive/catalog"
+}
 
 locals {
-  account_id   = data.aws_caller_identity.current.account_id
-  account_name = try(var.account_tags["AccountName"], "workload-${local.account_id}")
-  vpc_cidr     = try(var.custom_fields["vpc_cidr"], "10.10.0.0/16")
-  region       = data.aws_region.current.id
+  account_id          = data.aws_caller_identity.current.account_id
+  account_name        = try(var.account_tags["AccountName"], "workload-${local.account_id}")
+  vpc_cidr            = try(var.custom_fields["vpc_cidr"], "10.10.0.0/16")
+  region              = data.aws_region.current.id
+  log_archive_catalog = jsondecode(data.aws_ssm_parameter.log_archive_catalog.value)
 }
 
 # Security baseline - applied to all accounts
 module "security_baseline" {
-  source = "../../../../../../modules/security-baseline"
+  source = "../../../../../modules/security-baseline"
 
   enable_ebs_encryption         = true
   enable_s3_block_public_access = true
@@ -27,14 +31,17 @@ module "security_baseline" {
 
 # VPC with public and private subnets
 module "vpc" {
-  source = "../../../../../../modules/vpc"
+  source = "../../../../../modules/vpc"
 
-  name               = local.account_name
-  cidr_block         = local.vpc_cidr
-  availability_zones = ["${local.region}a", "${local.region}b", "${local.region}c"]
-  enable_nat_gateway = true
-  single_nat_gateway = false
-  enable_flow_logs   = true
+  name                     = local.account_name
+  cidr_block               = local.vpc_cidr
+  availability_zones       = ["${local.region}a", "${local.region}b", "${local.region}c"]
+  create_database_subnets  = false
+  create_transit_subnets   = false
+  enable_nat_gateway       = true
+  single_nat_gateway       = false
+  enable_flow_logs         = true
+  flow_log_destination_arn = local.log_archive_catalog.vpc_flow_logs_bucket_arn
 
   tags = var.account_tags
 }
@@ -46,8 +53,8 @@ resource "aws_iam_account_alias" "alias" {
 
 # Basic IAM roles for workload access
 module "iam_roles" {
-  source = "../../../../../../modules/iam"
+  source = "../../../../../modules/iam"
 
-  account_name = local.account_name
-  account_tags = var.account_tags
+  name_prefix = local.account_name
+  tags        = var.account_tags
 }

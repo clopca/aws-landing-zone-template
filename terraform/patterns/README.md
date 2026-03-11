@@ -107,7 +107,7 @@ Each pattern contains three directories:
 pattern-name/
 ├── aft-account-customizations/WORKLOAD/  # Account-specific resources
 ├── aft-global-customizations/            # Global resources (all accounts)
-└── aft-account-request/                  # Example account request
+└── aft-account-request/                  # README pointer to canonical examples
 ```
 
 Copy these to your AFT repositories:
@@ -124,8 +124,8 @@ cp -r aft-account-customizations/WORKLOAD \
 cp -r aft-global-customizations/terraform/* \
       /path/to/aft-global-customizations/terraform/
 
-# Copy account request template
-cp aft-account-request/terraform/main.tf \
+# Start from the canonical account request examples in this repo
+cp /path/to/aws-landing-zone-template/terraform/aft/account-requests/account-request.tf.example \
    /path/to/aft-account-requests/terraform/my-account.tf
 ```
 
@@ -192,7 +192,7 @@ pattern-name/
 │       └── versions.tf                          # Provider versions
 └── aft-account-request/
     └── terraform/
-        └── main.tf                              # Example account request
+        └── README.md                            # Points to canonical account request examples
 ```
 
 ## Customization

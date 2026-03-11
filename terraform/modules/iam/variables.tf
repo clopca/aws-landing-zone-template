@@ -41,7 +41,13 @@ variable "create_cross_account_roles" {
 }
 
 variable "trusted_account_ids" {
-  description = "List of AWS account IDs that can assume cross-account roles"
+  description = "Deprecated: list of AWS account IDs that can assume cross-account roles"
+  type        = list(string)
+  default     = []
+}
+
+variable "trusted_principal_arns" {
+  description = "List of IAM principal ARNs that can assume cross-account roles"
   type        = list(string)
   default     = []
 }
@@ -141,13 +147,13 @@ variable "password_policy" {
 variable "create_default_permission_sets" {
   description = "Whether to create default permission sets (AdministratorAccess, ReadOnlyAccess, etc.)"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "create_default_cross_account_roles" {
   description = "Whether to create default cross-account roles (OrganizationAccountAccessRole, SecurityAuditRole, etc.)"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "require_mfa_for_cross_account" {

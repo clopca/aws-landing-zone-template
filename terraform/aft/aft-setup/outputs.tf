@@ -1,29 +1,29 @@
-output "aft_request_metadata_table_name" {
-  description = "AFT request metadata DynamoDB table name"
-  value       = module.aft.aft_request_metadata_table_name
+output "aft_management_account_id" {
+  description = "AFT management account ID"
+  value       = module.aft.aft_management_account_id
 }
 
-output "aft_controltower_events_table_name" {
-  description = "AFT Control Tower events DynamoDB table name"
-  value       = module.aft.aft_controltower_events_table_name
+output "ct_home_region" {
+  description = "Control Tower home region"
+  value       = module.aft.ct_home_region
 }
 
-output "aft_invoke_aft_account_provisioning_framework_lambda_function_name" {
-  description = "AFT invoke provisioning framework Lambda function name"
-  value       = module.aft.aft_invoke_aft_account_provisioning_framework_lambda_function_name
+output "account_request_repo_name" {
+  description = "Account request repository name"
+  value       = module.aft.account_request_repo_name
 }
 
-output "aft_account_provisioning_framework_sfn_name" {
-  description = "AFT account provisioning framework Step Function name"
-  value       = module.aft.aft_account_provisioning_framework_sfn_name
+output "global_customizations_repo_name" {
+  description = "Global customizations repository name"
+  value       = module.aft.global_customizations_repo_name
 }
 
-output "aft_sns_topic_arn" {
-  description = "AFT SNS topic ARN for notifications"
-  value       = module.aft.aft_sns_topic_arn
+output "account_customizations_repo_name" {
+  description = "Account customizations repository name"
+  value       = module.aft.account_customizations_repo_name
 }
 
-output "aft_failure_sns_topic_arn" {
-  description = "AFT failure SNS topic ARN"
-  value       = module.aft.aft_failure_sns_topic_arn
+output "account_provisioning_customizations_repo_name" {
+  description = "Account provisioning customizations repository name"
+  value       = module.aft.account_provisioning_customizations_repo_name
 }

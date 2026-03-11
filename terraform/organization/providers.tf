@@ -1,19 +1,16 @@
 terraform {
-  required_version = ">= 1.5.0"
+  required_version = ">= 1.5.0, < 2.0.0"
 
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 5.0"
+      version = ">= 5.0, < 6.0"
     }
   }
 
   backend "s3" {
-    bucket         = "CHANGEME-terraform-state"
-    key            = "organization/terraform.tfstate"
-    region         = "us-east-1"
-    dynamodb_table = "terraform-locks"
-    encrypt        = true
+    key     = "organization/terraform.tfstate"
+    encrypt = true
   }
 }
 
@@ -25,7 +22,7 @@ provider "aws" {
       Project     = "aws-landing-zone"
       Environment = "management"
       ManagedBy   = "terraform"
-      Module      = "organization"
+      Component   = "organization"
     }
   }
 }

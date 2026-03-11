@@ -7,7 +7,7 @@ locals {
 
 # Security baseline applied globally to all AFT-managed accounts
 module "security_baseline" {
-  source = "../../../../../modules/security-baseline"
+  source = "../../../../modules/security-baseline"
 
   enable_ebs_encryption         = true
   enable_s3_block_public_access = true

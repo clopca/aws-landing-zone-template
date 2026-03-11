@@ -21,14 +21,10 @@ variable "availability_zones" {
   default     = ["us-east-1a", "us-east-1b", "us-east-1c"]
 }
 
-variable "transit_gateway_id" {
-  description = "Transit Gateway ID to attach to"
-  type        = string
-}
-
-variable "tgw_route_table_id" {
-  description = "Transit Gateway route table ID for association"
-  type        = string
+variable "organization_cidrs" {
+  description = "CIDRs routed to the organization transit gateway"
+  type        = list(string)
+  default     = ["10.0.0.0/8"]
 }
 
 variable "enable_ecr" {

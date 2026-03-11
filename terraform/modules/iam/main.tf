@@ -1,5 +1,6 @@
 locals {
   permission_boundary = var.enable_permission_boundary ? var.permission_boundary_arn : null
+  trusted_principals  = length(var.trusted_principal_arns) > 0 ? var.trusted_principal_arns : [for account_id in var.trusted_account_ids : "arn:aws:iam::${account_id}:root"]
 }
 
 resource "aws_iam_user" "break_glass" {

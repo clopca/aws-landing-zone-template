@@ -3,9 +3,10 @@ provider "aws" {
 
   default_tags {
     tags = {
-      ManagedBy = "Terraform"
-      Project   = "landing-zone"
-      Module    = "control-tower"
+      Project     = "aws-landing-zone"
+      Environment = "management"
+      ManagedBy   = "terraform"
+      Component   = "control-tower"
     }
   }
 }

@@ -1,6 +1,7 @@
 resource "aws_s3_bucket" "main" {
-  bucket        = var.bucket_name
-  force_destroy = var.force_destroy
+  bucket              = var.bucket_name
+  force_destroy       = var.force_destroy
+  object_lock_enabled = var.enable_object_lock
 
   tags = merge(var.tags, {
     Name = var.bucket_name
@@ -201,7 +202,15 @@ data "aws_iam_policy_document" "secure_transport" {
   }
 }
 
+data "aws_iam_policy_document" "merged" {
+  source_policy_documents = compact([
+    data.aws_iam_policy_document.secure_transport.json,
+    var.additional_bucket_policy_json,
+    var.bucket_policy,
+  ])
+}
+
 resource "aws_s3_bucket_policy" "main" {
   bucket = aws_s3_bucket.main.id
-  policy = var.bucket_policy != null ? var.bucket_policy : data.aws_iam_policy_document.secure_transport.json
+  policy = data.aws_iam_policy_document.merged.json
 }

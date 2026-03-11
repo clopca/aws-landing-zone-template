@@ -43,15 +43,3 @@ variable "private_hosted_zone_name" {
   type        = string
   default     = "aws.internal"
 }
-
-variable "enable_network_firewall" {
-  description = "Enable AWS Network Firewall for inspection"
-  type        = bool
-  default     = true
-}
-
-variable "vpc_flow_log_bucket_arn" {
-  description = "S3 bucket ARN for VPC flow logs"
-  type        = string
-  default     = ""
-}
